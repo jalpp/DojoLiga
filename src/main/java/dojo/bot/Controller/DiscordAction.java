@@ -13,17 +13,12 @@ import dojo.bot.Runner.Main;
 import io.github.sornerol.chess.pubapi.exception.ChessComPubApiException;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonInteraction;
-import net.dv8tion.jda.api.interactions.components.text.TextInput;
-import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
-import net.dv8tion.jda.api.interactions.modals.Modal;
 import org.bson.Document;
 
 import java.awt.*;
@@ -34,16 +29,18 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.*;
 
+import static dojo.bot.Controller.DiscordAdmin.isDiscordAdmin;
+import static dojo.bot.Controller.DiscordAdmin.isDiscordAdminMessage;
+
 /**
  * An Object that provides methods for DojoSwissManager to act upon Discord
  * events related to creating Leagues, checking admins, etc
- *
- * This is God Object intentionally made this way to further break down when less updates appear
  */
 
 public class DiscordAction {
 
     private final AntiSpam Slow_down_buddy = new AntiSpam(60000, 5);
+    private final TicketManager ticketSystem = new TicketManager();
 
     public DiscordAction() {
 
@@ -143,32 +140,7 @@ public class DiscordAction {
         }
     }
 
-    /**
-     * Discord Action containing admin User ids, checks if a user is admin or not
-     *
-     * @param event Slash command event
-     * @return true for is user admin or false
-     */
 
-    public boolean isDiscordAdmin(SlashCommandInteractionEvent event) {
-        return event.getUser().getId().equalsIgnoreCase("403639644887056406") ||
-                event.getUser().getId().equalsIgnoreCase("893527007051259954") ||
-                event.getUser().getId().equalsIgnoreCase("338307632232398850") ||
-                event.getUser().getId().equalsIgnoreCase("403217126820675594") ||
-                event.getUser().getId().equalsIgnoreCase("683031755271569528") ||
-                event.getUser().getId().equalsIgnoreCase("321893042485460992");
-    }
-
-
-    public boolean isDiscordAdminButton(ButtonInteraction event){
-        return event.getUser().getId().equalsIgnoreCase("403639644887056406") ||
-                event.getUser().getId().equalsIgnoreCase("893527007051259954") ||
-                event.getUser().getId().equalsIgnoreCase("338307632232398850") ||
-                event.getUser().getId().equalsIgnoreCase("403217126820675594") ||
-                event.getUser().getId().equalsIgnoreCase("683031755271569528") ||
-                event.getUser().getId().equalsIgnoreCase("321893042485460992")
-                || event.getUser().getId().equalsIgnoreCase("476559788822626305");
-    }
 
     /**
      * Discord Action to send standings in Discord
@@ -182,7 +154,7 @@ public class DiscordAction {
                                MongoCollection<Document> collection) {
         if (!Slow_down_buddy.checkSpam(event)) {
 
-            if (this.isDiscordAdmin(event)) {
+            if (isDiscordAdmin(event)) {
                 switch (event.getOptionsByName("time-control").get(0).getAsString()) {
 
                     case "sp-tc" -> {
@@ -399,7 +371,7 @@ public class DiscordAction {
     public void configLeagueArena(SlashCommandInteractionEvent event, MongoCollection<Document> arenaLeagueCollection) {
         if (!Slow_down_buddy.checkSpam(event)) {
 
-            if (this.isDiscordAdmin(event)) {
+            if (isDiscordAdmin(event)) {
 
                 if (event.getOptionsByName("interval").get(0).getAsString().equalsIgnoreCase("daily")) {
 
@@ -504,7 +476,7 @@ public class DiscordAction {
     public void configLeagueSwiss(SlashCommandInteractionEvent event, MongoCollection<Document> swissLeagueCollection) {
 
         if (!Slow_down_buddy.checkSpam(event)) {
-            if (this.isDiscordAdmin(event)) {
+            if (isDiscordAdmin(event)) {
 
                 if (event.getOptionsByName("interval-swiss").get(0).getAsString().equalsIgnoreCase("daily-swiss")) {
                     this.validateSwissInput(event);
@@ -605,7 +577,7 @@ public class DiscordAction {
     public void startComputingScores(SlashCommandInteractionEvent event, ComputeScores compute,
                                      MongoCollection<Document> arenaLeagueCollection, MongoCollection<Document> swissLeagueCollection) throws ChessComPubApiException, IOException {
         if (!Slow_down_buddy.checkSpam(event)) {
-            if (this.isDiscordAdmin(event)) {
+            if (isDiscordAdmin(event)) {
                 String urlarena = event.getOption("arena-url").getAsString();
 
                 event.reply("Computing.. Please wait for 5 mins").queue();
@@ -1085,7 +1057,7 @@ public class DiscordAction {
 
     public void inject(SlashCommandInteractionEvent event, MongoCollection<Document> arena,
                        MongoCollection<Document> swiss) {
-        if (this.isDiscordAdmin(event)) {
+        if (isDiscordAdmin(event)) {
             String url = Objects.requireNonNull(event.getOption("url")).getAsString();
             event.reply("Connecting..").queue();
 
@@ -1954,184 +1926,21 @@ public class DiscordAction {
 
 
     public void createEntryTicket(SlashCommandInteractionEvent event){
-
-        if(isDiscordAdmin(event)){
-            event.replyEmbeds(
-                    new EmbedBuilder().setTitle("Training Program Ticket System")
-                            .setDescription("Please click on following buttons to open a ticket" +
-                                    "\n\n" +
-                                    "**\uD83E\uDD4B Ask Senseis (Jesse, David, Kostya)**\n Ask the Sensei questions about chess" +
-                                    "\n\n" +
-                                    "**\uD83D\uDCD5 Training Program Feedback** \n Provide Training Program feedback" +
-                                    "\n\n" +
-                                    "**\uD83D\uDEE0\uFE0F Tech Feedback** \n Provide tech feedback" +
-                                    "\n\n" +
-                                    "**\uD83C\uDF10 FAQ** \n Read Training Program FAQ")
-                            .setColor(Color.GREEN)
-                            .setFooter("Note: if you get a message “application did’t respond” it means that there is server outage or the dev @Noobmaster is doing maintenance, if you get this message please create a ticket 3/5 hours after. Thanks!")
-                            .setThumbnail(Helper.DOJO_LOGO)
-                            .build()
-            ).addActionRow(Button.primary("sen", "\uD83E\uDD4B Ask Sensei"), Button.secondary("tp", "\uD83D\uDCD5 Training Program Feedback"), Button.danger("tech", "\uD83D\uDEE0\uFE0F  Tech Feedback"), Button.link("https://www.chessdojo.club/training-program-faq", "\uD83C\uDF10 Training Program FAQ")).queue();
-        }else{
-            event.reply("Sorry you are not an admin!").setEphemeral(true).queue();
-        }
-
-
+        ticketSystem.createEntryTicket(event);
     }
 
 
 
     public void ticketFormSystem(ModalInteractionEvent event, String senseiChannelId, String techChannelID, String tpchannel){
-        String id = event.getModalId();
-
-        switch (id){
-            case "sensei-modal" -> {
-                event.reply("Question Ticket issued! Please wait for Sensei to get back to you!").setEphemeral(true).queue();
-                EmbedBuilder builder = new EmbedBuilder();
-                builder.setThumbnail(Helper.DOJO_LOGO);
-                builder.setTitle("\uD83E\uDD4B Sensei Questions Ticket");
-                builder.setDescription("**Content:** \n  > "  + Objects.requireNonNull(event.getValue("asks")).getAsString());
-                builder.setColor(Color.ORANGE);
-                builder.addField("Ticket Number: ", "#" + generateRandomTicketNumber(new Random()), true);
-                builder.addField("Author @:", event.getUser().getAsMention(), true);
-                builder.addField("Author name: ", "@" + event.getUser().getEffectiveName(), true);
-                Role getAsMention = event.getGuild().getRolesByName("sensei", true).get(0);
-                String mention = getAsMention.getAsMention();
-                event.getGuild().getTextChannelById(senseiChannelId).sendMessage(mention).queue();
-                event.getGuild().getTextChannelById(senseiChannelId).sendMessageEmbeds(builder.build()).addActionRow(Button.success("reply", "↩\uFE0F Sensei reply")).queue(msg -> msg.addReaction(Emoji.fromFormatted("✅")).queue());
-
-            }
-            case "tp-modal" -> {
-                event.reply("Feedback Ticket issued! Please wait for our Admins to get back to you!").setEphemeral(true).queue();
-                EmbedBuilder builder = new EmbedBuilder();
-                builder.setThumbnail(Helper.DOJO_LOGO);
-                builder.addField("Ticket Number: ", "#" + generateRandomTicketNumber(new Random()), true);
-                builder.addField("Author @:", event.getUser().getAsMention(), true);
-                builder.addField("Author name: ", "@" + event.getUser().getEffectiveName(), true);
-                builder.setTitle("\uD83D\uDCD5 Training Program Feedback Ticket");
-                builder.setDescription("**Content:** \n  > " + Objects.requireNonNull(event.getValue("askt")).getAsString());
-                builder.setColor(Color.WHITE);
-                event.getGuild().getTextChannelById(tpchannel).sendMessageEmbeds(builder.build()).addActionRow(Button.success("reply", "↩\uFE0F Admin reply")).queue(msg -> msg.addReaction(Emoji.fromFormatted("⬆\uFE0F")).queue());
-
-            }
-
-
-            case "tech-modal" -> {
-                event.reply("Feedback Ticket issued! Please wait for our Admins to get back to you!").setEphemeral(true).queue();
-                EmbedBuilder builder = new EmbedBuilder();
-                builder.setThumbnail(Helper.DOJO_LOGO);
-                builder.addField("Ticket Number: ", "#" + generateRandomTicketNumber(new Random()), true);
-                builder.addField("Author @:", event.getUser().getAsMention(), true);
-                builder.addField("Author name: ", "@" + event.getUser().getEffectiveName(), true);
-                builder.setTitle("\uD83D\uDEE0\uFE0F Tech Feedback Ticket");
-                builder.setDescription( "**Content:** \n  > " + Objects.requireNonNull(event.getValue("asktech")).getAsString());
-                builder.setColor(Color.GREEN);
-                event.getGuild().getTextChannelById(techChannelID).sendMessageEmbeds(builder.build()).addActionRow(Button.success("reply", "↩\uFE0F Admin reply")).queue(msg -> msg.addReaction(Emoji.fromFormatted("⬆\uFE0F")).queue());
-
-            }
-
-            case "reply-modal" -> {
-                event.replyEmbeds(
-                        new EmbedBuilder().setThumbnail(event.getUser().getAvatarUrl()).setTitle(event.getUser().getEffectiveName() + "'s answer to ticket " + event.getMessage().getEmbeds().get(0).getFields().get(0).getValue()).setColor(Color.BLUE)
-                                .setDescription("**Content:** \n  > " + Objects.requireNonNull(event.getValue("reply-m")).getAsString()).build()).queue();
-                event.getChannel().sendMessage(event.getMessage().getEmbeds().get(0).getFields().get(1).getValue() + " Your Ticket has been answered!").queue();
-            }
-
-
-
-        }
+       ticketSystem.ticketFormSystem(event,senseiChannelId,techChannelID,tpchannel);
 
     }
 
 
 
     public void sentTheForms(ButtonInteraction event){
-        switch (event.getComponentId()){
-            case "sen" -> {
-                Modal modal = buildForm(
-                        "asks",
-                        "Ask Sensei question",
-                        "Ask Question",
-                        "sensei-modal",
-                        "Sensei Questions"
-                );
-                event.replyModal(modal).queue();
-            }
-            case "tp" -> {
-                Modal modal = buildForm(
-                        "askt",
-                        "provide feedback",
-                        "Provide Feedback",
-                        "tp-modal",
-                        "Training Program Feedback"
-                );
-
-                event.replyModal(modal).queue();
-
-            }
-            case "tech" -> {
-                Modal modal = buildForm(
-                        "asktech",
-                        "provide feedback",
-                        "Provide Tech Feedback",
-                        "tech-modal",
-                        "Tech Feedback"
-                );
-
-                event.replyModal(modal).queue();
-            }
-
-            case "reply" -> {
-
-                if(isDiscordAdminButton(event)){
-                    Modal modal = buildForm(
-                            "reply-m",
-                            "Reply to ticket",
-                            "Reply to ticket",
-                            "reply-modal",
-                            "Reply"
-                    );
-
-                    event.replyModal(modal).queue();
-
-                }else{
-                    event.reply("Your not an admin!").setEphemeral(true).queue();
-                }
-
-            }
-
-        }
+       ticketSystem.sentTheForms(event);
     }
-
-
-
-    public Modal buildForm(String textId, String labelInfo, String insideInfo, String modalId, String modalTitle){
-
-        TextInput wtext = TextInput.create(textId, labelInfo, TextInputStyle.PARAGRAPH)
-                .setPlaceholder(insideInfo)
-                .setMinLength(5)
-                .setMaxLength(3000)
-                .setRequired(true)
-
-                .build();
-
-
-        return Modal.create(modalId, modalTitle)
-                .addActionRow(wtext)
-                .build();
-
-    }
-
-
-    private static int generateRandomTicketNumber(Random random) {
-        // You can customize the range of the ticket number based on your requirements
-        int lowerBound = 100;
-        int upperBound = 999;
-
-        // Generate a random number within the specified range
-        return lowerBound + random.nextInt(upperBound - lowerBound + 1);
-    }
-
 
 
     public void computeChessDojoLichessLigaScores(MessageReceivedEvent event, MongoCollection<Document> arena, MongoCollection<Document> swiss, ComputeScores compute){
@@ -2150,9 +1959,14 @@ public class DiscordAction {
 
 
     public void sendLigaMessage(MessageReceivedEvent event){
-              Messenger messenger = new Messenger();
-              messenger.sendMessage();
-              event.getChannel().sendMessage("I have successfully notified Lichess team! Good luck to everyone playing!").queue();
+              if(isDiscordAdminMessage(event)){
+                  Messenger messenger = new Messenger();
+                  messenger.sendMessage();
+                  event.getChannel().sendMessage("I have successfully notified Lichess team! Good luck to everyone playing!").queue();
+              }else{
+                  event.getChannel().sendMessage("Error! Automated Message have been shut of, please call admin to send the messages!").queue();
+              }
+
 
     }
 
