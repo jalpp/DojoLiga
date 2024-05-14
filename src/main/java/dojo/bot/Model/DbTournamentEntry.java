@@ -1,5 +1,10 @@
 package dojo.bot.Model;
 
+
+/**
+ * Represents the tournament entry Document 
+ */
+
 public class DbTournamentEntry {
 
 
