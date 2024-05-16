@@ -7,7 +7,6 @@ import com.mongodb.client.MongoCollection;
 import dojo.bot.Commands.Helper;
 import dojo.bot.Commands.Profile;
 import dojo.bot.Commands.Verification;
-import dojo.bot.Model.ChessPlayer;
 import dojo.bot.Model.DbTournamentEntry;
 import dojo.bot.Runner.Main;
 import io.github.sornerol.chess.pubapi.exception.ChessComPubApiException;
@@ -42,6 +41,7 @@ public class DiscordAction {
     private final TicketManager ticketSystem = new TicketManager();
     private final StandingReactManager standingReactManager = new StandingReactManager();
     private final ConfigLeagueManager configLeagueManager = new ConfigLeagueManager();
+    private final VertificationManager vertificationManager = new VertificationManager();
 
     public DiscordAction() {
 
@@ -135,97 +135,20 @@ public class DiscordAction {
 
     public void startVerificationProcess(SlashCommandInteractionEvent event, Verification passport,
                                          MongoCollection<Document> collection) throws ChessComPubApiException, IOException {
-        ManageRoles manageRoles = new ManageRoles();
         if (Slow_down_buddy.checkSpam(event)) {
             event.reply("Slow Down buddy, go watch ChessDojo and run the command after a 1 min!").setEphemeral(true).queue();
-        } else {
-            String name = event.getOption("lichess-username").getAsString().toLowerCase().trim();
-            if (passport.userPresent(collection, event.getUser().getId(), name)) {
-                event.reply(
-                                "You have already been verified, Join our ChessDojo Lichess team if you have not already [**Join**](https://lichess.org/team/chessdojo). you can also run **/profile** to view your linked Lichess profile!")
-                        .setEphemeral(true).queue();
-                String cc = passport.getReletatedChessName(event.getUser().getId(), Main.chesscomplayers);
-
-                if(manageRoles.calculateChesscomRoleIndex(event, passport, cc) == -1 && manageRoles.calculateLichessRoleIndex(event, passport, name) == -1){
-                    event.reply("Error! Lichess.org Rapid and Classical ratings are ? and Chess.com account not linked! " +
-                            "I can't give belts. Please play more games or link chess.com account").setEphemeral(true).queue();
-                    return;
-                }
-
-                manageRoles.assignTheHighestRole(passport, event, false);
-            } else {
-                ChessPlayer player = new ChessPlayer(name, event.getUser().getId(), 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0,
-                        0, 0, 0,
-                        0, 0, 0, 0,
-                        0, 0);
-                Document document = new Document("Lichessname", player.getLichessname())
-                        .append("Discordid", player.getDiscordId())
-                        .append("blitz_score", player.getBLITZ_SCORE()) // blitz_score // rapid_score // blitz_score_gp // rapid_score_gp
-                        .append("rapid_score", player.getRAPID_SCORE()) // blitz_score_swiss 0.0 rapid_score_swiss 0.0
-                        .append("classical_score", player.getCLASSICAL_SCORE()) // blitz_score_swiss_gp // rapid_score_swiss_gp
-                        .append("blitz_rating", 0).append("classical_rating", 0) // blitz_comb_total // rapid_comb_total
-                        .append("rapid_rating", 0).append("blitz_score_gp", 0)  // blitz_comb_total_gp rapid_comb_total_gp
-                        .append("rapid_score_gp", 0).append("classical_score_gp", 0) // sp_score // eg_score //sp_rating // eg_rating
-                        .append("blitz_score_swiss", 0.0).append("rapid_score_swiss", 0.0)
-                        .append("classical_score_swiss", 0.0).append("blitz_score_swiss_gp", 0)
-                        .append("rapid_score_swiss_gp", 0).append("classical_score_swiss_gp", 0)
-                        .append("blitz_comb_total", 0).append("blitz_comb_total_gp", 0)
-                        .append("rapid_comb_total", 0).append("rapid_comb_total_gp", 0)
-                        .append("classical_comb_total", 0).append("classical_comb_total_gp", 0).append("sp_score", 0.0)
-                        .append("sparring_rating", 0).append("eg_score", 0.0)
-                        .append("eg_rating", 0);
-                collection.insertOne(document);
-                passport.verificationStatus(name, event.getUser().getId(), event);
-
-            }
+        }else{
+           vertificationManager.startVerificationProcessLichess(event,passport,collection);
         }
     }
 
 
     public void startVerificationProcessChessCom(SlashCommandInteractionEvent event, Verification passport,
                                          MongoCollection<Document> collection) throws ChessComPubApiException, IOException {
-        ManageRoles manageRoles = new ManageRoles();
         if (Slow_down_buddy.checkSpam(event)) {
             event.reply("Slow Down buddy, go watch ChessDojo and run the command after a 1 min!").setEphemeral(true).queue();
-        } else {
-            String name = event.getOption("chesscom-username").getAsString().toLowerCase().trim();
-            if (passport.userPresentChesscom(collection, event.getUser().getId(), name)) {
-                event.reply("You are now verified!").setEphemeral(true).queue();
-
-                String li = passport.getReletatedLichessName(event.getUser().getId(), Main.collection);
-                String cc = passport.getReletatedChessName(event.getUser().getId(), Main.chesscomplayers);
-
-                if(manageRoles.calculateChesscomRoleIndex(event, passport, cc) == -1 && manageRoles.calculateLichessRoleIndex(event, passport, li) == -1){
-                    event.reply("Error! Lichess.org Rapid and Classical ratings are ? and Chess.com account not linked! " +
-                            "I can't give belts. Please play more games or link chess.com account").setEphemeral(true).queue();
-                    return;
-                }
-
-                manageRoles.assignTheHighestRole(passport, event, false);
-            } else {
-                ChessPlayer player = new ChessPlayer(name, event.getUser().getId());
-                CCProfile profile = new CCProfile(name);
-                Document document = new Document("Chesscomname", player.getChesscomname())
-                        .append("Discordid", player.getDiscordId())
-                        .append("blitz_score", profile.getBlitzRating())
-                        .append("rapid_score", profile.getRapidRating())
-                        .append("blitz_rating", 0)
-                        .append("rapid_rating", 0).append("blitz_score_gp", 0)
-                        .append("rapid_score_gp", 0)
-                        .append("blitz_score_swiss", 0.0).append("rapid_score_swiss", 0.0)
-                        .append("blitz_score_swiss_gp", 0)
-                        .append("rapid_score_swiss_gp", 0)
-                        .append("blitz_comb_total", 0).append("blitz_comb_total_gp", 0)
-                        .append("rapid_comb_total", 0).append("rapid_comb_total_gp", 0)
-                        .append("sp_score", 0.0)
-                        .append("sparring_rating", 0).append("eg_score", 0.0)
-                        .append("eg_rating", 0);
-
-                collection.insertOne(document);
-                passport.verificationStatusChesscom(name, event.getUser().getId(), event);
-
-            }
+        }else{
+           vertificationManager.startVerificationProcessChessCom(event,passport,collection);
         }
     }
 
@@ -239,17 +162,8 @@ public class DiscordAction {
 
     public void leagueRegister(SlashCommandInteractionEvent event, Verification passport,
                                MongoCollection<Document> collection) {
-        if (!Slow_down_buddy.checkSpam(event)) {
-            if (!passport.userPresentNormal(collection, event.getUser().getId())) {
-                event.reply("Registration failed, please run **/verify** to authenticate your Lichess.org account").setEphemeral(true)
-                        .queue();
-            } else {
-                event.reply(
-                                "Please join ChessDojo team to enter in upcoming league/tournaments! Your request will be accepted by Chessdojo mods. \n"
-                                        +
-                                        "Once you get accepted in the team, you will receive Lichess DM for confirmation")
-                        .addActionRow(Button.link("https://lichess.org/team/chessdojo", "Join Team")).queue();
-            }
+        if(!Slow_down_buddy.checkSpam(event)) {
+            configLeagueManager.leagueRegister(event, passport, collection);
         } else {
             event.reply("Slow Down buddy, go watch ChessDojo and run the command after 1 min!").setEphemeral(true).queue();
         }

@@ -1,7 +1,9 @@
 package dojo.bot.Controller;
 
 import com.mongodb.client.MongoCollection;
+import dojo.bot.Commands.Verification;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import org.bson.Document;
 
 import java.time.DayOfWeek;
@@ -251,6 +253,30 @@ public class ConfigLeagueManager {
             event.reply("Error! Number of rounds must be between 3 and 9").queue();
 
         }
+    }
+
+
+
+    /**
+     * Discord action to send ChessDojo URL based on if user is verified
+     *
+     * @param event      Slash command event
+     * @param passport   Verification object
+     * @param collection collection of players
+     */
+
+    public void leagueRegister(SlashCommandInteractionEvent event, Verification passport,
+                               MongoCollection<Document> collection) {
+            if (!passport.userPresentNormal(collection, event.getUser().getId())) {
+                event.reply("Registration failed, please run **/verify** to authenticate your Lichess.org account").setEphemeral(true)
+                        .queue();
+            } else {
+                event.reply(
+                                "Please join ChessDojo team to enter in upcoming league/tournaments! Your request will be accepted by Chessdojo mods. \n"
+                                        +
+                                        "Once you get accepted in the team, you will receive Lichess DM for confirmation")
+                        .addActionRow(Button.link("https://lichess.org/team/chessdojo", "Join Team")).queue();
+            }
     }
 
 
