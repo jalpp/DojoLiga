@@ -1,8 +1,14 @@
 package dojo.bot.Controller;
 
+import chariot.Client;
 import com.mongodb.client.MongoCollection;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import org.bson.Document;
+
+import java.util.Objects;
 
 import static dojo.bot.Controller.DiscordAdmin.isDiscordAdmin;
 
@@ -222,5 +228,80 @@ public class StandingReactManager {
 
 
     }
+
+
+    /**
+     * Sends the standing of Lichess tournament based on Lichess URL
+     * @param event Discord trigger event
+     * @param client Lichess java client
+     * @param Slow_down_buddy Antispam checker
+     */
+
+    public void getStandingsForURL(SlashCommandInteractionEvent event, Client client, AntiSpam Slow_down_buddy) {
+        if (!Slow_down_buddy.checkSpam(event)) {
+            String targetUrl = Objects.requireNonNull(event.getOption("tournament-url")).getAsString();
+            if (targetUrl.contains("https://lichess.org/tournament/")
+                    || targetUrl.contains("https://lichess.org/swiss/")) {
+                UserArena base = new UserArena(client, targetUrl);
+                event.replyEmbeds(base.getUserArena().build()).addActionRow(Button.link(targetUrl, "View On Lichess"))
+                        .queue();
+
+            } else {
+                event.reply("Error! URL must be a Lichess Swiss or Arena URL").setEphemeral(true).queue();
+            }
+        } else {
+            event.reply("Slow Down buddy, go watch ChessDojo and run the command after 1 min!").setEphemeral(true).queue();
+        }
+    }
+
+
+    /**
+     * handle sending pairings for the Lichess url
+     * @param event Discord trigger event
+     * @param Slow_down_buddy Antispam checker
+     */
+
+    public void getPairingsReact(SlashCommandInteractionEvent event, AntiSpam Slow_down_buddy) {
+        if (!Slow_down_buddy.checkSpam(event)) {
+            String url = Objects.requireNonNull(event.getOption("request-url")).getAsString();
+            if (url.contains("https://lichess.org/tournament/") || url.contains("https://lichess.org/swiss/")) {
+                event.reply("View Pairings on Lichess!").addActionRow(Button.link(url, "View Pairings")).queue();
+            } else {
+                event.reply("Please provide valid URL!").setEphemeral(true).queue();
+            }
+        } else {
+            event.reply("Slow Down buddy, go watch ChessDojo and run the command after 1 min!").setEphemeral(true).queue();
+        }
+    }
+
+
+    /**
+     * Sends 3 leaderboards into #general chat at 1:00 PM everyday
+     * @param jda        JDA object
+     * @param channelId  Channel ID
+     * @param collection collection of players
+     */
+
+    public void sendStandingEmbeds(JDA jda, String channelId, MongoCollection<Document> collection) {
+
+        ComputeStandings standings = new ComputeStandings();
+        TextChannel channel = jda.getTextChannelById(channelId);
+
+        if (channel != null) {
+            channel.sendMessageEmbeds(standings.calculateBlitzCombTotalGPStandings(collection).build()).queue();
+            channel.sendMessageEmbeds(standings.calculateRapidCombTotalGPStandings(collection).build()).queue();
+            channel.sendMessageEmbeds(standings.calculateClassicalCombTotalGPStandings(collection).build()).queue();
+
+        } else {
+            System.out.println("Channel not found or bot does not have access to the channel with ID: " + channelId);
+        }
+    }
+
+
+
+
+
+
+
 
 }

@@ -67,7 +67,7 @@ public class Main extends ListenerAdapter {
 
         jdaBuilder.setStatus(OnlineStatus.DO_NOT_DISTURB);
 
-        jdaBuilder.setActivity(Activity.playing("V7.4.6 Date: April 24 2024 Author: Noobmaster "));
+        jdaBuilder.setActivity(Activity.playing("V7.4.8 Date: April 24 2024 Author: Noobmaster "));
 
         jdaBuilder.addEventListeners(new Main());
 
