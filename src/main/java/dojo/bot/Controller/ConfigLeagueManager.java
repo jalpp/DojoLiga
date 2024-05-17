@@ -3,6 +3,7 @@ package dojo.bot.Controller;
 import com.mongodb.client.MongoCollection;
 import dojo.bot.Commands.Verification;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import org.bson.Document;
 
@@ -10,6 +11,7 @@ import java.time.DayOfWeek;
 import java.util.Arrays;
 
 import static dojo.bot.Controller.DiscordAdmin.isDiscordAdmin;
+import static dojo.bot.Controller.DiscordAdmin.isDiscordAdminMessage;
 
 public class ConfigLeagueManager {
 
@@ -277,6 +279,23 @@ public class ConfigLeagueManager {
                                         "Once you get accepted in the team, you will receive Lichess DM for confirmation")
                         .addActionRow(Button.link("https://lichess.org/team/chessdojo", "Join Team")).queue();
             }
+    }
+
+
+    /**
+     * Send Liga message
+     * @param event Discord trigger event
+     */
+
+    public void sendLigaMessage(MessageReceivedEvent event){
+        if(isDiscordAdminMessage(event)){
+            Messenger messenger = new Messenger();
+            messenger.sendMessage();
+            event.getChannel().sendMessage("I have successfully notified Lichess team! Good luck to everyone playing!").queue();
+        }else{
+            event.getChannel().sendMessage("Error! Automated Message have been shut of, please call admin to send the messages!").queue();
+        }
+
     }
 
 
