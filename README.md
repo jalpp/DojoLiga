@@ -1,10 +1,7 @@
 # DojoLiga
 
-DojoLiga is an open source Discord backed backend system that allows Dojo community admins to create/config and manage Lichess and Chess.com tournaments, while allows users to play in Dojo yearly tournaments and qualify for Dojo candidates! More info [here](https://www.dojoscoreboard.com/tournaments?type=info)
+DojoLiga is an open source Discord backed backend system that allows Dojo community admins to create/config and manage Lichess and Chess.com tournaments, while allows users to play in Dojo yearly tournaments and qualify for Dojo candidates! More info [here](https://www.chessdojo.club/tournaments?type=info)
 
-## Contribution
-
-Open to everyone for contributing, please join the Dojo server if you want to contribute, if creating PR double check on Discord before making one
 
 ## Tech Stack
 
