@@ -5,13 +5,12 @@ package dojo.bot.Model;
  * Represents the tournament entry Document 
  */
 
+
 public class DbTournamentEntry {
 
 
     private String tournamentName;
     private String LichessTournamentId;
-
-    
 
 
     public DbTournamentEntry(String tournamentName, String lichessTournamentId) {
@@ -23,15 +22,8 @@ public class DbTournamentEntry {
         return tournamentName;
     }
 
-    public void setTournamentName(String tournamentName) {
-        this.tournamentName = tournamentName;
-    }
-
     public String getLichessTournamentId() {
         return LichessTournamentId;
     }
 
-    public void setLichessTournamentId(String lichessTournamentId) {
-        LichessTournamentId = lichessTournamentId;
-    }
 }
