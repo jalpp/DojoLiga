@@ -62,7 +62,7 @@ public class Main extends ListenerAdapter {
         String beta = System.getenv("Beta_token");
         String prod = System.getenv("Prod_token");
 
-        JDABuilder jdaBuilder = JDABuilder.createDefault(IS_BETA ? beta : prod).enableIntents(GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_MEMBERS);
+        JDABuilder jdaBuilder = JDABuilder.createDefault(IS_BETA ? beta: prod).enableIntents(GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_MEMBERS);
         jdaBuilder.disableCache(CacheFlag.VOICE_STATE, CacheFlag.EMOJI, CacheFlag.STICKER, CacheFlag.SCHEDULED_EVENTS);
 
         jdaBuilder.setStatus(OnlineStatus.DO_NOT_DISTURB);
