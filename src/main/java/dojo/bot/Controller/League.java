@@ -6,7 +6,6 @@ import chariot.model.Arena;
 import chariot.model.Fail;
 import chariot.model.Swiss;
 import com.mongodb.client.MongoCollection;
-import dojo.bot.Commands.Verification;
 import dojo.bot.Model.DbTournamentEntry;
 import dojo.bot.Model.TournamentManager;
 import dojo.bot.Runner.Main;
@@ -20,93 +19,49 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-/**
- * The heart of DojoLiga the League creator
- */
 public class League implements TournamentManager {
 
-    private ClientAuth client = Client.auth(Main.botToken);
-    private final String DOJO_TEAM = "chessdojo";
-
-    private String LEAGUE_NAME;
-    private String LEAGUE_DES;
-    private int TournamentCount;
-    private Type LeagueType;
-
-    private Verification verification;
+    private final ClientAuth client = Client.auth(Main.botToken);
+    private final String DOJO_TEAM = Main.IS_BETA ? "teamtesting" : "chessdojo";
+    private final String LEAGUE_NAME;
+    private final String LEAGUE_DES;
+    private final int TournamentCount;
+    private final Type LeagueType;
 
     private Time_Control LEAGUE_TIME_TYPE;
 
-    private MongoCollection<Document> tournamentCollection;
+    private final MongoCollection<Document> tournamentCollection;
 
-    private Interval interval;
+    private final Interval interval;
 
-    private int ClockTime;
+    private final int ClockTime;
 
     private int duration;
 
-    private int ClockIncrement;
+    private final int ClockIncrement;
 
     private int Swiss_rounds;
 
     private int Swiss_round_interval;
 
-    private int time_zone_start;
+    private final int time_zone_start;
 
-    private String fen;
+    private final String fen;
 
-    private int MaxRating;
+    private final int MaxRating;
 
 
     private final DayOfWeek dayOfWeekOrMonth;
-
-    public MongoCollection<Document> getTournamentCollection() {
-        return tournamentCollection;
-    }
-
-    public void setTournamentCollection(MongoCollection<Document> tournamentCollection) {
-        this.tournamentCollection = tournamentCollection;
-    }
 
     public int getClockTime() {
         return ClockTime;
     }
 
-    public void setClockTime(int clockTime) {
-        ClockTime = clockTime;
-    }
 
     public int getClockIncrement() {
         return ClockIncrement;
     }
 
-    public void setClockIncrement(int clockIncrement) {
-        ClockIncrement = clockIncrement;
-    }
-
-    public int getSwiss_rounds() {
-        return Swiss_rounds;
-    }
-
-    public void setSwiss_rounds(int swiss_rounds) {
-        Swiss_rounds = swiss_rounds;
-    }
-
-    public int getSwiss_round_interval() {
-        return Swiss_round_interval;
-    }
-
-    public void setSwiss_round_interval(int swiss_round_interval) {
-        Swiss_round_interval = swiss_round_interval;
-    }
-
-    public int getTime_zone_start() {
-        return time_zone_start;
-    }
-
-    public void setTime_zone_start(int time_zone_start) {
-        this.time_zone_start = time_zone_start;
-    }
 
     public League(String LEAGUE_NAME, String LEAGUE_DES, int tournamentCount, Type leagueType, Interval interval,
                   MongoCollection<Document> registry, int time_zone_start, int clockTime, int clockIncrement, int duration,
@@ -145,46 +100,6 @@ public class League implements TournamentManager {
         this.MaxRating = maxRating;
         this.dayOfWeekOrMonth = dayOfWeek;
 
-    }
-
-    public int getTournamentCount() {
-        return TournamentCount;
-    }
-
-    public void setTournamentCount(int tournamentCount) {
-        TournamentCount = tournamentCount;
-    }
-
-    public String getLEAGUE_NAME() {
-        return LEAGUE_NAME;
-    }
-
-    public void setLEAGUE_NAME(String LEAGUE_NAME) {
-        this.LEAGUE_NAME = LEAGUE_NAME;
-    }
-
-    public String getLEAGUE_DES() {
-        return LEAGUE_DES;
-    }
-
-    public void setLEAGUE_DES(String LEAGUE_DES) {
-        this.LEAGUE_DES = LEAGUE_DES;
-    }
-
-    public Type getLeagueType() {
-        return LeagueType;
-    }
-
-    public void setLeagueType(Type leagueType) {
-        LeagueType = leagueType;
-    }
-
-    public Interval getInterval() {
-        return interval;
-    }
-
-    public void setInterval(Interval interval) {
-        this.interval = interval;
     }
 
     public void setLEAGUE_TIME_TYPE() {
@@ -380,27 +295,6 @@ public class League implements TournamentManager {
         return "Error! Something went wrong..";
     }
 
-    @Override
-    public String getStandings() {
-
-        return null;
-    }
-
-    @Override
-    public String getPairings() {
-        return null;
-    }
-
-    @Override
-    public String NotifyMembers() {
-        return null;
-    }
-
-    @Override
-    public String passcodeGenerator() {
-        return null;
-    }
-
 
     public static ArrayList<String> splitFENs(String input) {
         ArrayList<String> fenList = new ArrayList<>();
@@ -413,8 +307,6 @@ public class League implements TournamentManager {
 
         return fenList;
     }
-
-
 
 
     public String createArenaWithMaxAndFENParameter(Boolean isZerk) {
