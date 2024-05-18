@@ -40,7 +40,7 @@ public class Main extends ListenerAdapter {
     private static JDA jda;
     public static MongoCollection<Document> collection;
 
-    private final static boolean IS_BETA = true;
+    public final static boolean IS_BETA = true;
 
 
     public static MongoCollection<Document> chesscomplayers;
