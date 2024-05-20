@@ -1,5 +1,4 @@
 package dojo.bot.Controller;
-
 import chariot.Client;
 import chariot.ClientAuth;
 import chariot.model.Arena;
@@ -10,7 +9,6 @@ import dojo.bot.Model.DbTournamentEntry;
 import dojo.bot.Model.TournamentManager;
 import dojo.bot.Runner.Main;
 import org.bson.Document;
-
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -20,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class League implements TournamentManager {
-
     private final ClientAuth client = Client.auth(Main.botToken);
     private final String DOJO_TEAM = Main.IS_BETA ? "teamtesting" : "chessdojo";
     private final String LEAGUE_NAME;
@@ -149,10 +146,6 @@ public class League implements TournamentManager {
                 int[] checkSec = {0,1,2,3,4,5,6,7,10,15,20,25,30,40,50,60};
                 int[] checkDuration = {20,25, 30, 35, 40, 45, 50, 55, 60, 70, 80, 90 ,100, 110, 120, 150, 180, 210,240, 270, 300, 330, 360, 420, 480, 540, 600, 720};
                 int[] maxRating= {2200, 2100, 2000 ,1900, 1800 ,1700, 1600, 1500, 1400, 1300, 1200, 1100 ,1000, 900, 800, 0};
-
-
-
-
 
                         if (Arrays.stream(maxRating).anyMatch(n -> n == this.MaxRating)) {
 
@@ -311,36 +304,13 @@ public class League implements TournamentManager {
 
     public String createArenaWithMaxAndFENParameter(Boolean isZerk) {
 
-
         if(this.TournamentCount != splitFENs(this.fen).size() || this.TournamentCount != splitFENs(this.LEAGUE_NAME).size() || splitFENs(this.fen).size() != splitFENs(this.LEAGUE_NAME).size()) {
             StringBuilder addIds = new StringBuilder("Here are League Tournaments: \n");
 
             for (int d = 0; d < this.TournamentCount; d++) {
-                ZoneId estZoneId = ZoneId.of("America/New_York");
-                var tmr =  ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                var daysIndex = tmr;
-
-                switch (this.interval){
-                    case DAILY_INTERVAL -> {
-
-                        daysIndex = tmr.plusDays(d).with(
-                                LocalTime.of(this.getMilitaryClock(), 0));
-                    }
-                    case WEEKLY_INTERVAL -> {
-                        var tmr1 = ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                        daysIndex = tmr1.plusWeeks(d).with(
-                                LocalTime.of(this.getMilitaryClock(), 0));
-                    }
-
-                    case MONTHLY_INTERVAL -> {
-                        var tmr1 = ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                        daysIndex = tmr1.plusMonths(d).with(
-                                LocalTime.of(this.getMilitaryClock(), 0));
-                    }
-                }
 
                 int finalD = d + 1;
-                ZonedDateTime finalDaysIndex = daysIndex;
+                ZonedDateTime finalDaysIndex = getLeagueSpanTime(d);
 
                     var res = this.client.tournaments().createArena(addparam -> addparam.clock(
                                     this.getClockTime(), this.getClockIncrement())
@@ -383,30 +353,9 @@ public class League implements TournamentManager {
             StringBuilder addIds = new StringBuilder("Here are League Tournaments: \n");
 
             for (int d = 0; d < splitFENs(this.fen).size(); d++) {
-                ZoneId estZoneId = ZoneId.of("America/New_York");
-                var tmr =  ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                var daysIndex = tmr;
 
-                switch (this.interval){
-                    case DAILY_INTERVAL -> {
-                        daysIndex = tmr.plusDays(d).with(
-                                LocalTime.of(this.getMilitaryClock(), 0));
-                    }
-                    case WEEKLY_INTERVAL -> {
-                        var tmr1 = ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                        daysIndex = tmr1.plusWeeks(d).with(
-                                LocalTime.of(this.getMilitaryClock(), 0));
-                    }
-
-                    case MONTHLY_INTERVAL -> {
-                        var tmr1 = ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                        daysIndex = tmr1.plusMonths(d).with(
-                                LocalTime.of(this.getMilitaryClock(), 0));
-                    }
-                }
-                int finalD = d + 1;
                 int finalD1 = d;
-                ZonedDateTime finalDaysIndex = daysIndex;
+                ZonedDateTime finalDaysIndex = getLeagueSpanTime(d);
 
                     var res = this.client.tournaments().createArena(addparam -> addparam.clock(
                                     this.getClockTime(), this.getClockIncrement())
@@ -456,29 +405,9 @@ public class League implements TournamentManager {
             StringBuilder addIds = new StringBuilder("Here are League Tournaments: \n");
 
             for (int d = 0; d < this.TournamentCount; d++) {
-                ZoneId estZoneId = ZoneId.of("America/New_York");
-                var tmr =  ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                var daysIndex = tmr;
 
-                switch (this.interval){
-                    case DAILY_INTERVAL -> {
-                        daysIndex = tmr.plusDays(d).with(
-                                LocalTime.of(this.getMilitaryClock(), 0));
-                    }
-                    case WEEKLY_INTERVAL -> {
-                        var tmr1 = ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                        daysIndex = tmr1.plusWeeks(d).with(
-                                LocalTime.of(this.getMilitaryClock(), 0));
-                    }
-
-                    case MONTHLY_INTERVAL -> {
-                        var tmr1 = ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                        daysIndex = tmr1.plusMonths(d).with(
-                                LocalTime.of(this.getMilitaryClock(), 0));
-                    }
-                }
                 int finalD = d + 1;
-                ZonedDateTime finalDaysIndex = daysIndex;
+                ZonedDateTime finalDaysIndex = getLeagueSpanTime(d);
 
                     var res = this.client.tournaments().createArena(addparam -> addparam.clock(
                                     this.getClockTime(), this.getClockIncrement())
@@ -522,30 +451,9 @@ public class League implements TournamentManager {
             StringBuilder addIds = new StringBuilder("Here are League Tournaments: \n");
 
             for (int d = 0; d < splitFENs(this.fen).size(); d++) {
-                ZoneId estZoneId = ZoneId.of("America/New_York");
-                var tmr =  ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                var daysIndex = tmr;
 
-                switch (this.interval){
-                    case DAILY_INTERVAL -> {
-                        daysIndex = tmr.plusDays(d).with(
-                                LocalTime.of(this.getMilitaryClock(), 0));
-                    }
-                    case WEEKLY_INTERVAL -> {
-                        var tmr1 = ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                        daysIndex = tmr1.plusWeeks(d).with(
-                                LocalTime.of(this.getMilitaryClock(), 0));
-                    }
-
-                    case MONTHLY_INTERVAL -> {
-                        var tmr1 = ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                        daysIndex = tmr1.plusMonths(d).with(
-                                LocalTime.of(this.getMilitaryClock(), 0));
-                    }
-                }
-                int finalD = d + 1;
                 int finalD1 = d;
-                ZonedDateTime finalDaysIndex = daysIndex;
+                ZonedDateTime finalDaysIndex = getLeagueSpanTime(d);
 
                     var res = this.client.tournaments().createArena(addparam -> addparam.clock(
                                     this.getClockTime(), this.getClockIncrement())
@@ -596,30 +504,7 @@ public class League implements TournamentManager {
             StringBuilder addIds = new StringBuilder("Here are League Tournaments: \n");
 
             for (int d = 0; d < this.TournamentCount; d++) {
-                ZoneId estZoneId = ZoneId.of("America/New_York");
-                var tmr =  ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                var daysIndex = tmr;
-
-                switch (this.interval){
-                    case DAILY_INTERVAL -> {
-                        daysIndex = tmr.plusDays(d).with(
-                                LocalTime.of(this.getMilitaryClock(), 0));
-                    }
-                    case WEEKLY_INTERVAL -> {
-                        var tmrr = ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                        daysIndex = tmrr.plusWeeks(d).with(
-                                LocalTime.of(this.getMilitaryClock(), 0));
-                    }
-
-                    case MONTHLY_INTERVAL -> {
-                        var tmrr = ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                        daysIndex = tmrr.plusMonths(d).with(
-                                LocalTime.of(this.getMilitaryClock(), 0));
-                    }
-                }
-
-                int finalD = d + 1;
-                ZonedDateTime finalDaysIndex = daysIndex;
+                ZonedDateTime finalDaysIndex = getLeagueSpanTime(d);
 
                 var res = this.client.tournaments().createArena(addparam -> addparam.clock(
                                 this.getClockTime(), this.getClockIncrement())
@@ -663,30 +548,9 @@ public class League implements TournamentManager {
             StringBuilder addIds = new StringBuilder("Here are League Tournaments: \n");
 
             for (int d = 0; d < this.TournamentCount; d++) {
-                ZoneId estZoneId = ZoneId.of("America/New_York");
-                var tmr =  ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                var daysIndex = tmr;
-
-                switch (this.interval){
-                    case DAILY_INTERVAL -> {
-                        daysIndex = tmr.plusDays(d).with(
-                                LocalTime.of(this.getMilitaryClock(), 0));
-                    }
-                    case WEEKLY_INTERVAL -> {
-                        var tmrr = ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                        daysIndex = tmrr.plusWeeks(d).with(
-                                LocalTime.of(this.getMilitaryClock(), 0));
-                    }
-
-                    case MONTHLY_INTERVAL -> {
-                        var tmrr = ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                        daysIndex = tmrr.plusMonths(d).with(
-                                LocalTime.of(this.getMilitaryClock(), 0));
-                    }
-                }
 
                 int finalD = d + 1;
-                ZonedDateTime finalDaysIndex = daysIndex;
+                ZonedDateTime finalDaysIndex = getLeagueSpanTime(d);
 
                 var res = this.client.tournaments().createArena(addparam -> addparam.clock(
                                 this.getClockTime(), this.getClockIncrement())
@@ -701,7 +565,6 @@ public class League implements TournamentManager {
                 if(res instanceof Fail<Arena> fail){
                     return fail.message();
                 }
-
 
                 System.out.println(res);
 
@@ -737,30 +600,8 @@ public class League implements TournamentManager {
           StringBuilder addIds = new StringBuilder("Here are League Tournaments: \n");
 
           for (int d = 0; d < this.TournamentCount; d++) {
-              ZoneId estZoneId = ZoneId.of("America/New_York");
-              var tmr =  ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
 
-              var daysIndex = tmr;
-
-              switch (this.interval){
-                  case DAILY_INTERVAL -> {
-                      daysIndex = tmr.plusDays(d).with(
-                              LocalTime.of(this.getMilitaryClock(), 0));
-                  }
-                  case WEEKLY_INTERVAL -> {
-                      var tmrr = ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                      daysIndex = tmrr.plusWeeks(d).with(
-                              LocalTime.of(this.getMilitaryClock(), 0));
-                  }
-
-                  case MONTHLY_INTERVAL -> {
-                      var tmrr = ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                      daysIndex = tmrr.plusMonths(d).with(
-                              LocalTime.of(this.getMilitaryClock(), 0));
-                  }
-              }
-              int finalD = d + 1;
-              ZonedDateTime finalDaysIndex = daysIndex;
+              ZonedDateTime finalDaysIndex = getLeagueSpanTime(d);
 
               var res = this.client.tournaments().createArena(addparam -> addparam.clock(
                               this.getClockTime(), this.getClockIncrement())
@@ -803,30 +644,9 @@ public class League implements TournamentManager {
           StringBuilder addIds = new StringBuilder("Here are League Tournaments: \n");
 
           for (int d = 0; d < this.TournamentCount; d++) {
-              ZoneId estZoneId = ZoneId.of("America/New_York");
-              var tmr =  ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
 
-              var daysIndex = tmr;
-
-              switch (this.interval){
-                  case DAILY_INTERVAL -> {
-                      daysIndex = tmr.plusDays(d).with(
-                              LocalTime.of(this.getMilitaryClock(), 0));
-                  }
-                  case WEEKLY_INTERVAL -> {
-                      var tmrr = ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                      daysIndex = tmrr.plusWeeks(d).with(
-                              LocalTime.of(this.getMilitaryClock(), 0));
-                  }
-
-                  case MONTHLY_INTERVAL -> {
-                      var tmrr = ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                      daysIndex = tmrr.plusMonths(d).with(
-                              LocalTime.of(this.getMilitaryClock(), 0));
-                  }
-              }
               int finalD = d + 1;
-              ZonedDateTime finalDaysIndex = daysIndex;
+              ZonedDateTime finalDaysIndex = getLeagueSpanTime(d);
 
               var res = this.client.tournaments().createArena(addparam -> addparam.clock(
                               this.getClockTime(), this.getClockIncrement())
@@ -875,31 +695,8 @@ public class League implements TournamentManager {
             StringBuilder addIds = new StringBuilder("Here are League Tournaments: \n");
 
             for (int d = 0; d < this.TournamentCount; d++) {
-                ZoneId estZoneId = ZoneId.of("America/New_York");
-                var tmr =  ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-
-                var daysIndex = tmr;
-
-                switch (this.interval){
-                    case DAILY_INTERVAL -> {
-                        daysIndex = tmr.plusDays(d).with(
-                                LocalTime.of(this.getMilitaryClock(), 0));
-                    }
-                    case WEEKLY_INTERVAL -> {
-                        var tmrr = ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                        daysIndex = tmrr.plusWeeks(d).with(
-                                LocalTime.of(this.getMilitaryClock(), 0));
-                    }
-
-                    case MONTHLY_INTERVAL -> {
-                        var tmrr = ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                        daysIndex = tmrr.plusMonths(d).with(
-                                LocalTime.of(this.getMilitaryClock(), 0));
-                    }
-                }
-
                 int finalD = d + 1;
-                ZonedDateTime finalDaysIndex = daysIndex;
+                ZonedDateTime finalDaysIndex = getLeagueSpanTime(d);
 
                     var res = this.client.tournaments().createSwiss(DOJO_TEAM,
                             params -> params
@@ -945,31 +742,9 @@ public class League implements TournamentManager {
             StringBuilder addIds = new StringBuilder("Here are League Tournaments: \n");
 
             for (int d = 0; d < this.TournamentCount; d++) {
-                ZoneId estZoneId = ZoneId.of("America/New_York");
-                var tmr =  ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                var daysIndex = tmr;
 
-                switch (this.interval){
-                    case DAILY_INTERVAL -> {
-                        daysIndex = tmr.plusDays(d).with(
-                                LocalTime.of(this.getMilitaryClock(), 0));
-                    }
-                    case WEEKLY_INTERVAL -> {
-                        var tmrr = ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                        daysIndex = tmrr.plusWeeks(d).with(
-                                LocalTime.of(this.getMilitaryClock(), 0));
-                    }
-
-                    case MONTHLY_INTERVAL -> {
-                        var tmrr = ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                        daysIndex = tmrr.plusMonths(d).with(
-                                LocalTime.of(this.getMilitaryClock(), 0));
-                    }
-                }
-
-                int finalD = d + 1;
                 int finalD1 = d;
-                ZonedDateTime finalDaysIndex = daysIndex;
+                ZonedDateTime finalDaysIndex = getLeagueSpanTime(d);
 
                     var res = this.client.tournaments().createSwiss(DOJO_TEAM,
                             params -> params
@@ -1020,30 +795,9 @@ public class League implements TournamentManager {
             StringBuilder addIds = new StringBuilder("Here are League Tournaments: \n");
 
             for (int d = 0; d < this.TournamentCount; d++) {
-                ZoneId estZoneId = ZoneId.of("America/New_York");
-                var tmr =  ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                var daysIndex = tmr;
-
-                switch (this.interval){
-                    case DAILY_INTERVAL -> {
-                        daysIndex = tmr.plusDays(d).with(
-                                LocalTime.of(this.getMilitaryClock(), 0));
-                    }
-                    case WEEKLY_INTERVAL -> {
-                        var tmrr = ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                        daysIndex = tmrr.plusWeeks(d).with(
-                                LocalTime.of(this.getMilitaryClock(), 0));
-                    }
-
-                    case MONTHLY_INTERVAL -> {
-                        var tmrr = ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                        daysIndex = tmrr.plusMonths(d).with(
-                                LocalTime.of(this.getMilitaryClock(), 0));
-                    }
-                }
 
                 int finalD = d + 1;
-                ZonedDateTime finalDaysIndex = daysIndex;
+                ZonedDateTime finalDaysIndex = getLeagueSpanTime(d);
 
                     var res = this.client.tournaments().createSwiss(DOJO_TEAM,
                             params -> params
@@ -1087,31 +841,9 @@ public class League implements TournamentManager {
             StringBuilder addIds = new StringBuilder("Here are League Tournaments: \n");
 
             for (int d = 0; d < this.TournamentCount; d++) {
-                ZoneId estZoneId = ZoneId.of("America/New_York");
-                var tmr =  ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                var daysIndex = tmr;
 
-                switch (this.interval){
-                    case DAILY_INTERVAL -> {
-                        daysIndex = tmr.plusDays(d).with(
-                                LocalTime.of(this.getMilitaryClock(), 0));
-                    }
-                    case WEEKLY_INTERVAL -> {
-                        var tmrr = ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                        daysIndex = tmrr.plusWeeks(d).with(
-                                LocalTime.of(this.getMilitaryClock(), 0));
-                    }
-
-                    case MONTHLY_INTERVAL -> {
-                        var tmrr = ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                        daysIndex = tmrr.plusMonths(d).with(
-                                LocalTime.of(this.getMilitaryClock(), 0));
-                    }
-                }
-
-                int finalD = d + 1;
                 int finalD1 = d;
-                ZonedDateTime finalDaysIndex = daysIndex;
+                ZonedDateTime finalDaysIndex = getLeagueSpanTime(d);
 
                     var res = this.client.tournaments().createSwiss(DOJO_TEAM,
                             params -> params
@@ -1160,30 +892,8 @@ public class League implements TournamentManager {
            StringBuilder addIds = new StringBuilder("Here are League Tournaments: \n");
 
            for (int d = 0; d < this.TournamentCount; d++) {
-               ZoneId estZoneId = ZoneId.of("America/New_York");
-               var tmr =  ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-               var daysIndex = tmr;
 
-               switch (this.interval){
-                   case DAILY_INTERVAL -> {
-                       daysIndex = tmr.plusDays(d).with(
-                               LocalTime.of(this.getMilitaryClock(), 0));
-                   }
-                   case WEEKLY_INTERVAL -> {
-                       var tmrr = ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                       daysIndex = tmrr.plusWeeks(d).with(
-                               LocalTime.of(this.getMilitaryClock(), 0));
-                   }
-
-                   case MONTHLY_INTERVAL -> {
-                       var tmrr = ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                       daysIndex = tmrr.plusMonths(d).with(
-                               LocalTime.of(this.getMilitaryClock(), 0));
-                   }
-               }
-
-               int finalD = d + 1;
-               ZonedDateTime finalDaysIndex = daysIndex;
+               ZonedDateTime finalDaysIndex = getLeagueSpanTime(d);
 
                var res = this.client.tournaments().createSwiss(DOJO_TEAM,
                        params -> params
@@ -1225,30 +935,8 @@ public class League implements TournamentManager {
            StringBuilder addIds = new StringBuilder("Here are League Tournaments: \n");
 
            for (int d = 0; d < this.TournamentCount; d++) {
-               ZoneId estZoneId = ZoneId.of("America/New_York");
-               var tmr =  ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-               var daysIndex = tmr;
-
-               switch (this.interval){
-                   case DAILY_INTERVAL -> {
-                       daysIndex = tmr.plusDays(d).with(
-                               LocalTime.of(this.getMilitaryClock(), 0));
-                   }
-                   case WEEKLY_INTERVAL -> {
-                       var tmrr = ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                       daysIndex = tmrr.plusWeeks(d).with(
-                               LocalTime.of(this.getMilitaryClock(), 0));
-                   }
-
-                   case MONTHLY_INTERVAL -> {
-                       var tmrr = ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                       daysIndex = tmrr.plusMonths(d).with(
-                               LocalTime.of(this.getMilitaryClock(), 0));
-                   }
-               }
-
                int finalD = d + 1;
-               ZonedDateTime finalDaysIndex = daysIndex;
+               ZonedDateTime finalDaysIndex = getLeagueSpanTime(d);
 
                var res = this.client.tournaments().createSwiss(DOJO_TEAM,
                        params -> params
@@ -1295,29 +983,8 @@ public class League implements TournamentManager {
             StringBuilder addIds = new StringBuilder("Here are League Tournaments: \n");
 
             for (int d = 0; d < this.TournamentCount; d++) {
-                ZoneId estZoneId = ZoneId.of("America/New_York");
-                var tmr =  ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                var daysIndex = tmr;
 
-                switch (this.interval){
-                    case DAILY_INTERVAL -> daysIndex = tmr.plusDays(d).with(
-                            LocalTime.of(this.getMilitaryClock(), 0));
-                    case WEEKLY_INTERVAL -> {
-                        var tmrr = ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                        daysIndex = tmrr.plusWeeks(d).with(
-                                LocalTime.of(this.getMilitaryClock(), 0));
-                    }
-
-                    case MONTHLY_INTERVAL -> {
-                        var tmrr = ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                        daysIndex = tmrr.plusMonths(d).with(
-                                LocalTime.of(this.getMilitaryClock(), 0));
-
-                    }
-                }
-
-                int finalD = d + 1;
-                ZonedDateTime finalDaysIndex = daysIndex;
+                ZonedDateTime finalDaysIndex = getLeagueSpanTime(d);
 
                 var res = this.client.tournaments().createSwiss(DOJO_TEAM,
                         params -> params
@@ -1357,29 +1024,9 @@ public class League implements TournamentManager {
             StringBuilder addIds = new StringBuilder("Here are League Tournaments: \n");
 
             for (int d = 0; d < this.TournamentCount; d++) {
-                ZoneId estZoneId = ZoneId.of("America/New_York");
-                var tmr =  ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                var daysIndex = tmr;
-
-                switch (this.interval){
-                    case DAILY_INTERVAL -> daysIndex = tmr.plusDays(d).with(
-                            LocalTime.of(this.getMilitaryClock(), 0));
-                    case WEEKLY_INTERVAL -> {
-                        var tmrr = ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                        daysIndex = tmrr.plusWeeks(d).with(
-                                LocalTime.of(this.getMilitaryClock(), 0));
-                    }
-
-                    case MONTHLY_INTERVAL -> {
-                        var tmrr = ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
-                        daysIndex = tmrr.plusMonths(d).with(
-                                LocalTime.of(this.getMilitaryClock(), 0));
-
-                    }
-                }
 
                 int finalD = d + 1;
-                ZonedDateTime finalDaysIndex = daysIndex;
+                ZonedDateTime finalDaysIndex = getLeagueSpanTime(d);
 
                 var res = this.client.tournaments().createSwiss(DOJO_TEAM,
                         params -> params
@@ -1417,5 +1064,44 @@ public class League implements TournamentManager {
             return addIds.toString();
         }
     }
+
+
+
+
+    public ZonedDateTime getLeagueSpanTime(int d){
+        ZoneId estZoneId = ZoneId.of("America/New_York");
+        var tmr =  ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
+        var daysIndex = tmr;
+
+        switch (this.interval){
+            case DAILY_INTERVAL -> {
+
+                daysIndex = tmr.plusDays(d).with(
+                        LocalTime.of(this.getMilitaryClock(), 0));
+            }
+            case WEEKLY_INTERVAL -> {
+                var tmr1 = ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
+                daysIndex = tmr1.plusWeeks(d).with(
+                        LocalTime.of(this.getMilitaryClock(), 0));
+            }
+
+            case MONTHLY_INTERVAL -> {
+                var tmr1 = ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
+                daysIndex = tmr1.plusMonths(d).with(
+                        LocalTime.of(this.getMilitaryClock(), 0));
+            }
+        }
+
+        return daysIndex;
+    }
+
+
+
+
+
+
+
+
+
 
 }
