@@ -43,7 +43,7 @@ public class LeagueConsumer {
                    .description(desc)
                    .startTime(time)
                    .conditionTeam(team));
-       }else if(clockmins != null && clocksecs != null) {
+       }else if(clockmins != null && clocksecs != null && fen == null && Maxrating == null) {
            totalBuilder = totalBuilder.andThen(builder -> builder.clock(clockmins, clocksecs).
                    berserkable(iszerk)
                    .minutes(duration)
@@ -62,6 +62,6 @@ public class LeagueConsumer {
    }
 
 
-   
+
 
 }

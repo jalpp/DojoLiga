@@ -15,14 +15,15 @@ public class LeagueManager {
 
     private final ClientAuth client = Client.auth(Main.botToken);
 
-    public String manageArenaLeagueCreation(Integer MaxRating, String DOJO_TEAM, Boolean isZerk, String League_NAME, String LEAGUE_NEXT, String fen, Boolean isRated, Integer duration, ZonedDateTime finalDaysIndex, Integer clockTime, Integer clockIncrement, String LEAGUE_DES, StringBuilder addIds, MongoCollection<Document> tournamentCollection){
+    public void manageArenaLeagueCreation(Integer MaxRating, String DOJO_TEAM, Boolean isZerk, String League_NAME, String LEAGUE_NEXT, String fen, Boolean isRated, Integer duration, ZonedDateTime finalDaysIndex, Integer clockTime, Integer clockIncrement, String LEAGUE_DES, StringBuilder addIds, MongoCollection<Document> tournamentCollection){
 
         var res = this.client.tournaments().createArena(LeagueConsumer.LeagueConsumerArenaInvoker(
                 MaxRating, DOJO_TEAM, isZerk, League_NAME, fen, isRated, duration, finalDaysIndex, clockTime, clockIncrement, LEAGUE_DES
         ));
 
         if(res instanceof Fail<Arena> fail){
-            return fail.message();
+             System.out.println(fail.message());
+             addIds.append(fail.message());
         }
 
         addIds.append("https://lichess.org/tournament/").append(res.get().id())
@@ -39,11 +40,12 @@ public class LeagueManager {
         tournamentCollection.insertOne(document);
 
 
-        return res.toString();
+        System.out.println(res.toString());
+
 
 
     }
 
-    
+
 
 }

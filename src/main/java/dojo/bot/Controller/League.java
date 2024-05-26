@@ -1,7 +1,7 @@
 package dojo.bot.Controller;
+
 import chariot.Client;
 import chariot.ClientAuth;
-import chariot.model.Arena;
 import chariot.model.Fail;
 import chariot.model.Swiss;
 import com.mongodb.client.MongoCollection;
@@ -9,6 +9,7 @@ import dojo.bot.Model.DbTournamentEntry;
 import dojo.bot.Model.TournamentManager;
 import dojo.bot.Runner.Main;
 import org.bson.Document;
+
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -23,6 +24,7 @@ public class League implements TournamentManager {
     private final String LEAGUE_NAME;
     private final String LEAGUE_DES;
     private final int TournamentCount;
+
     private final Type LeagueType;
 
     private Time_Control LEAGUE_TIME_TYPE;
@@ -47,8 +49,8 @@ public class League implements TournamentManager {
 
     private final int MaxRating;
 
-
     private final DayOfWeek dayOfWeekOrMonth;
+    private final LeagueManager leagueManager = new LeagueManager();
 
     public int getClockTime() {
         return ClockTime;
@@ -141,7 +143,6 @@ public class League implements TournamentManager {
 
             case ARENA -> {
 
-
                 int[] checkTime = {2,3,4,5,6,7,8,10,15,20,25,30,40,50,60};
                 int[] checkSec = {0,1,2,3,4,5,6,7,10,15,20,25,30,40,50,60};
                 int[] checkDuration = {20,25, 30, 35, 40, 45, 50, 55, 60, 70, 80, 90 ,100, 110, 120, 150, 180, 210,240, 270, 300, 330, 360, 420, 480, 540, 600, 720};
@@ -222,11 +223,6 @@ public class League implements TournamentManager {
                         } else {
                             return "Invalid Player Max rating! please provide proper max rating value, max rating value must be \n " + Arrays.toString(maxRating);
                         }
-
-
-
-
-
             }
 
             case SWISS -> {
@@ -237,8 +233,6 @@ public class League implements TournamentManager {
                 };
 
                 int[] maxRating= {2200, 2100, 2000 ,1900, 1800 ,1700, 1600, 1500, 1400, 1300, 1200, 1100 ,1000, 900, 800, 0};
-
-
 
                     if (Arrays.stream(maxRating).anyMatch(n -> n == this.MaxRating)) {
 
@@ -273,21 +267,16 @@ public class League implements TournamentManager {
                             }
                         } else {
                             return "Invalid Clock Time! Please provide proper clock time, clock must be \n " + Arrays.toString(timesInMinutes);
-
                         }
-
                     } else {
                         return "Invalid Player Max rating! please provide proper max rating value, max rating value must be \n " + Arrays.toString(maxRating);
                     }
-
-
             }
 
         }
 
         return "Error! Something went wrong..";
     }
-
 
     public static ArrayList<String> splitFENs(String input) {
         ArrayList<String> fenList = new ArrayList<>();
@@ -301,7 +290,6 @@ public class League implements TournamentManager {
         return fenList;
     }
 
-
     public String createArenaWithMaxAndFENParameter(Boolean isZerk) {
 
         if(this.TournamentCount != splitFENs(this.fen).size() || this.TournamentCount != splitFENs(this.LEAGUE_NAME).size() || splitFENs(this.fen).size() != splitFENs(this.LEAGUE_NAME).size()) {
@@ -310,42 +298,25 @@ public class League implements TournamentManager {
             for (int d = 0; d < this.TournamentCount; d++) {
 
                 int finalD = d + 1;
-                ZonedDateTime finalDaysIndex = getLeagueSpanTime(d);
 
-                    var res = this.client.tournaments().createArena(addparam -> addparam.clock(
-                                    this.getClockTime(), this.getClockIncrement())
-                            .berserkable(isZerk)
-                            .name(this.getName_Pattern(finalD)).description(this.LEAGUE_DES)
-                            .conditionTeam(DOJO_TEAM)
-                            .minutes(duration)
-                            .position(splitFENs(this.fen).get(0))
-                            .rated(true)
-                            .conditionMaxRating(this.MaxRating)
-                            .startTime(finalDaysIndex));
-
-                    if(res instanceof Fail<Arena> fail){
-                        return fail.message();
-                    }
-
-                    addIds.append("https://lichess.org/tournament/").append(res.get().id())
-                            .append("\n");
-                    DojoScoreboard
-                            .createTournament("https://lichess.org/tournament/" + res.get().id());
-
-                    if (res.isPresent()) {
-
-                        DbTournamentEntry entry = new DbTournamentEntry(this.getName_Pattern(d + 1),
-                                res.get().id());
-                        Document document = new Document("Name", entry.getTournamentName())
-                                .append("Id", entry.getLichessTournamentId());
-                        this.tournamentCollection.insertOne(document);
-
-                    }else{
-                        return res.toString();
-                    }
+                leagueManager.manageArenaLeagueCreation(
+                        MaxRating,
+                        DOJO_TEAM,
+                        isZerk,
+                        getName_Pattern(finalD),
+                        getName_Pattern(d + 1),
+                        splitFENs(fen).get(0),
+                        true,
+                        duration,
+                        getLeagueSpanTime(d),
+                        getClockTime(),
+                        getClockIncrement(),
+                        LEAGUE_DES,
+                        addIds,
+                        tournamentCollection
+                );
 
             }
-
 
             return addIds.toString();
 
@@ -354,41 +325,22 @@ public class League implements TournamentManager {
 
             for (int d = 0; d < splitFENs(this.fen).size(); d++) {
 
-                int finalD1 = d;
-                ZonedDateTime finalDaysIndex = getLeagueSpanTime(d);
-
-                    var res = this.client.tournaments().createArena(addparam -> addparam.clock(
-                                    this.getClockTime(), this.getClockIncrement())
-                            .berserkable(isZerk)
-                            .name(splitFENs(this.LEAGUE_NAME).get(finalD1))
-                            .conditionTeam(DOJO_TEAM)
-                            .minutes(duration)
-                            .position(splitFENs(this.fen).get(finalD1))
-                            .rated(true)
-                            .conditionMaxRating(this.MaxRating)
-                            .startTime(finalDaysIndex));
-
-                if(res instanceof Fail<Arena> fail){
-                    return fail.message();
-                }
-
-
-                addIds.append("https://lichess.org/tournament/").append(res.get().id())
-                            .append("\n");
-                   DojoScoreboard
-                            .createTournament("https://lichess.org/tournament/" + res.get().id());
-
-                    if (res.isPresent()) {
-
-                        DbTournamentEntry entry = new DbTournamentEntry(this.getName_Pattern(d + 1),
-                                res.get().id());
-                        Document document = new Document("Name", entry.getTournamentName())
-                                .append("Id", entry.getLichessTournamentId());
-                        this.tournamentCollection.insertOne(document);
-
-                    }else{
-                        return res.toString();
-                    }
+                leagueManager.manageArenaLeagueCreation(
+                        MaxRating,
+                        DOJO_TEAM,
+                        isZerk,
+                        splitFENs(this.LEAGUE_NAME).get(d),
+                        getName_Pattern(d+1),
+                        splitFENs(this.fen).get(d),
+                        true,
+                        duration,
+                        getLeagueSpanTime(d),
+                        getClockTime(),
+                        getClockIncrement(),
+                        LEAGUE_DES,
+                        addIds,
+                        tournamentCollection
+                );
 
             }
 
@@ -398,7 +350,6 @@ public class League implements TournamentManager {
 
     }
 
-
     public String createArenaWithoutMaxAndWithFEN(Boolean isZerk) {
 
         if(this.TournamentCount != splitFENs(this.fen).size() || this.TournamentCount != splitFENs(this.LEAGUE_NAME).size() || splitFENs(this.fen).size() != splitFENs(this.LEAGUE_NAME).size()) {
@@ -407,43 +358,24 @@ public class League implements TournamentManager {
             for (int d = 0; d < this.TournamentCount; d++) {
 
                 int finalD = d + 1;
-                ZonedDateTime finalDaysIndex = getLeagueSpanTime(d);
 
-                    var res = this.client.tournaments().createArena(addparam -> addparam.clock(
-                                    this.getClockTime(), this.getClockIncrement())
-                            .berserkable(isZerk)
-                            .name(this.getName_Pattern(finalD)).description(this.LEAGUE_DES)
-                            .conditionTeam(DOJO_TEAM)
-                            .minutes(duration)
-                            .position(splitFENs(this.fen).get(0))
-                            .rated(true)
-                            .startTime(finalDaysIndex));
-
-                if(res instanceof Fail<Arena> fail){
-                    return fail.message();
-                }
-
-
-                addIds.append("https://lichess.org/tournament/").append(res.get().id())
-                            .append("\n");
-                    DojoScoreboard
-                           .createTournament("https://lichess.org/tournament/" + res.get().id());
-
-                    if (res.isPresent()) {
-
-                        DbTournamentEntry entry = new DbTournamentEntry(this.getName_Pattern(d + 1),
-                                res.get().id());
-                        Document document = new Document("Name", entry.getTournamentName())
-                                .append("Id", entry.getLichessTournamentId());
-                        this.tournamentCollection.insertOne(document);
-
-                    }else{
-                        return res.toString();
-                    }
-
-
+                leagueManager.manageArenaLeagueCreation(
+                        null,
+                        DOJO_TEAM,
+                        isZerk,
+                        getName_Pattern(finalD),
+                        getName_Pattern(d + 1),
+                        splitFENs(fen).get(0),
+                        true,
+                        duration,
+                        getLeagueSpanTime(d),
+                        getClockTime(),
+                        getClockIncrement(),
+                        LEAGUE_DES,
+                        addIds,
+                        tournamentCollection
+                );
             }
-
 
             return addIds.toString();
 
@@ -452,42 +384,22 @@ public class League implements TournamentManager {
 
             for (int d = 0; d < splitFENs(this.fen).size(); d++) {
 
-                int finalD1 = d;
-                ZonedDateTime finalDaysIndex = getLeagueSpanTime(d);
-
-                    var res = this.client.tournaments().createArena(addparam -> addparam.clock(
-                                    this.getClockTime(), this.getClockIncrement())
-                            .berserkable(isZerk)
-                            .name(splitFENs(this.LEAGUE_NAME).get(finalD1)).description(this.LEAGUE_DES)
-                            .conditionTeam(DOJO_TEAM)
-                            .minutes(duration)
-                            .position(splitFENs(this.fen).get(finalD1))
-                            .rated(true)
-                            .startTime(finalDaysIndex));
-
-                if(res instanceof Fail<Arena> fail){
-                    return fail.message();
-                }
-
-
-                System.out.println(res);
-
-                    addIds.append("https://lichess.org/tournament/").append(res.get().id())
-                            .append("\n");
-                    DojoScoreboard
-                            .createTournament("https://lichess.org/tournament/" + res.get().id());
-
-                    if (res.isPresent()) {
-
-                        DbTournamentEntry entry = new DbTournamentEntry(this.getName_Pattern(d + 1),
-                                res.get().id());
-                        Document document = new Document("Name", entry.getTournamentName())
-                                .append("Id", entry.getLichessTournamentId());
-                        this.tournamentCollection.insertOne(document);
-
-                    }else{
-                        return res.toString();
-                    }
+                leagueManager.manageArenaLeagueCreation(
+                        MaxRating,
+                        DOJO_TEAM,
+                        isZerk,
+                        splitFENs(this.LEAGUE_NAME).get(d),
+                        getName_Pattern(d+1),
+                        splitFENs(this.fen).get(d),
+                        true,
+                        duration,
+                        getLeagueSpanTime(d),
+                        getClockTime(),
+                        getClockIncrement(),
+                        LEAGUE_DES,
+                        addIds,
+                        tournamentCollection
+                );
 
             }
 
@@ -504,42 +416,23 @@ public class League implements TournamentManager {
             StringBuilder addIds = new StringBuilder("Here are League Tournaments: \n");
 
             for (int d = 0; d < this.TournamentCount; d++) {
-                ZonedDateTime finalDaysIndex = getLeagueSpanTime(d);
 
-                var res = this.client.tournaments().createArena(addparam -> addparam.clock(
-                                this.getClockTime(), this.getClockIncrement())
-                        .berserkable(isZerk)
-                        .name(this.LEAGUE_NAME.replaceFirst("-", "")).description(this.LEAGUE_DES)
-                        .conditionTeam(DOJO_TEAM)
-                        .minutes(duration)
-                        .conditionMaxRating(this.MaxRating)
-                        .rated(true)
-                        .startTime(finalDaysIndex));
-
-                if(res instanceof Fail<Arena> fail){
-                    return fail.message();
-                }
-
-
-                System.out.println(res);
-
-                addIds.append("https://lichess.org/tournament/").append(res.get().id())
-                        .append("\n");
-                DojoScoreboard
-                       .createTournament("https://lichess.org/tournament/" + res.get().id());
-
-                if (res.isPresent()) {
-
-                    DbTournamentEntry entry = new DbTournamentEntry(this.getName_Pattern(d + 1),
-                            res.get().id());
-                    Document document = new Document("Name", entry.getTournamentName())
-                            .append("Id", entry.getLichessTournamentId());
-                    this.tournamentCollection.insertOne(document);
-
-                }else{
-                    return res.toString();
-                }
-
+                leagueManager.manageArenaLeagueCreation(
+                        MaxRating,
+                        DOJO_TEAM,
+                        isZerk,
+                        this.LEAGUE_NAME.replaceFirst("-", ""),
+                        getName_Pattern(d + 1),
+                        null,
+                        true,
+                        duration,
+                        getLeagueSpanTime(d),
+                        getClockTime(),
+                        getClockIncrement(),
+                        LEAGUE_DES,
+                        addIds,
+                        tournamentCollection
+                );
 
             }
 
@@ -550,42 +443,23 @@ public class League implements TournamentManager {
             for (int d = 0; d < this.TournamentCount; d++) {
 
                 int finalD = d + 1;
-                ZonedDateTime finalDaysIndex = getLeagueSpanTime(d);
 
-                var res = this.client.tournaments().createArena(addparam -> addparam.clock(
-                                this.getClockTime(), this.getClockIncrement())
-                        .berserkable(isZerk)
-                        .name(this.getName_Pattern(finalD)).description(this.LEAGUE_DES)
-                        .conditionTeam(DOJO_TEAM)
-                        .minutes(duration)
-                        .conditionMaxRating(this.MaxRating)
-                        .rated(true)
-                        .startTime(finalDaysIndex));
-
-                if(res instanceof Fail<Arena> fail){
-                    return fail.message();
-                }
-
-                System.out.println(res);
-
-                addIds.append("https://lichess.org/tournament/").append(res.get().id())
-                        .append("\n");
-                DojoScoreboard
-                        .createTournament("https://lichess.org/tournament/" + res.get().id());
-
-                if (res.isPresent()) {
-
-                    DbTournamentEntry entry = new DbTournamentEntry(this.getName_Pattern(d + 1),
-                            res.get().id());
-                    Document document = new Document("Name", entry.getTournamentName())
-                            .append("Id", entry.getLichessTournamentId());
-                    this.tournamentCollection.insertOne(document);
-
-                }else{
-                    return res.toString();
-                }
-
-
+                leagueManager.manageArenaLeagueCreation(
+                        MaxRating,
+                        DOJO_TEAM,
+                        isZerk,
+                        this.getName_Pattern(finalD),
+                        getName_Pattern(d + 1),
+                        null,
+                        true,
+                        duration,
+                        getLeagueSpanTime(d),
+                        getClockTime(),
+                        getClockIncrement(),
+                        LEAGUE_DES,
+                        addIds,
+                        tournamentCollection
+                );
             }
 
             return addIds.toString();
@@ -601,41 +475,22 @@ public class League implements TournamentManager {
 
           for (int d = 0; d < this.TournamentCount; d++) {
 
-              ZonedDateTime finalDaysIndex = getLeagueSpanTime(d);
-
-              var res = this.client.tournaments().createArena(addparam -> addparam.clock(
-                              this.getClockTime(), this.getClockIncrement())
-                      .berserkable(isZerk)
-                      .name(this.LEAGUE_NAME.replaceFirst("-", "")).description(this.LEAGUE_DES)
-                      .conditionTeam(DOJO_TEAM)
-                      .minutes(duration)
-                      .rated(true)
-                      .startTime(finalDaysIndex));
-
-              if(res instanceof Fail<Arena> fail){
-                  return fail.message();
-              }
-
-
-              System.out.println(res);
-
-              addIds.append("https://lichess.org/tournament/").append(res.get().id())
-                      .append("\n");
-              DojoScoreboard
-                      .createTournament("https://lichess.org/tournament/" + res.get().id());
-
-              if (res.isPresent()) {
-
-                  DbTournamentEntry entry = new DbTournamentEntry(this.getName_Pattern(d + 1),
-                          res.get().id());
-                  Document document = new Document("Name", entry.getTournamentName())
-                          .append("Id", entry.getLichessTournamentId());
-                  this.tournamentCollection.insertOne(document);
-
-              }else{
-                  return res.toString();
-              }
-
+              leagueManager.manageArenaLeagueCreation(
+                      null,
+                      DOJO_TEAM,
+                      isZerk,
+                      this.LEAGUE_NAME.replaceFirst("-", ""),
+                      getName_Pattern(d + 1),
+                      null,
+                      true,
+                      duration,
+                      getLeagueSpanTime(d),
+                      getClockTime(),
+                      getClockIncrement(),
+                      LEAGUE_DES,
+                      addIds,
+                      tournamentCollection
+              );
 
           }
 
@@ -646,41 +501,23 @@ public class League implements TournamentManager {
           for (int d = 0; d < this.TournamentCount; d++) {
 
               int finalD = d + 1;
-              ZonedDateTime finalDaysIndex = getLeagueSpanTime(d);
 
-              var res = this.client.tournaments().createArena(addparam -> addparam.clock(
-                              this.getClockTime(), this.getClockIncrement())
-                      .berserkable(isZerk)
-                      .name(this.getName_Pattern(finalD)).description(this.LEAGUE_DES)
-                      .conditionTeam(DOJO_TEAM)
-                      .minutes(duration)
-                      .rated(true)
-                      .startTime(finalDaysIndex));
-
-              if(res instanceof Fail<Arena> fail){
-                  return fail.message();
-              }
-
-
-              System.out.println(res);
-
-              addIds.append("https://lichess.org/tournament/").append(res.get().id())
-                      .append("\n");
-              DojoScoreboard
-                      .createTournament("https://lichess.org/tournament/" + res.get().id());
-
-              if (res.isPresent()) {
-
-                  DbTournamentEntry entry = new DbTournamentEntry(this.getName_Pattern(d + 1),
-                          res.get().id());
-                  Document document = new Document("Name", entry.getTournamentName())
-                          .append("Id", entry.getLichessTournamentId());
-                  this.tournamentCollection.insertOne(document);
-
-              }else{
-                  return res.toString();
-              }
-
+              leagueManager.manageArenaLeagueCreation(
+                     null,
+                      DOJO_TEAM,
+                      isZerk,
+                      this.getName_Pattern(finalD),
+                      getName_Pattern(d + 1),
+                      null,
+                      true,
+                      duration,
+                      getLeagueSpanTime(d),
+                      getClockTime(),
+                      getClockIncrement(),
+                      LEAGUE_DES,
+                      addIds,
+                      tournamentCollection
+              );
 
           }
 
@@ -1094,12 +931,6 @@ public class League implements TournamentManager {
 
         return daysIndex;
     }
-
-
-
-
-
-
 
 
 
