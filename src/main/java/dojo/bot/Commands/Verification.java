@@ -12,11 +12,6 @@ import org.bson.Document;
 
 import java.io.IOException;
 
-
-/**
- * Heart of Discord Verification flow
- */
-
 public class Verification {
 
     private final Client client = Client.basic();
@@ -87,7 +82,7 @@ public class Verification {
 
     public void verificationStatusChesscom(String ccname, String DiscordId, SlashCommandInteractionEvent event) throws ChessComPubApiException, IOException {
         String checkDiscordId =  playerClient.getPlayerByUsername(ccname).getLocation();
-
+        //ManageRoles manageRoles = new ManageRoles();
 
         if( checkDiscordId != null && checkDiscordId.equalsIgnoreCase(DiscordId)){
             event.reply("You have been verified for Chess.com!").setEphemeral(true).queue();
@@ -109,7 +104,7 @@ public class Verification {
             Document query = new Document("Discordid", discordId);
             FindIterable<Document> result = collection.find(query);
             return result.iterator().hasNext();
-
+        
     }
 
     public boolean userPresentNormalChesscom(MongoCollection<Document> collection, String discordId){

@@ -10,10 +10,6 @@ import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Class for displaying Lichess arena results
- */
-
 public class UserArena {
 
     private Client client;
@@ -66,8 +62,8 @@ public class UserArena {
 
                 String perfname = perf.name();
 
-                String stand = "";
-                String standPodium = "";
+                StringBuilder stand = new StringBuilder();
+                StringBuilder standPodium = new StringBuilder();
 
 
                 Arena.Standing standing = arena.standing();
@@ -79,7 +75,7 @@ public class UserArena {
 
                 for (int i = 0; i < 3; i++) {
 
-                    standPodium +=  podium[i] + " " + players.get(i).name() + "  " + players.get(i).rating() + "  **" + players.get(i).score() + "** " + players.get(i).team() + "\n ";
+                    standPodium.append(podium[i]).append(" ").append(players.get(i).name()).append("  ").append(players.get(i).rating()).append("  **").append(players.get(i).score()).append("** ").append(players.get(i).team()).append("\n ");
 
 
                 }
@@ -87,7 +83,7 @@ public class UserArena {
 
                 for (int i = 0; i < players.size(); i++) {
 
-                    stand +=  emojileaderboard[i] + " " + players.get(i).name() + "  " + players.get(i).rating() + "  **" + players.get(i).score() + "** " + players.get(i).team() + "\n ";
+                    stand.append(emojileaderboard[i]).append(" ").append(players.get(i).name()).append("  ").append(players.get(i).rating()).append("  **").append(players.get(i).score()).append("** ").append(players.get(i).team()).append("\n ");
 
 
                 }

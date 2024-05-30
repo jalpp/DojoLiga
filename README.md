@@ -5,7 +5,7 @@ DojoLiga is an open source Discord backed backend system that allows Dojo commun
 
 ## Tech Stack
 
-- Java 17+
+- Java 21
 - MongoDB
 - Maven
 - Azure/AWS

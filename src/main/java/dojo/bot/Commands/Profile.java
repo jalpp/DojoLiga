@@ -7,9 +7,6 @@ import dojo.bot.Model.UserObject;
 
 import java.util.List;
 
-/**
- * Class to show Lichess profile
- */
 public class Profile extends UserObject {
 
 
@@ -43,7 +40,7 @@ public class Profile extends UserObject {
         String blitzRating = " \uD83D\uDD25 **Blitz**: ?";
 
         if(userBlitz.isPresent() && !userBlitz.get().perf().glicko().provisional()){
-            return blitzRating = " \uD83D\uDD25 **Blitz**:  " + userBlitz.get().perf().glicko().rating().intValue();
+            return " \uD83D\uDD25 **Blitz**:  " + userBlitz.get().perf().glicko().rating().intValue();
         }
 
         return blitzRating;
@@ -65,7 +62,7 @@ public class Profile extends UserObject {
         String rapidRating = " \uD83D\uDC07 **Rapid**: ?";
 
         if(userRapid.isPresent() && !userRapid.get().perf().glicko().provisional()){
-            return rapidRating = "\uD83D\uDC07 **Rapid**:  " + userRapid.get().perf().glicko().rating().intValue();
+            return "\uD83D\uDC07 **Rapid**:  " + userRapid.get().perf().glicko().rating().intValue();
         }
 
         return rapidRating;
@@ -110,7 +107,7 @@ public class Profile extends UserObject {
         String bulletRating = "\uD83D\uDD2B **Bullet**: ?";
 
         if(userBullet.isPresent() && !userBullet .get().perf().glicko().provisional()){
-            return bulletRating = "\uD83D\uDD2B **Bullet**:  " + userBullet .get().perf().glicko().rating().intValue();
+            return "\uD83D\uDD2B **Bullet**:  " + userBullet .get().perf().glicko().rating().intValue();
         }
 
         return bulletRating;
@@ -130,7 +127,7 @@ public class Profile extends UserObject {
         String calRating = "\uD83D\uDC22 **Classical**: ?";
 
         if(usercal.isPresent() && !usercal.get().perf().glicko().provisional()){
-            return calRating = "\uD83D\uDC22 **Classical**:  " +usercal.get().perf().glicko().rating().intValue();
+            return "\uD83D\uDC22 **Classical**:  " +usercal.get().perf().glicko().rating().intValue();
         }
 
         return calRating;
