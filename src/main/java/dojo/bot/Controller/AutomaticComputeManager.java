@@ -204,8 +204,8 @@ public class AutomaticComputeManager {
         }
     }
 
-    /**
-     *  compute scores Lichess blitz bundesliga scores for Dojo players
+     /**
+     *  compute scores Lichess blitz bundesliga and Mega Team battle scores for Dojo players
      * @param event Discord trigger event
      * @param arena arena collection
      * @param swiss swiss collection
@@ -215,7 +215,7 @@ public class AutomaticComputeManager {
     public void computeChessDojoLichessLigaScores(MessageReceivedEvent event, MongoCollection<Document> arena, MongoCollection<Document> swiss, ComputeScores compute){
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("America/New_York"));
 
-        List<Tournament> list = new ArrayList<>(Client.basic().teams().arenaByTeamId("chessdojo", 50).stream().filter(tournament -> tournament.fullName().contains("Lichess Liga")).filter(tournament -> tournament.finishesTime().getMonthValue() == now.getMonthValue()).toList());
+        List<Tournament> list = new ArrayList<>(Client.basic().teams().arenaByTeamId("chessdojo", 50).stream().filter(tournament -> tournament.fullName().contains("Lichess Liga")).filter(tournament -> tournament.fullName().contains("Lichess Mega")).filter(tournament -> tournament.finishesTime().getMonthValue() == now.getMonthValue()).toList());
 
 
         event.getChannel().sendMessage("Computing Lichess Dojo Liga tournaments of size " + list.size() + "  Please wait!").queue();
@@ -225,6 +225,7 @@ public class AutomaticComputeManager {
             event.getChannel().sendMessage(res).queue();
         }
     }
+
 
 
 
