@@ -1,6 +1,5 @@
 package dojo.bot.Controller;
 
-import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Updates;
 import dojo.bot.Model.ChessPlayer;
@@ -15,21 +14,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Class to compute Chess.com scores
- */
-
+import static dojo.bot.Controller.ScoresUtil.*;
 
 public class ComputeScorescc {
-
-
 
 
     public ComputeScorescc(){
 
     }
-
-
 
 
     /**
@@ -255,19 +247,7 @@ public class ComputeScorescc {
         updatePlayerSwiss(playerName, newScore, "eg_score", collection);
     }
 
-    /**
-     * Returns true if the provided tournament exists in the provided collection.
-     *
-     * @param collection   The collection to check for the tournament.
-     * @param tournamentID The ID of the tournament to check for.
-     * @return True if the provided tournament ID exists in the collection.
-     */
-    public static boolean tournamentPresent(MongoCollection<Document> collection, String tournamentID) {
 
-        Document query = new Document("Id", tournamentID);
-        FindIterable<Document> result = collection.find(query);
-        return result.iterator().hasNext();
-    }
 
     /**
      * Calculates and saves the player scores for the provided tournament URL.
@@ -561,23 +541,6 @@ public class ComputeScorescc {
     }
 
 
-    public static void insertTournamentID(String id, MongoCollection<Document> collection) {
-        // Create a new document with the provided ID and rename the field to "doc-id"
-        Document document = new Document("tournament-id", id);
-
-        // Insert the document into the collection
-        collection.insertOne(document);
-
-        System.out.println("Document inserted successfully.");
-    }
-
-    public static boolean isTournamentIDresent(String id, MongoCollection<Document> collection) {
-        Document query = new Document("tournament-id", id);
-        FindIterable<Document> result = collection.find(query);
-
-        return result.iterator().hasNext();
-    }
-
     public static List<String> compareCollections(MongoCollection<Document> collectionA, MongoCollection<Document> collectionB, String target) {
         List<String> idList = new ArrayList<>();
 
@@ -595,12 +558,6 @@ public class ComputeScorescc {
         });
 
         return idList;
-    }
-
-
-
-    public ArrayList<String> findUnComputedTournaments(MongoCollection<Document> arenacol, MongoCollection<Document> swisscol){
-      return null;
     }
 
 
@@ -626,7 +583,4 @@ public class ComputeScorescc {
     }
 
 
-
-
-    
 }

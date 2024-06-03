@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Objects;
 
 import static dojo.bot.Controller.DiscordAdmin.isDiscordAdmin;
+import static dojo.bot.Controller.ScoresUtil.isTournamentIDresent;
+import static dojo.bot.Controller.ScoresUtil.tournamentPresent;
 
 public class AutomaticComputeManager {
 
@@ -158,11 +160,11 @@ public class AutomaticComputeManager {
                 System.out.println("Arena not finished: https://lichess.org/tournament/" + tournament.id());
                 continue;
             }
-            if (!ComputeScores.tournamentPresent(arenaCollection, tournament.id())) {
+            if (tournamentPresent(arenaCollection, tournament.id())) {
                 System.out.println("Arena not in current League: https://lichess.org/tournament/" + tournament.id());
                 continue;
             }
-            if (ComputeScores.isTournamentIDresent(tournament.id(), Main.computedId)) {
+            if (isTournamentIDresent(tournament.id(), Main.computedId)) {
                 System.out.println("Arena already computed: https://lichess.org/tournament/" + tournament.id());
                 continue;
             }
@@ -176,11 +178,11 @@ public class AutomaticComputeManager {
                 System.out.println("Swiss not finished: https://lichess.org/swiss/" + swiss.id());
                 continue;
             }
-            if (!ComputeScores.tournamentPresent(swissCollection, swiss.id())) {
+            if (tournamentPresent(swissCollection, swiss.id())) {
                 System.out.println("Swiss not in current League: https://lichess.org/swiss/" + swiss.id());
                 continue;
             }
-            if (ComputeScores.isTournamentIDresent(swiss.id(), Main.computedId)) {
+            if (isTournamentIDresent(swiss.id(), Main.computedId)) {
                 System.out.println("Swiss already computed: https://lichess.org/swiss/" + swiss.id());
                 continue;
             }
@@ -204,7 +206,7 @@ public class AutomaticComputeManager {
         }
     }
 
-     /**
+    /**
      *  compute scores Lichess blitz bundesliga and Mega Team battle scores for Dojo players
      * @param event Discord trigger event
      * @param arena arena collection
@@ -217,7 +219,10 @@ public class AutomaticComputeManager {
 
         List<Tournament> list = new ArrayList<>(Client.basic().teams().arenaByTeamId("chessdojo", 50).stream().filter(tournament -> tournament.fullName().contains("Lichess Liga")).filter(tournament -> tournament.fullName().contains("Lichess Mega")).filter(tournament -> tournament.finishesTime().getMonthValue() == now.getMonthValue()).toList());
 
-
+        if(list.isEmpty()){
+            event.getChannel().sendMessage("No new completed Lichess Dojo Liga tournaments found. Scores cannot be computed.").queue();
+            return;
+        }
         event.getChannel().sendMessage("Computing Lichess Dojo Liga tournaments of size " + list.size() + "  Please wait!").queue();
 
         for(Tournament t: list){
@@ -228,11 +233,5 @@ public class AutomaticComputeManager {
 
 
 
-
-
-
-
-
-
-
+    
 }

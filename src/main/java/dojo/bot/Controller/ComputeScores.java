@@ -4,7 +4,6 @@ package dojo.bot.Controller;
 import chariot.Client;
 import chariot.ClientAuth;
 import chariot.model.*;
-import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
@@ -19,9 +18,8 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * Class to compute Lichess scores
- */
+import static dojo.bot.Controller.ScoresUtil.*;
+
 public class ComputeScores {
 
     private final ClientAuth client = Client.auth(Main.botToken);
@@ -48,21 +46,12 @@ public class ComputeScores {
             return;
         }
 
-        String fieldPrefix = "";
-
-        switch (timeControl) {
-            case BLITZ:
-                fieldPrefix = "blitz";
-                break;
-
-            case RAPID:
-                fieldPrefix = "rapid";
-                break;
-
-            case CLASSICAL:
-                fieldPrefix = "classical";
-                break;
-        }
+        String fieldPrefix = switch (timeControl) {
+            case BLITZ -> "blitz";
+            case RAPID -> "rapid";
+            case CLASSICAL -> "classical";
+            default -> "";
+        };
 
         if (fieldPrefix.length() == 0) {
             return;
@@ -261,19 +250,7 @@ public class ComputeScores {
         updatePlayerSwiss(playerName, newScore, "eg_score", collection);
     }
 
-    /**
-     * Returns true if the provided tournament exists in the provided collection.
-     *
-     * @param collection   The collection to check for the tournament.
-     * @param tournamentID The ID of the tournament to check for.
-     * @return True if the provided tournament ID exists in the collection.
-     */
-    public static boolean tournamentPresent(MongoCollection<Document> collection, String tournamentID) {
 
-        Document query = new Document("Id", tournamentID);
-        FindIterable<Document> result = collection.find(query);
-        return result.iterator().hasNext();
-    }
 
     /**
      * Calculates and saves the player scores for the provided tournament URL.
@@ -321,7 +298,7 @@ public class ComputeScores {
         if (tournamentCollection.countDocuments() <= 0) {
             return "Can't calculate scores since you did not create an Arena League!";
         }
-        if (!tournamentPresent(tournamentCollection, touryID)) {
+        if (tournamentPresent(tournamentCollection, touryID)) {
             return "This tournament is not in the current arena League! Please double check tournament URL and check ChessDojo team \n" +
                     "if you are trying to compute Lichess liga results run /inject [URL] to inject the URL in the database.";
         }
@@ -336,9 +313,12 @@ public class ComputeScores {
             return "Invalid time control: " + arenaResult1.get().perf().key();
         }
 
-        if (arenaResult1.get().fullName().contains("Lichess Liga")) {
+        if (arenaResult1.get().fullName().contains("Lichess Liga") || arenaResult1.get().fullName().contains("Lichess Mega")) {
+            int teamindex = getTeamIndex(touryID, client);
+            System.out.println(teamindex);
             List<chariot.model.TeamBattleResults.Teams.Player> allPlayers = client.tournaments()
-                    .teamBattleResultsById(touryID).get().teams().get(getTeamIndex(touryID, client)).players();
+                    .teamBattleResultsById(touryID).get().teams().get(teamindex - 1).players();
+
 
             if (allPlayers.size() >= 10) {
                 for (int g = 0; g < 10; g++) {
@@ -358,8 +338,10 @@ public class ComputeScores {
                 checkUserInDateBase(player.user().name().toLowerCase(), Main.collection);
                 updatePlayerScores(player.user().name().toLowerCase(), player.score(),
                         Main.collection, timeControl);
+                updatePlayerRatings(player.user().name().toLowerCase(), new Profile(client,player.user().name().toLowerCase()).getSingleBlitzRating(), Main.collection, timeControl);
                 addCombinedPlayerTotalScores(player.user().name().toLowerCase(), Main.collection,
                         timeControl);
+
             }
 
             insertTournamentID(touryID, Main.computedId);
@@ -469,7 +451,7 @@ public class ComputeScores {
             return "Can't calculate scores since you did not create an Swiss League!";
         }
 
-        if (!tournamentPresent(tournamentCollection, touryIDSwiss)) {
+        if (tournamentPresent(tournamentCollection, touryIDSwiss)) {
             return "This tournament is not in the current Swiss League! Please double check tournament URL and check ChessDojo team";
         }
 
@@ -525,7 +507,7 @@ public class ComputeScores {
         Many<SwissResult> swissResultResult = client.tournaments().resultsBySwissId(touryIDSwiss);
         List<SwissResult> results = swissResultResult.stream().toList();
 
-        Time_Control timeControl = null;
+        Time_Control timeControl;
 
         if (swissOne.get().clock().limit() >= 180 && swissOne.get().clock().limit() <= 480) {
             timeControl = Time_Control.BLITZ;
@@ -554,14 +536,14 @@ public class ComputeScores {
 
         }
 
-        for (int g = 0; g < results.size(); g++) {
-            checkUserInDateBase(results.get(g).username().toLowerCase(), Main.collection);
-            updatePlayerSwissScores(results.get(g).username().toLowerCase(),
-                    results.get(g).points(), Main.collection,
+        for (SwissResult result : results) {
+            checkUserInDateBase(result.username().toLowerCase(), Main.collection);
+            updatePlayerSwissScores(result.username().toLowerCase(),
+                    result.points(), Main.collection,
                     timeControl);
-            updatePlayerRatings(results.get(g).username().toLowerCase(), results.get(g).rating(),
+            updatePlayerRatings(result.username().toLowerCase(), result.rating(),
                     Main.collection, timeControl);
-            addCombinedPlayerTotalScores(results.get(g).username().toLowerCase(), Main.collection,
+            addCombinedPlayerTotalScores(result.username().toLowerCase(), Main.collection,
                     timeControl);
         }
 
@@ -664,12 +646,13 @@ public class ComputeScores {
                         + getPlayerRankDouble(playerName, collection, "classical_score_swiss") + "\n" +
                         "**Grand Prix: **" + "\n"
                         + getPlayerRank(playerName, collection, "classical_comb_total_gp") + "\n\n" +
-                        "♻\uFE0F **Sparring**" + "\n **Middlegame Sparring Rank:** " + "\n"
+                        "♻️ **Sparring**" + "\n **Middlegame Sparring Rank:** " + "\n"
                         + getPlayerRankDouble(playerName, collection, "sp_score") + "\n"
                         + "**Endgame Sparring Rank:** \n" + getPlayerRankDouble(playerName, collection, "eg_score"));
 
         embedBuilder.setFooter(
                 "**Note: Players can view their league scores with /score");
+        System.out.println(embedBuilder.getDescriptionBuilder().toString());
 
         return embedBuilder;
     }
@@ -750,12 +733,14 @@ public class ComputeScores {
                 "\n **Arena Score:** " + "\n" + result.getInteger("classical_score") + "\n" +
                 "**Swiss Score:** " + "\n" + result.getDouble("classical_score_swiss") + "\n" +
                 "**Grand Prix: **" + "\n" + result.getInteger("classical_comb_total_gp") + "\n" +
-                "\n ♻\uFE0F **Sparring**" + "\n **Middlegame Sparring Score:** " + "\n"
+                "\n ♻️ **Sparring**" + "\n **Middlegame Sparring Score:** " + "\n"
                 + result.getDouble("sp_score") + "\n" + "**Endgame Sparring Score:** \n"
                 + result.getDouble("eg_score"));
 
         embedBuilder.setFooter(
                 "**Note: scores of 0 means the player did not participate/play or earned zero points in a league, players can view their ranks with /rank");
+
+        System.out.println(embedBuilder.getDescriptionBuilder().toString());
 
         return embedBuilder;
     }
@@ -773,7 +758,7 @@ public class ComputeScores {
                                                 MongoCollection<Document> collection) {
         switch (type) {
             case ARENA, SWISS, COMB_GRAND_PRIX -> DojoScoreboard.updateLeaderboard(timeControl, type.getName(),
-                    collection, timeControl.toString() + type.toString());
+                    collection, timeControl + type.toString());
 
             case SPARRING, SPARRING_ENDGAME ->
                     DojoScoreboard.updateLeaderboard(timeControl, type.getName(), collection, type.toString());
@@ -781,93 +766,19 @@ public class ComputeScores {
         }
     }
 
-    public static void insertTournamentID(String id, MongoCollection<Document> collection) {
-       
-        Document document = new Document("tournament-id", id);
-
-      
-        collection.insertOne(document);
-
-        System.out.println("Document inserted successfully.");
-    }
-
-    public static boolean isTournamentIDresent(String id, MongoCollection<Document> collection) {
-        Document query = new Document("tournament-id", id);
-        FindIterable<Document> result = collection.find(query);
-
-        return result.iterator().hasNext();
-    }
-
-    public static int getTeamIndex(String id, Client client) {
-
-        for (int i = 0; i < client.tournaments().teamBattleResultsById(id).get().teams().size(); i++) {
-            if (client.tournaments().teamBattleResultsById(id).get().teams().get(i).id()
-                    .equalsIgnoreCase("chessdojo")) {
-                return i;
-            }
-        }
-
-        return -1;
-
-    }
-
-
+    /**
+     * Calculates the scores for the Lichess liga with the provided URL and
+     * tournament collection.
+     *
+     * @param arenaUrl             The URL of the Lichess liga to calculate scores
+     *                             for.
+     * @param tournamentCollection The collection of tournaments tracked in the
+     *                             database.
+     * @return A String description of the calculation result.
+     */
 
     public String calculateLichessLigaScores(String arenaUrl, MongoCollection<Document> tournamentCollection) {
-        String[] spliturl = arenaUrl.split("tournament/");
-        String touryID = spliturl[1];
-
-        One<chariot.model.Arena> arenaResult1 = client.tournaments().arenaById(touryID);
-        if (!arenaResult1.isPresent()) {
-            return "Seems like this arena is not present :( Can't compute player scores.";
-        }
-
-        if (tournamentCollection.countDocuments() <= 0) {
-            return "Can't calculate scores since you did not create an Arena League!";
-        }
-
-        if (isTournamentIDresent(touryID, Main.computedId)) {
-            return "This Tournament is already computed! Try another tournament";
-        }
-
-
-        Time_Control timeControl = Time_Control.fromString(arenaResult1.get().perf().key());
-        if (timeControl == null) {
-            return "Invalid time control: " + arenaResult1.get().perf().key();
-        }
-
-
-            List<chariot.model.TeamBattleResults.Teams.Player> allPlayers = client.tournaments()
-                    .teamBattleResultsById(touryID).get().teams().get(getTeamIndex(touryID, client)).players();
-
-            if (allPlayers.size() >= 10) {
-                for (int g = 0; g < 10; g++) {
-                    checkUserInDateBase(allPlayers.get(g).user().name().toLowerCase(), Main.collection);
-                    updatePlayerScoresArenaGp(allPlayers.get(g).user().name().toLowerCase(), 10 - g,
-                            Main.collection, timeControl);
-                }
-            } else {
-                for (int g = 0; g < allPlayers.size(); g++) {
-                    checkUserInDateBase(allPlayers.get(g).user().name().toLowerCase(), Main.collection);
-                    updatePlayerScoresArenaGp(allPlayers.get(g).user().name().toLowerCase(), 10 - g,
-                            Main.collection, timeControl);
-                }
-            }
-
-            for (chariot.model.TeamBattleResults.Teams.Player player : allPlayers) {
-                checkUserInDateBase(player.user().name().toLowerCase(), Main.collection);
-                updatePlayerScores(player.user().name().toLowerCase(), player.score(),
-                        Main.collection, timeControl);
-                addCombinedPlayerTotalScores(player.user().name().toLowerCase(), Main.collection,
-                        timeControl);
-            }
-
-            insertTournamentID(touryID, Main.computedId);
-            updateStandingsOnDojoScoreBoard(timeControl, Type.ARENA, Main.collection);
-            updateStandingsOnDojoScoreBoard(timeControl, Type.COMB_GRAND_PRIX, Main.collection);
-
-            return "Success! Updated player scores for " + arenaResult1.get().fullName();
-
+        return calculateArenaScores(arenaUrl, tournamentCollection);
     }
 
 }
