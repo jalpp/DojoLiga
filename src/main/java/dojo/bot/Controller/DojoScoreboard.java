@@ -3,6 +3,7 @@ package dojo.bot.Controller;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Sorts;
 import dojo.bot.Model.ChessPlayer;
+import dojo.bot.Runner.Main;
 import okhttp3.*;
 import org.bson.Document;
 import org.json.JSONObject;
@@ -69,7 +70,8 @@ public class DojoScoreboard {
         post(CREATE_TOURNAMENT_URL, jsonBody);
     }
 
-    /**
+
+     /**
      * Sends an update leaderboard request to the Dojo Scoreboard.
      *
      * @param timeControl    The time control of the leaderboard to update.
@@ -78,12 +80,15 @@ public class DojoScoreboard {
      * @param scoreField     The field used to get a player's score.
      */
     public static void updateLeaderboard(Time_Control timeControl, String tournamentType,
-                                         MongoCollection<Document> collection, String scoreField) {
+                                         MongoCollection<Document> collection, String scoreField, Mode mode) {
+
+        String URL = Main.IS_BETA ? BETA_UPDATE : UPDATE_LEADERBOARD_URL;
 
         Document body = new Document();
         body.put("timeControl", timeControl.toString());
         body.put("type", tournamentType);
         body.put("site", "lichess.org");
+        body.put("mode", mode.toString()); // open or under1800
 
         ArrayList<Document> players = new ArrayList<>();
         collection.find().sort(Sorts.descending(scoreField)).map(d -> {
@@ -103,7 +108,7 @@ public class DojoScoreboard {
         }
         body.put("players", players);
 
-        post(UPDATE_LEADERBOARD_URL, body.toJson());
+        post(URL, body.toJson());
     }
 
 
