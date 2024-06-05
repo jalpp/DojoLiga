@@ -412,8 +412,8 @@ public class League implements TournamentManager {
 
     public String createArenaWithoutFENAndWithMAX(Boolean isZerk){
 
+        StringBuilder addIds = new StringBuilder("Here are League Tournaments: \n");
         if(this.LEAGUE_NAME.startsWith("-")){
-            StringBuilder addIds = new StringBuilder("Here are League Tournaments: \n");
 
             for (int d = 0; d < this.TournamentCount; d++) {
 
@@ -436,9 +436,7 @@ public class League implements TournamentManager {
 
             }
 
-            return addIds.toString();
         }else{
-            StringBuilder addIds = new StringBuilder("Here are League Tournaments: \n");
 
             for (int d = 0; d < this.TournamentCount; d++) {
 
@@ -462,18 +460,18 @@ public class League implements TournamentManager {
                 );
             }
 
-            return addIds.toString();
         }
+        return addIds.toString();
     }
 
 
 
     public String createArenaWithoutFENAndMAX(Boolean isZerk){
 
-      if(this.LEAGUE_NAME.startsWith("-")){
-          StringBuilder addIds = new StringBuilder("Here are League Tournaments: \n");
+        StringBuilder addIds = new StringBuilder("Here are League Tournaments: \n");
+        if(this.LEAGUE_NAME.startsWith("-")){
 
-          for (int d = 0; d < this.TournamentCount; d++) {
+            for (int d = 0; d < this.TournamentCount; d++) {
 
               leagueManager.manageArenaLeagueCreation(
                       null,
@@ -494,11 +492,9 @@ public class League implements TournamentManager {
 
           }
 
-          return addIds.toString();
-      }else{
-          StringBuilder addIds = new StringBuilder("Here are League Tournaments: \n");
+        }else{
 
-          for (int d = 0; d < this.TournamentCount; d++) {
+            for (int d = 0; d < this.TournamentCount; d++) {
 
               int finalD = d + 1;
 
@@ -521,8 +517,8 @@ public class League implements TournamentManager {
 
           }
 
-          return addIds.toString();
-      }
+        }
+        return addIds.toString();
     }
 
 
@@ -563,7 +559,8 @@ public class League implements TournamentManager {
                                 res.get().id());
                         Document document = new Document("Name", entry.getTournamentName())
                                 .append("Id", entry.getLichessTournamentId());
-                        this.tournamentCollection.insertOne(document);
+
+                        U1800CollectionInsert(document);
 
                     }else{
                         return res.toString();
@@ -611,7 +608,7 @@ public class League implements TournamentManager {
                                 res.get().id());
                         Document document = new Document("Name", entry.getTournamentName())
                                 .append("Id", entry.getLichessTournamentId());
-                        this.tournamentCollection.insertOne(document);
+                        U1800CollectionInsert(document);
 
                     }else{
                         return res.toString();
@@ -725,10 +722,10 @@ public class League implements TournamentManager {
 
 
     public String createSwissWithMAXWithoutFEN(){
-       if(this.LEAGUE_NAME.startsWith("-")){
-           StringBuilder addIds = new StringBuilder("Here are League Tournaments: \n");
+        StringBuilder addIds = new StringBuilder("Here are League Tournaments: \n");
+        if(this.LEAGUE_NAME.startsWith("-")){
 
-           for (int d = 0; d < this.TournamentCount; d++) {
+            for (int d = 0; d < this.TournamentCount; d++) {
 
                ZonedDateTime finalDaysIndex = getLeagueSpanTime(d);
 
@@ -759,7 +756,7 @@ public class League implements TournamentManager {
                            res.get().id());
                    Document document = new Document("Name", entry.getTournamentName())
                            .append("Id", entry.getLichessTournamentId());
-                   this.tournamentCollection.insertOne(document);
+                   U1800CollectionInsert(document);
 
                }else{
                    return res.toString();
@@ -767,11 +764,9 @@ public class League implements TournamentManager {
 
 
            }
-           return addIds.toString();
-       }else {
-           StringBuilder addIds = new StringBuilder("Here are League Tournaments: \n");
+        }else {
 
-           for (int d = 0; d < this.TournamentCount; d++) {
+            for (int d = 0; d < this.TournamentCount; d++) {
                int finalD = d + 1;
                ZonedDateTime finalDaysIndex = getLeagueSpanTime(d);
 
@@ -802,7 +797,7 @@ public class League implements TournamentManager {
                            res.get().id());
                    Document document = new Document("Name", entry.getTournamentName())
                            .append("Id", entry.getLichessTournamentId());
-                   this.tournamentCollection.insertOne(document);
+                   U1800CollectionInsert(document);
 
                }else{
                    return res.toString();
@@ -810,14 +805,14 @@ public class League implements TournamentManager {
 
 
            }
-           return addIds.toString();
-       }
+        }
+        return addIds.toString();
     }
 
 
     public String createSwissWithoutMaxAndFEN(){
+        StringBuilder addIds = new StringBuilder("Here are League Tournaments: \n");
         if(this.LEAGUE_NAME.startsWith("-")){
-            StringBuilder addIds = new StringBuilder("Here are League Tournaments: \n");
 
             for (int d = 0; d < this.TournamentCount; d++) {
 
@@ -856,9 +851,7 @@ public class League implements TournamentManager {
 
 
             }
-            return addIds.toString();
         }else{
-            StringBuilder addIds = new StringBuilder("Here are League Tournaments: \n");
 
             for (int d = 0; d < this.TournamentCount; d++) {
 
@@ -898,8 +891,8 @@ public class League implements TournamentManager {
 
 
             }
-            return addIds.toString();
         }
+        return addIds.toString();
     }
 
 
@@ -911,11 +904,8 @@ public class League implements TournamentManager {
         var daysIndex = tmr;
 
         switch (this.interval){
-            case DAILY_INTERVAL -> {
-
-                daysIndex = tmr.plusDays(d).with(
-                        LocalTime.of(this.getMilitaryClock(), 0));
-            }
+            case DAILY_INTERVAL -> daysIndex = tmr.plusDays(d).with(
+                    LocalTime.of(this.getMilitaryClock(), 0));
             case WEEKLY_INTERVAL -> {
                 var tmr1 = ZonedDateTime.now(estZoneId).with(TemporalAdjusters.next(this.dayOfWeekOrMonth));
                 daysIndex = tmr1.plusWeeks(d).with(
@@ -930,6 +920,15 @@ public class League implements TournamentManager {
         }
 
         return daysIndex;
+    }
+
+    public void U1800CollectionInsert(Document document){
+        if(this.MaxRating == 1800){
+            Main.u1800swissCollection.insertOne(document);
+        }else{
+            this.tournamentCollection.insertOne(document);
+        }
+
     }
 
 

@@ -345,8 +345,8 @@ public class ComputeScores {
             }
 
             insertTournamentID(touryID, Main.computedId);
-            updateStandingsOnDojoScoreBoard(timeControl, Type.ARENA, Main.collection);
-            updateStandingsOnDojoScoreBoard(timeControl, Type.COMB_GRAND_PRIX, Main.collection);
+            updateStandingsOnDojoScoreBoard(timeControl, Type.ARENA, Mode.OPEN , Main.collection);
+            updateStandingsOnDojoScoreBoard(timeControl, Type.COMB_GRAND_PRIX, Mode.OPEN ,Main.collection);
 
             return "Success! Updated player scores for " + arenaResult1.get().fullName();
 
@@ -368,7 +368,7 @@ public class ComputeScores {
             }
 
             insertTournamentID(touryID, Main.computedId);
-            updateStandingsOnDojoScoreBoard(Time_Control.MIX, Type.SPARRING, Main.collection);
+            updateStandingsOnDojoScoreBoard(Time_Control.MIX, Type.SPARRING, Mode.OPEN, Main.collection);
 
             return "Success! Updated player scores for " + arenaResult1.get().fullName();
 
@@ -390,7 +390,7 @@ public class ComputeScores {
             }
 
             insertTournamentID(touryID, Main.computedId);
-            updateStandingsOnDojoScoreBoard(Time_Control.MIX_ENDGAME, Type.SPARRING_ENDGAME, Main.collection);
+            updateStandingsOnDojoScoreBoard(Time_Control.MIX_ENDGAME, Type.SPARRING_ENDGAME, Mode.OPEN ,Main.collection);
 
             return "Success! Updated player scores for " + arenaResult1.get().fullName();
 
@@ -426,8 +426,8 @@ public class ComputeScores {
         }
 
         insertTournamentID(touryID, Main.computedId);
-        updateStandingsOnDojoScoreBoard(timeControl, Type.ARENA, Main.collection);
-        updateStandingsOnDojoScoreBoard(timeControl, Type.COMB_GRAND_PRIX, Main.collection);
+        updateStandingsOnDojoScoreBoard(timeControl, Type.ARENA, Mode.OPEN ,Main.collection);
+        updateStandingsOnDojoScoreBoard(timeControl, Type.COMB_GRAND_PRIX, Mode.OPEN ,Main.collection);
 
         return "Success! Updated player scores for " + arenaResult1.get().fullName();
     }
@@ -451,7 +451,7 @@ public class ComputeScores {
             return "Can't calculate scores since you did not create an Swiss League!";
         }
 
-        if (tournamentPresent(tournamentCollection, touryIDSwiss)) {
+        if (tournamentPresent(tournamentCollection, touryIDSwiss) || tournamentPresent(Main.u1800swissCollection, touryIDSwiss)) {
             return "This tournament is not in the current Swiss League! Please double check tournament URL and check ChessDojo team";
         }
 
@@ -479,7 +479,7 @@ public class ComputeScores {
 
             }
             insertTournamentID(touryIDSwiss, Main.computedId);
-            updateStandingsOnDojoScoreBoard(Time_Control.MIX, Type.SPARRING, Main.collection);
+            updateStandingsOnDojoScoreBoard(Time_Control.MIX, Type.SPARRING, Mode.OPEN ,Main.collection);
 
             return "Success! Updated player scores for " + swissOne.get().name();
 
@@ -498,7 +498,7 @@ public class ComputeScores {
 
             }
             insertTournamentID(touryIDSwiss, Main.computedId);
-            updateStandingsOnDojoScoreBoard(Time_Control.MIX_ENDGAME, Type.SPARRING_ENDGAME, Main.collection);
+            updateStandingsOnDojoScoreBoard(Time_Control.MIX_ENDGAME, Type.SPARRING_ENDGAME, Mode.OPEN ,Main.collection);
 
             return "Success! Updated player scores for " + swissOne.get().name();
 
@@ -519,37 +519,40 @@ public class ComputeScores {
             return "Error time control not supported! Time control must be Blitz, Rapid, Classical";
         }
 
+        MongoCollection<Document> swissCollection = (tournamentPresent(Main.u1800swissCollection, touryIDSwiss)) ? Main.collection : Main.u1800Playerswiss;
+        Mode mode = (tournamentPresent(Main.u1800swissCollection, touryIDSwiss)) ? Mode.OPEN : Mode.UNDER1800;
+
         if (results.size() >= 10) {
             for (int g = 0; g < 10; g++) {
-                checkUserInDateBase(results.get(g).username().toLowerCase(), Main.collection);
+                checkUserInDateBase(results.get(g).username().toLowerCase(), swissCollection);
                 updatePlayerScoresSwissGp(results.get(g).username().toLowerCase(),
-                        10 - g, Main.collection,
+                        10 - g, swissCollection,
                         timeControl);
             }
         } else {
             for (int g = 0; g < results.size(); g++) {
-                checkUserInDateBase(results.get(g).username().toLowerCase(), Main.collection);
+                checkUserInDateBase(results.get(g).username().toLowerCase(),swissCollection);
                 updatePlayerScoresSwissGp(results.get(g).username().toLowerCase(),
-                        10 - g, Main.collection,
+                        10 - g, swissCollection,
                         timeControl);
             }
 
         }
 
         for (SwissResult result : results) {
-            checkUserInDateBase(result.username().toLowerCase(), Main.collection);
+            checkUserInDateBase(result.username().toLowerCase(), swissCollection);
             updatePlayerSwissScores(result.username().toLowerCase(),
-                    result.points(), Main.collection,
+                    result.points(), swissCollection,
                     timeControl);
             updatePlayerRatings(result.username().toLowerCase(), result.rating(),
-                    Main.collection, timeControl);
-            addCombinedPlayerTotalScores(result.username().toLowerCase(), Main.collection,
+                    swissCollection, timeControl);
+            addCombinedPlayerTotalScores(result.username().toLowerCase(), swissCollection,
                     timeControl);
         }
 
         insertTournamentID(touryIDSwiss, Main.computedId);
-        updateStandingsOnDojoScoreBoard(timeControl, Type.SWISS, Main.collection);
-        updateStandingsOnDojoScoreBoard(timeControl, Type.COMB_GRAND_PRIX, Main.collection);
+        updateStandingsOnDojoScoreBoard(timeControl, Type.SWISS, mode ,swissCollection);
+        updateStandingsOnDojoScoreBoard(timeControl, Type.COMB_GRAND_PRIX, mode ,swissCollection);
 
         return "Success! Updated player scores for " + swissOne.get().name();
     }
@@ -754,14 +757,14 @@ public class ComputeScores {
      * @param collection  the collection of players
      */
 
-    public void updateStandingsOnDojoScoreBoard(Time_Control timeControl, Type type,
+    public void updateStandingsOnDojoScoreBoard(Time_Control timeControl, Type type, Mode mode,
                                                 MongoCollection<Document> collection) {
         switch (type) {
             case ARENA, SWISS, COMB_GRAND_PRIX -> DojoScoreboard.updateLeaderboard(timeControl, type.getName(),
-                    collection, timeControl + type.toString());
+                    collection, timeControl + type.toString(), mode);
 
             case SPARRING, SPARRING_ENDGAME ->
-                    DojoScoreboard.updateLeaderboard(timeControl, type.getName(), collection, type.toString());
+                    DojoScoreboard.updateLeaderboard(timeControl, type.getName(), collection, type.toString(), mode);
 
         }
     }

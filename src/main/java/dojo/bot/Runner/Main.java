@@ -47,6 +47,10 @@ public class Main extends ListenerAdapter {
 
     public static MongoCollection<Document> computedId;
 
+    public static MongoCollection<Document> u1800Playerswiss;
+
+    public static MongoCollection<Document> u1800swissCollection;
+
     public DiscordAction DiscordReactor = new DiscordAction();
 
     private static MongoCollection<Document> swissLeagueCollection;
@@ -240,6 +244,8 @@ public class Main extends ListenerAdapter {
         swissLeagueCollection = database.getCollection(System.getenv("swiss_coll"));
         arenaLeagueCollection = database.getCollection(System.getenv("arena_coll"));
         computedId = database.getCollection(System.getenv("comp_coll"));
+        u1800Playerswiss = database.getCollection("u1800_coll");
+        u1800swissCollection = database.getCollection("u1800_coll");
 
 
 
