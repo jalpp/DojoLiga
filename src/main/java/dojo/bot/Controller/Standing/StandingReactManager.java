@@ -9,14 +9,9 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import org.bson.Document;
-
 import java.util.Objects;
-
 import static dojo.bot.Controller.Discord.DiscordAdmin.isDiscordAdmin;
 
-import java.util.Objects;
-
-import static dojo.bot.Controller.DiscordAdmin.isDiscordAdmin;
 
 public class StandingReactManager {
 
