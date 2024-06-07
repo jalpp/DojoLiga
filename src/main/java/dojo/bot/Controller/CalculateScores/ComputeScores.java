@@ -24,8 +24,6 @@ import java.util.List;
 
 import static dojo.bot.Controller.CalculateScores.ScoresUtil.*;
 
-import static dojo.bot.Controller.ScoresUtil.*;
-
 public class ComputeScores {
 
     private final ClientAuth client = Client.auth(Main.botToken);

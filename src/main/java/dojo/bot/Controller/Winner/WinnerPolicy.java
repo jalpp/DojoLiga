@@ -6,7 +6,7 @@ import dojo.bot.Controller.DojoScoreboard.DojoScoreboard;
 import dojo.bot.Controller.League.Time_Control;
 import dojo.bot.Controller.League.Type;
 import dojo.bot.Controller.User.ChessPlayer;
-
+import com.mongodb.client.MongoCollection;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
