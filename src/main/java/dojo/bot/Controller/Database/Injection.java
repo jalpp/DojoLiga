@@ -7,7 +7,6 @@ import org.bson.Document;
 
 import static dojo.bot.Controller.Discord.DiscordAdmin.isDiscordAdmin;
 
-
 public class Injection {
 
 
@@ -15,17 +14,19 @@ public class Injection {
                        MongoCollection<Document> swiss) {
         if (isDiscordAdmin(event)) {
 
-            String url = Objects.requireNonNull(event.getOption("url")).getAsString();
+            String url = event.getOption("url").getAsString();
             event.reply("Connecting..").queue();
 
-
-            switch (url) {
-                case "https://lichess.org/tournament/" -> InjectLichessTournament(event, arena, "tournament/", url);
-                case "https://lichess.org/swiss/" -> InjectLichessTournament(event, swiss, "swiss/", url);
-                case "https://www.chess.com/tournament/live/arena/" -> InjectChesscomTournament(event, arena, "arena/", "arenacc", url);
-                case "https://www.chess.com/tournament/live/" -> InjectChesscomTournament(event, swiss, "live/", "swisscc", url);
-                default -> event.reply("error! invalid URL").queue();
-
+            if(url.contains("https://lichess.org/tournament/")){
+                InjectLichessTournament(event, arena, "tournament/", url);
+            }else if(url.contains("https://lichess.org/swiss/")){
+                InjectLichessTournament(event, swiss, "swiss/", url);
+            }else if(url.contains("https://www.chess.com/tournament/live/arena/")){
+                InjectChesscomTournament(event, arena, "arena/", "arenacc", url);
+            }else if(url.contains("https://www.chess.com/tournament/live/")){
+                InjectChesscomTournament(event, swiss, "live/", "swisscc", url);
+            }else{
+                event.getChannel().sendMessage("error! invalid URL").queue();
             }
 
         } else {
@@ -36,7 +37,8 @@ public class Injection {
 
 
 
-    private void InjectLichessTournament(SlashCommandInteractionEvent event, MongoCollection<Document> collection, String regex, String url){
+    public void InjectLichessTournament(SlashCommandInteractionEvent event, MongoCollection<Document> collection, String regex, String url){
+        System.out.println("test1");
         String[] spliturl = url.split(regex);
         String touryID = spliturl[1];
         DbTournamentEntry entry = new DbTournamentEntry(touryID, touryID);
@@ -49,7 +51,8 @@ public class Injection {
 
     }
 
-   private void InjectChesscomTournament(SlashCommandInteractionEvent event, MongoCollection<Document> collection, String regex, String target, String url){
+   public void InjectChesscomTournament(SlashCommandInteractionEvent event, MongoCollection<Document> collection, String regex, String target, String url){
+       System.out.println("test2");
        String[] spliturl = url.split(regex);
        String touryID = spliturl[1];
        DbTournamentEntry entry = new DbTournamentEntry(touryID, touryID);

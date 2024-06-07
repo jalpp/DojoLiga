@@ -6,46 +6,17 @@ import dojo.bot.Controller.DojoScoreboard.DojoScoreboard;
 import dojo.bot.Controller.League.Time_Control;
 import dojo.bot.Controller.League.Type;
 import dojo.bot.Controller.User.ChessPlayer;
-import com.mongodb.client.MongoCollection;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-
-/**
- *
- * This class is responsible for computing possible winners for DojoLiga
- *
- */
-
 public class WinnerPolicy {
 
 
-    private Client client = Client.basic();
+    private final Client client = Client.basic();
 
-
-    public static List<String> getPlayerNames(MongoCollection collection, int startIndex, int endIndex){
-
-        List<String> usernames = new ArrayList<>();
-
-        try(MongoCursor<Document> cursor = collection.find().skip(startIndex).limit(endIndex - startIndex + 1).iterator()){
-
-            while (cursor.hasNext()) {
-                Document document = cursor.next();
-
-                // Check if the document contains the "username" field
-                if (document.containsKey("username")) {
-                    // Retrieve the username and add it to the list
-                    String username = document.getString("username");
-                    usernames.add(username);
-                }
-            }
-
-            return usernames;
-        }
-
-    }
 
 
    public String getISOtime(int month, int year){
@@ -62,6 +33,7 @@ public class WinnerPolicy {
 
     public String findWinner(Time_Control timeControl, Type type, int month, int year){
             ArrayList<ChessPlayer> top10Players = DojoScoreboard.getLeaderboard(timeControl, "monthly", getISOtime(month, year), type);
+            //List<Document> top10Players = new ArrayList<>();
             List<String> winnersGreaterThan1800 = new ArrayList<>();
             List<String> winnerLessThan1800 = new ArrayList<>();
             List<String> isNonWinner = new ArrayList<>();
@@ -141,23 +113,7 @@ public class WinnerPolicy {
     public boolean isClosed(String username){
         return client.users().byId(username).get().disabled();
     }
-
-// Not good for O(N) time makes algorithm worse
-//    public boolean isInTeam(String username){
-//
-//        Client.basic().users().byId()
-//
-////       List<TeamMember> members = client.teams().usersByTeamId("chessdojo").stream().toList();
-////
-////       for(TeamMember member: members){
-////           if(member.user().name().equalsIgnoreCase(username)){
-////               return true;
-////           }
-////       }
-//
-//       return false;
-//    }
-
+    
 
     public boolean isProv(String username, Time_Control timeControl){
        switch (timeControl){
@@ -176,57 +132,6 @@ public class WinnerPolicy {
     }
 
 
-    // Not good algo
-//    public boolean isRatingGreaterThan1800(String username, Time_Control timeControl){
-//
-//        if(!isProv(username, timeControl)){
-//            switch (timeControl){
-//
-//                case BLITZ -> {
-//                    return new Profile(client, username).getSingleBlitzRating() > 1800;
-//                }
-//
-//                case RAPID -> {
-//                    return new Profile(client, username).getSingleRapidRating() > 1800;
-//                }
-//
-//                case CLASSICAL -> {
-//                    return new Profile(client, username).getSingleClassicalRating() > 1800;
-//                }
-//
-//            }
-//        }
-//
-//        return false;
-//    }
-//
-//
-//    public int getPlayerRatingPrint(String username, Time_Control timeControl){
-//
-//        if(!isProv(username, timeControl)){
-//
-//            switch (timeControl){
-//
-//                case BLITZ -> {
-//                    return new Profile(client, username).getSingleBlitzRating();
-//                }
-//
-//                case RAPID -> {
-//                    return new Profile(client, username).getSingleRapidRating();
-//                }
-//
-//                case CLASSICAL -> {
-//                    return new Profile(client, username).getSingleClassicalRating();
-//                }
-//
-//
-//
-//            }
-//
-//
-//        }
-//
-//        return 0;
 
+}
 
-    }
