@@ -157,6 +157,10 @@ public class Main extends ListenerAdapter {
                         .addChoice("Friday", "fri")
                         .addChoice("Saturday", "sat")
                         .addChoice("Sunday", "sun")));
+        commands.addCommands(Commands.slash("search", "search a user's Lichess/Chesscom/Discord ids")
+                .addOptions(new OptionData(OptionType.STRING, "query-mode", "Select query mode", true).addChoice("Lichess.org", "limode")
+                        .addChoice("Chess.com", "ccmode")
+                        .addChoice("Discord ID", "dimode")).addOption(OptionType.STRING, "value-search", "enter value", true));
         commands.addCommands(Commands.slash("standingshelp", "View Dojo League Standings info"));
         commands.addCommands(Commands.slash("stream", "View ChessDojo stream"));
         commands.addCommands(Commands.slash("update", "Update your Belts for your live Lichess.org and Chess.com account"));
@@ -279,6 +283,8 @@ public class Main extends ListenerAdapter {
 
             case "leaguehelp" -> DiscordReactor.sendLeagueHelp(event, helper);
 
+            case "search" -> DiscordReactor.performSearch(event);
+            
             case "update" -> {
                 try {
                     manageRoles.startUpdatingRoles(event, passport);

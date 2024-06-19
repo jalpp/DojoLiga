@@ -389,4 +389,11 @@ public class DiscordAction {
        playerLeagueActionManager.unlinkeUserBelt(event);
     }
 
+    
+    public void performSearch(SlashCommandInteractionEvent event){
+        SearchQueryManager queryManager = new SearchQueryManager();
+        queryManager.renderSearchResults(event, new SearchQuery());
+    }
+
+
 }
