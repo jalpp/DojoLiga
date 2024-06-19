@@ -359,10 +359,11 @@ public class DiscordAction {
      * @param senseiChannelId Sensei channel
      * @param techChannelID Tech channel
      * @param tpchannel Training program channel
+     * @param tacchannel feedback channel
      */
 
-    public void ticketFormSystem(ModalInteractionEvent event, String senseiChannelId, String techChannelID, String tpchannel){
-       ticketSystem.ticketFormSystem(event,senseiChannelId,techChannelID,tpchannel);
+    public void ticketFormSystem(ModalInteractionEvent event, String senseiChannelId, String techChannelID, String tpchannel, String tacchannel){
+       ticketSystem.ticketFormSystem(event,senseiChannelId,techChannelID,tpchannel, tacchannel);
 
     }
 
