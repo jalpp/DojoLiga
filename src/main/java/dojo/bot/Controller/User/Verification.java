@@ -3,7 +3,6 @@ package dojo.bot.Controller.User;
 import chariot.Client;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
-import dojo.bot.Controller.Discord.ManageRoles;
 import io.github.sornerol.chess.pubapi.client.PlayerClient;
 import io.github.sornerol.chess.pubapi.exception.ChessComPubApiException;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -35,8 +34,14 @@ public class Verification {
 
 
     public void verificationStatus(String Lichessname, String DiscordId, SlashCommandInteractionEvent event){
+        boolean checkClosed = client.users().byId(Lichessname).get().disabled();
+        boolean checkTOSViolation = client.users().byId(Lichessname).get().tosViolation();
+
+        if(checkClosed || checkTOSViolation){
+            event.reply("The following account is closed or has violated Lichess TOS! The following account can't be used to obtain Dojo belt").queue();
+        }
+
         String checkDiscordId =  client.users().byId(Lichessname).get().profile().location().orElse("");
-        ManageRoles manageRoles = new ManageRoles();
 
         if(checkDiscordId.equalsIgnoreCase(DiscordId)){
             event.reply("You have been verified for Lichess!").setEphemeral(true).queue();
@@ -65,26 +70,39 @@ public class Verification {
         }
     }
 
+
+    public String getDiscordIdByLichessUsername(MongoCollection<Document> collection, String LichessUser){
+        return getGeneralSearchBasedOnParams("Lichessname", LichessUser, collection, "Discordid");
+    }
+
+    public String getDiscordIdByChesscomUsername(MongoCollection<Document> collection, String ccUser){
+        return getGeneralSearchBasedOnParams("Chesscomname", ccUser, collection, "Discordid");
+    }
+
     public boolean userPresentNormal(MongoCollection<Document> collection, String discordId){
             Document query = new Document("Discordid", discordId);
             FindIterable<Document> result = collection.find(query);
             return result.iterator().hasNext();
     }
 
-
-    public String getReletatedLichessName(String DiscordId, MongoCollection<Document> collection){
-
-        Document query = new Document("Discordid", DiscordId);
+    public String getGeneralSearchBasedOnParams(String targetSearch, String targetID, MongoCollection<Document> collection, String returnId){
+        Document query = new Document(targetSearch, targetID);
 
         Document result = collection.find(query).first();
 
         if(result != null){
 
-            return result.getString("Lichessname");
+            return result.getString(returnId);
 
         }else{
             return "Something went wrong!";
         }
+    }
+
+
+    public String getReletatedLichessName(String DiscordId, MongoCollection<Document> collection){
+
+        return getGeneralSearchBasedOnParams("Discordid", DiscordId, collection, "Lichessname");
 
     }
 
@@ -92,7 +110,14 @@ public class Verification {
 
     public void verificationStatusChesscom(String ccname, String DiscordId, SlashCommandInteractionEvent event) throws ChessComPubApiException, IOException {
         String checkDiscordId =  playerClient.getPlayerByUsername(ccname).getLocation();
-        //ManageRoles manageRoles = new ManageRoles();
+
+        String isNotAllowed = playerClient.getPlayerByUsername(ccname).getMembershipStatus().toString().toLowerCase();
+
+
+        if(isNotAllowed.contains("closed")){
+            event.reply("The following account is closed or has violated Chess.com TOS! The following account can't be used to obtain Dojo belt").queue();
+
+        }
 
         if( checkDiscordId != null && checkDiscordId.equalsIgnoreCase(DiscordId)){
             event.reply("You have been verified for Chess.com!").setEphemeral(true).queue();
@@ -126,17 +151,7 @@ public class Verification {
 
     public String getReletatedChessName(String DiscordId, MongoCollection<Document> collection){
 
-        Document query = new Document("Discordid", DiscordId);
-
-        Document result = collection.find(query).first();
-
-        if(result != null){
-
-            return result.getString("Chesscomname");
-
-        }else{
-            return "Something went wrong!";
-        }
+        return getGeneralSearchBasedOnParams("Discordid", DiscordId, collection, "Chesscomname");
 
     }
 
