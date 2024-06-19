@@ -374,9 +374,9 @@ public class Main extends ListenerAdapter {
     @Override
     public void onModalInteraction(@NotNull ModalInteractionEvent event) {
         if(!IS_BETA) {
-            DiscordReactor.ticketFormSystem(event, Keys.PROD_CHANNEL_ID_SENSEI, Keys.PROD_CHANNEL_ID_TECH, Keys.PROD_CHANNEL_ID_TP);
+            DiscordReactor.ticketFormSystem(event, Keys.PROD_CHANNEL_ID_SENSEI, Keys.PROD_CHANNEL_ID_TECH, Keys.PROD_CHANNEL_ID_TP, Keys.PROD_CHANNEL_FEEDBACK);
         }else{
-            DiscordReactor.ticketFormSystem(event, Keys.BETA_CHANNEL_ID_SENSEI, Keys.BETA_CHANNEL_ID_TECH, Keys.BETA_CHANNEL_ID_TP);
+            DiscordReactor.ticketFormSystem(event, Keys.BETA_CHANNEL_ID_SENSEI, Keys.BETA_CHANNEL_ID_TECH, Keys.BETA_CHANNEL_ID_TP, Keys.BETA_CHANNEL_FEEDBACK);
 
         }
     }
