@@ -3,6 +3,7 @@ package dojo.bot.Controller.Discord;
 import chariot.Client;
 import com.mongodb.client.MongoCollection;
 import dojo.bot.Controller.Database.Injection;
+import dojo.bot.Controller.Database.SearchQuery;
 import dojo.bot.Controller.League.FutureTournamentViewerManager;
 import dojo.bot.Controller.Standing.StandingReactManager;
 import dojo.bot.Controller.TicketSystem.TicketManager;
