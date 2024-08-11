@@ -25,9 +25,6 @@ import static dojo.bot.Controller.CalculateScores.ScoresUtil.tournamentPresent;
 public class AutomaticComputeManager {
 
 
-
-
-
     /**
      * Discord Action to start computing scores
      *
@@ -58,18 +55,16 @@ public class AutomaticComputeManager {
     }
 
 
-
-
     /**
      * Automatically Chess.com computes scores for any finished tournaments that haven't
      * already been computed.
      *
-     * @param event           The message that kicked off the
-     *                        automaticComputeScores() event.
-     * @param computecc         The ComputeScores object to use when calculating
-     *                        player scores.
-     * @param arenacc The collection of Arena tournaments in the database.
-     * @param swisscc The collection of Swiss tournaments in the database.
+     * @param event     The message that kicked off the
+     *                  automaticComputeScores() event.
+     * @param computecc The ComputeScores object to use when calculating
+     *                  player scores.
+     * @param arenacc   The collection of Arena tournaments in the database.
+     * @param swisscc   The collection of Swiss tournaments in the database.
      */
 
 
@@ -85,39 +80,39 @@ public class AutomaticComputeManager {
         arenaids.removeIf(Objects::isNull);
 
 
-        if(arenaids.isEmpty() && swissids.isEmpty()){
+        if (arenaids.isEmpty() && swissids.isEmpty()) {
             event.getChannel().sendMessage("No Chess.com arena and swiss tournament found to be computed").queue();
-        }else if(arenaids.isEmpty()){
+        } else if (arenaids.isEmpty()) {
 
             event.getChannel().sendMessage("Computing Chess.com swiss tournaments of size: " + swissids.size()).queue();
 
-            for(String id: swissids){
-                String url = "https://www.chess.com/tournament/live/"+ id;
+            for (String id : swissids) {
+                String url = "https://www.chess.com/tournament/live/" + id;
                 String result = computecc.calculatePlayerScores(url, arenacc, swisscc);
                 event.getChannel().sendMessage(result).queue();
             }
 
-        }else if(swissids.isEmpty()){
+        } else if (swissids.isEmpty()) {
             event.getChannel().sendMessage("Computing Chess.com arena tournaments of size: " + arenaids.size()).queue();
 
-            for(String id: arenaids){
-                String url = "https://www.chess.com/tournament/live/arena/"+ id;
+            for (String id : arenaids) {
+                String url = "https://www.chess.com/tournament/live/arena/" + id;
                 String result = computecc.calculatePlayerScores(url, arenacc, swisscc);
                 event.getChannel().sendMessage(result).queue();
             }
 
-        }else{
+        } else {
 
             event.getChannel().sendMessage("Computing Chess.com swiss & arena tournaments of size: " + swissids.size() + swissids.size()).queue();
 
-            for(String id: swissids){
-                String url = "https://www.chess.com/tournament/live/"+ id;
+            for (String id : swissids) {
+                String url = "https://www.chess.com/tournament/live/" + id;
                 String result = computecc.calculatePlayerScores(url, arenacc, swisscc);
                 event.getChannel().sendMessage(result).queue();
             }
 
-            for(String id: arenaids){
-                String url = "https://www.chess.com/tournament/live/arena/"+ id;
+            for (String id : arenaids) {
+                String url = "https://www.chess.com/tournament/live/arena/" + id;
                 String result = computecc.calculatePlayerScores(url, arenacc, swisscc);
                 event.getChannel().sendMessage(result).queue();
             }
@@ -125,9 +120,7 @@ public class AutomaticComputeManager {
         }
 
 
-
     }
-
 
 
     /**
@@ -152,7 +145,7 @@ public class AutomaticComputeManager {
 
         for (Tournament tournament : arenaList) {
 
-            if(tournament.startsTime().getMonthValue() != now.getMonthValue() && tournament.startsTime().getYear() == tournament.startsTime().getYear() ){
+            if (tournament.startsTime().getMonthValue() != now.getMonthValue() && tournament.startsTime().getYear() == tournament.startsTime().getYear()) {
                 System.out.println("Arena was ignored due last month");
                 continue;
             }
@@ -208,31 +201,30 @@ public class AutomaticComputeManager {
     }
 
     /**
-     *  compute scores Lichess blitz bundesliga and Mega Team battle scores for Dojo players
-     * @param event Discord trigger event
-     * @param arena arena collection
-     * @param swiss swiss collection
+     * compute scores Lichess blitz bundesliga and Mega Team battle scores for Dojo players
+     *
+     * @param event   Discord trigger event
+     * @param arena   arena collection
+     * @param swiss   swiss collection
      * @param compute compute manager
      */
 
-    public void computeChessDojoLichessLigaScores(MessageReceivedEvent event, MongoCollection<Document> arena, MongoCollection<Document> swiss, ComputeScores compute){
+    public void computeChessDojoLichessLigaScores(MessageReceivedEvent event, MongoCollection<Document> arena, MongoCollection<Document> swiss, ComputeScores compute) {
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("America/New_York"));
 
         List<Tournament> list = new ArrayList<>(Client.basic().teams().arenaByTeamId("chessdojo", 50).stream().filter(tournament -> tournament.fullName().contains("Lichess Liga")).filter(tournament -> tournament.fullName().contains("Lichess Mega")).filter(tournament -> tournament.finishesTime().getMonthValue() == now.getMonthValue()).toList());
 
-        if(list.isEmpty()){
+        if (list.isEmpty()) {
             event.getChannel().sendMessage("No new completed Lichess Dojo Liga tournaments found. Scores cannot be computed.").queue();
             return;
         }
         event.getChannel().sendMessage("Computing Lichess Dojo Liga tournaments of size " + list.size() + "  Please wait!").queue();
 
-        for(Tournament t: list){
+        for (Tournament t : list) {
             String res = compute.calculateLichessLigaScores("https://lichess.org/tournament/" + t.id(), arena);
             event.getChannel().sendMessage(res).queue();
         }
     }
 
 
-
-    
 }

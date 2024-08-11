@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Objects;
 
 
-
 /**
  * A object that takes care of managing user roles based on player ratings
  */
@@ -33,49 +32,44 @@ public class ManageRoles {
     private final Client client = Client.basic();
 
 
-
-
-
-
-    public ManageRoles(){
+    public ManageRoles() {
 
     }
 
 
     public void updateRolesChesscom(String DiscordId, SlashCommandInteractionEvent event) throws ChessComPubApiException, IOException {
         Verification verification = new Verification();
-        if(verification.userPresentNormalChesscom(Main.chesscomplayers, DiscordId)){
+        if (verification.userPresentNormalChesscom(Main.chesscomplayers, DiscordId)) {
             String playerName = verification.getReletatedChessName(DiscordId, Main.chesscomplayers);
             removePreviousRoles(event.getGuild(), Objects.requireNonNull(event.getMember()));
             giveRolesBasedOnChessComRapidRating(playerName.toLowerCase(), event, true);
-        }else {
+        } else {
             event.reply("You have not verified your Chess.com account! Please run **/verifychesscom**").setEphemeral(true).queue();
         }
     }
 
 
-
     /**
      * Updates the role for given Discord Id
+     *
      * @param DiscordId user Discord Id
-     * @param event slashCommand event
+     * @param event     slashCommand event
      */
 
 
-    public void updateRoles(String DiscordId, SlashCommandInteractionEvent event){
+    public void updateRoles(String DiscordId, SlashCommandInteractionEvent event) {
         Verification verification = new Verification();
-        if(verification.userPresentNormal(Main.collection, DiscordId)){
+        if (verification.userPresentNormal(Main.collection, DiscordId)) {
             String playerName = verification.getReletatedLichessName(DiscordId, Main.collection);
             removePreviousRoles(event.getGuild(), event.getMember());
             assignRolesBasedOnRating(playerName.toLowerCase(), event, true);
-        }else {
+        } else {
             event.reply("You have not verified your Lichess account! Please run **/verify**").queue();
         }
     }
 
 
-
-    public void updateLiveRatings(String username, MongoCollection<Document> collection, int blitz_rating, int classical_rating, int rapid_rating){
+    public void updateLiveRatings(String username, MongoCollection<Document> collection, int blitz_rating, int classical_rating, int rapid_rating) {
         updatePlayer(username, blitz_rating, "blitz_rating", collection);
         updatePlayer(username, rapid_rating, "rapid_rating", collection);
         updatePlayer(username, classical_rating, "classical_rating", collection);
@@ -98,7 +92,7 @@ public class ManageRoles {
     }
 
     private void updatePlayerCC(String playerName, int value, String fieldName,
-                              MongoCollection<Document> collection) {
+                                MongoCollection<Document> collection) {
         Document query = new Document("Chesscomname", playerName);
 
         if (collection.countDocuments() <= 0) {
@@ -111,7 +105,6 @@ public class ManageRoles {
     }
 
 
-
     public void giveRolesBasedOnChessComRapidRating(String ccName, SlashCommandInteractionEvent event, boolean update) throws ChessComPubApiException, IOException {
         CCProfile profile = new CCProfile(ccName);
         int rapid_rating = profile.getRapidRating();
@@ -120,11 +113,11 @@ public class ManageRoles {
         updatePlayerCC(ccName, rapid_rating, "rapid_rating", Main.chesscomplayers);
         updatePlayerCC(ccName, blitz_rating, "blitz_rating", Main.chesscomplayers);
 
-        if( rapid_rating < 1000){
+        if (rapid_rating < 1000) {
             calculateRoles("White", event, update, "a Chess.com Rapid rating of " + rapid_rating);
-        } else if (  rapid_rating < 1200 && rapid_rating >= 1000) {
+        } else if (rapid_rating < 1200 && rapid_rating >= 1000) {
             calculateRoles("Yellow", event, update, "a Chess.com Rapid rating of " + rapid_rating);
-        } else if ( rapid_rating < 1400 && rapid_rating >= 1200){
+        } else if (rapid_rating < 1400 && rapid_rating >= 1200) {
             calculateRoles("Orange", event, update, "a Chess.com Rapid rating of " + rapid_rating);
         } else if (rapid_rating < 1600 && rapid_rating >= 1400) {
             calculateRoles("Green", event, update, "a Chess.com Rapid rating of " + rapid_rating);
@@ -134,15 +127,14 @@ public class ManageRoles {
             calculateRoles("Purple", event, update, "a Chess.com Rapid rating of " + rapid_rating);
         } else if (rapid_rating < 2400 && rapid_rating >= 2100) {
             calculateRoles("Red", event, update, "a Chess.com Rapid rating of " + rapid_rating);
-        } else if( rapid_rating < 3300 && rapid_rating >= 2400){
+        } else if (rapid_rating < 3300 && rapid_rating >= 2400) {
             calculateRoles("Black", event, update, "a Chess.com Rapid rating of " + rapid_rating);
         }
     }
 
 
-
     public int calculateChesscomRoleIndex(SlashCommandInteractionEvent event, Verification pass, String cc) throws ChessComPubApiException, IOException {
-        if(pass.userPresentNormalChesscom(Main.chesscomplayers, event.getUser().getId())) {
+        if (pass.userPresentNormalChesscom(Main.chesscomplayers, event.getUser().getId())) {
             CCProfile profile = new CCProfile(cc);
             int rapid_rating = profile.getRapidRating();
 
@@ -178,78 +170,76 @@ public class ManageRoles {
     }
 
 
-     // W Y O G B P R Bl
+    // W Y O G B P R Bl
     // 0  1 2 3 4 5 6 7
 
-    public int calculateLichessRoleIndex(SlashCommandInteractionEvent event, Verification pass, String li){
-        if(pass.userPresentNormal(Main.collection, event.getUser().getId())) {
+    public int calculateLichessRoleIndex(SlashCommandInteractionEvent event, Verification pass, String li) {
+        if (pass.userPresentNormal(Main.collection, event.getUser().getId())) {
             Profile profile = new Profile(client, li);
 
             int rapid_rating = profile.getSingleRapidRating();
             int cla_rating = profile.getSingleClassicalRating();
 
 
-            if(rapid_rating == -1 && cla_rating == -1){
+            if (rapid_rating == -1 && cla_rating == -1) {
                 return -1;
             }
 
 
-            if(rapid_rating > cla_rating){
-                if( rapid_rating <= 1199 ){
+            if (rapid_rating > cla_rating) {
+                if (rapid_rating <= 1199) {
                     return 0;
                     //calculateRoles("White", event, update, "a Lichess Rapid rating of " + rapid_rating);
-                }else if(isInBeltRange(1200, 1399, rapid_rating)) {
+                } else if (isInBeltRange(1200, 1399, rapid_rating)) {
                     return 1;
                     //calculateRoles("Yellow", event, update, "a Lichess Rapid rating of " + rapid_rating);
                 } else if (isInBeltRange(1400, 1599, rapid_rating)) {
                     return 2;
                     //calculateRoles("Orange", event, update, "a Lichess Rapid rating of " + rapid_rating);
-                } else if (isInBeltRange(1600, 1799, rapid_rating)){
+                } else if (isInBeltRange(1600, 1799, rapid_rating)) {
                     return 3;
                     //calculateRoles("Green", event, update, "a Lichess Rapid rating of " + rapid_rating);
-                } else if(isInBeltRange(1800, 1999, rapid_rating)){
+                } else if (isInBeltRange(1800, 1999, rapid_rating)) {
                     return 4;
                     //calculateRoles("Blue", event, update, "a Lichess Rapid rating of " + rapid_rating);
-                } else if(isInBeltRange(2000, 2199, rapid_rating)){
+                } else if (isInBeltRange(2000, 2199, rapid_rating)) {
                     return 5;
                     //calculateRoles("Purple", event, update, "a Lichess Rapid rating of " + rapid_rating);
-                } else if(isInBeltRange(2200, 2499, rapid_rating)){
+                } else if (isInBeltRange(2200, 2499, rapid_rating)) {
                     return 6;
                     //calculateRoles("Red", event, update, "a Lichess Rapid rating of " + rapid_rating);
-                } else if (isInBeltRange(2500, 4000, rapid_rating)){
+                } else if (isInBeltRange(2500, 4000, rapid_rating)) {
                     return 7;
                     //calculateRoles("Black", event, update, "a Lichess Rapid rating of " + rapid_rating);
                 }
             } else {
-                if( cla_rating <= 1199 ){
+                if (cla_rating <= 1199) {
                     return 0;
                     //calculateRoles("White", event, update, "a Lichess Rapid rating of " + rapid_rating);
-                }else if(isInBeltRange(1200, 1399, cla_rating)) {
+                } else if (isInBeltRange(1200, 1399, cla_rating)) {
                     return 1;
                     //calculateRoles("Yellow", event, update, "a Lichess Rapid rating of " + rapid_rating);
                 } else if (isInBeltRange(1400, 1599, cla_rating)) {
                     return 2;
                     //calculateRoles("Orange", event, update, "a Lichess Rapid rating of " + rapid_rating);
-                } else if (isInBeltRange(1600, 1799, cla_rating)){
+                } else if (isInBeltRange(1600, 1799, cla_rating)) {
                     return 3;
                     //calculateRoles("Green", event, update, "a Lichess Rapid rating of " + rapid_rating);
-                } else if(isInBeltRange(1800, 1999, cla_rating)){
+                } else if (isInBeltRange(1800, 1999, cla_rating)) {
                     return 4;
                     //calculateRoles("Blue", event, update, "a Lichess Rapid rating of " + rapid_rating);
-                } else if(isInBeltRange(2000, 2099, cla_rating)){
+                } else if (isInBeltRange(2000, 2099, cla_rating)) {
                     return 5;
                     //calculateRoles("Purple", event, update, "a Lichess Rapid rating of " + rapid_rating);
-                } else if(isInBeltRange(2100, 2199, cla_rating)){
+                } else if (isInBeltRange(2100, 2199, cla_rating)) {
                     return 6;
                     //calculateRoles("Red", event, update, "a Lichess Rapid rating of " + rapid_rating);
-                } else if (isInBeltRange(2200, 4000, cla_rating)){
+                } else if (isInBeltRange(2200, 4000, cla_rating)) {
                     return 7;
                     //calculateRoles("Black", event, update, "a Lichess Rapid rating of " + rapid_rating);
                 }
 
             }
-
-
 
 
         }
@@ -261,13 +251,14 @@ public class ManageRoles {
 
     /**
      * Assign roles based on rating of a given user
+     *
      * @param LichessUsername PlayerName
-     * @param event SlashcommandEvent
-     * @param update true or false if its updating or not
+     * @param event           SlashcommandEvent
+     * @param update          true or false if its updating or not
      */
 
 
-    public void assignRolesBasedOnRating(String LichessUsername, SlashCommandInteractionEvent event, boolean update){
+    public void assignRolesBasedOnRating(String LichessUsername, SlashCommandInteractionEvent event, boolean update) {
 
         Profile profile = new Profile(client, LichessUsername.toLowerCase());
         int rapid_rating = profile.getSingleRapidRating();
@@ -275,7 +266,7 @@ public class ManageRoles {
         int blz_rating = profile.getSingleBlitzRating();
 
 
-        if(rapid_rating == -1 && cla_rating == -1){
+        if (rapid_rating == -1 && cla_rating == -1) {
             event.getChannel().sendMessage("Your rapid and classical rating is still provisional, please try again after getting an established rating (20 games)").queue();
             return;
         }
@@ -283,40 +274,40 @@ public class ManageRoles {
         updateLiveRatings(LichessUsername, Main.collection, blz_rating, cla_rating, rapid_rating);
 
 
-        if(rapid_rating > cla_rating){
-            if( rapid_rating <= 1199 ){
+        if (rapid_rating > cla_rating) {
+            if (rapid_rating <= 1199) {
                 calculateRoles("White", event, update, "a Lichess Rapid rating of " + rapid_rating);
-            }else if(isInBeltRange(1200, 1399, rapid_rating)) {
+            } else if (isInBeltRange(1200, 1399, rapid_rating)) {
                 calculateRoles("Yellow", event, update, "a Lichess Rapid rating of " + rapid_rating);
             } else if (isInBeltRange(1400, 1599, rapid_rating)) {
                 calculateRoles("Orange", event, update, "a Lichess Rapid rating of " + rapid_rating);
-            } else if (isInBeltRange(1600, 1799, rapid_rating)){
+            } else if (isInBeltRange(1600, 1799, rapid_rating)) {
                 calculateRoles("Green", event, update, "a Lichess Rapid rating of " + rapid_rating);
-            } else if(isInBeltRange(1800, 1999, rapid_rating)){
+            } else if (isInBeltRange(1800, 1999, rapid_rating)) {
                 calculateRoles("Blue", event, update, "a Lichess Rapid rating of " + rapid_rating);
-            } else if(isInBeltRange(2000, 2199, rapid_rating)){
+            } else if (isInBeltRange(2000, 2199, rapid_rating)) {
                 calculateRoles("Purple", event, update, "a Lichess Rapid rating of " + rapid_rating);
-            } else if(isInBeltRange(2200, 2499, rapid_rating)){
+            } else if (isInBeltRange(2200, 2499, rapid_rating)) {
                 calculateRoles("Red", event, update, "a Lichess Rapid rating of " + rapid_rating);
-            } else if (isInBeltRange(2500, 4000, rapid_rating)){
+            } else if (isInBeltRange(2500, 4000, rapid_rating)) {
                 calculateRoles("Black", event, update, "a Lichess Rapid rating of " + rapid_rating);
             }
         } else {
-            if( cla_rating <= 1199 ){
+            if (cla_rating <= 1199) {
                 calculateRoles("White", event, update, "a Lichess Rapid rating of " + rapid_rating);
-            }else if(isInBeltRange(1200, 1399, cla_rating)) {
+            } else if (isInBeltRange(1200, 1399, cla_rating)) {
                 calculateRoles("Yellow", event, update, "a Lichess Rapid rating of " + rapid_rating);
             } else if (isInBeltRange(1400, 1599, cla_rating)) {
                 calculateRoles("Orange", event, update, "a Lichess Rapid rating of " + rapid_rating);
-            } else if (isInBeltRange(1600, 1799, cla_rating)){
+            } else if (isInBeltRange(1600, 1799, cla_rating)) {
                 calculateRoles("Green", event, update, "a Lichess Rapid rating of " + rapid_rating);
-            } else if(isInBeltRange(1800, 1999, cla_rating)){
+            } else if (isInBeltRange(1800, 1999, cla_rating)) {
                 calculateRoles("Blue", event, update, "a Lichess Rapid rating of " + rapid_rating);
-            } else if(isInBeltRange(2000, 2099, cla_rating)){
+            } else if (isInBeltRange(2000, 2099, cla_rating)) {
                 calculateRoles("Purple", event, update, "a Lichess Rapid rating of " + rapid_rating);
-            } else if(isInBeltRange(2100, 2199, cla_rating)){
+            } else if (isInBeltRange(2100, 2199, cla_rating)) {
                 calculateRoles("Red", event, update, "a Lichess Rapid rating of " + rapid_rating);
-            } else if (isInBeltRange(2200, 4000, cla_rating)){
+            } else if (isInBeltRange(2200, 4000, cla_rating)) {
                 calculateRoles("Black", event, update, "a Lichess Rapid rating of " + rapid_rating);
             }
 
@@ -327,27 +318,30 @@ public class ManageRoles {
 
     /**
      * Calculate roles for a given belt name
+     *
      * @param beltName the belt name
-     * @param event SlashCommandEvent
-     * @param update true or false if its updating or not
+     * @param event    SlashCommandEvent
+     * @param update   true or false if its updating or not
      */
-    public void calculateRoles(String beltName, SlashCommandInteractionEvent event, boolean update, String reason){
+    public void calculateRoles(String beltName, SlashCommandInteractionEvent event, boolean update, String reason) {
 
-        if(!update) {
+        if (!update) {
             User user = event.getUser();
             Role role = Objects.requireNonNull(event.getGuild()).getRolesByName(beltName + " Belt", true).get(0);
             event.getGuild().addRoleToMember(user, role).queue();
             event.getChannel().sendMessage("Verification successful! " + "Based on " + reason + ", " + event.getUser().getAsMention() + " has earned the " + beltName + " Belt! \uD83E\uDD4B ").addActionRow(Button.link("https://www.chessdojo.club/", "Success")).queue(msg -> msg.addReaction(Emoji.fromFormatted(Helper.BELT_COLOURS.get(beltName))).queue());
-        }else{
+        } else {
             User user = event.getUser();
             Role role = Objects.requireNonNull(event.getGuild()).getRolesByName(beltName + " Belt", true).get(0);
             event.getGuild().addRoleToMember(user, role).queue();
-            event.getChannel().sendMessage("Based on " + reason + ", " + event.getUser().getAsMention() + " has earned the " + beltName + " Belt! \uD83E\uDD4B " ).addActionRow(Button.link("https://www.chessdojo.club/", "Success")).queue(msg -> msg.addReaction(Emoji.fromFormatted(Helper.BELT_COLOURS.get(beltName))).queue());
+            event.getChannel().sendMessage("Based on " + reason + ", " + event.getUser().getAsMention() + " has earned the " + beltName + " Belt! \uD83E\uDD4B ").addActionRow(Button.link("https://www.chessdojo.club/", "Success")).queue(msg -> msg.addReaction(Emoji.fromFormatted(Helper.BELT_COLOURS.get(beltName))).queue());
         }
     }
+
     /**
      * Remove the previous role of a user which is a belt role
-     * @param guild the Discord guild in which the bot has to remove the role
+     *
+     * @param guild  the Discord guild in which the bot has to remove the role
      * @param member the member for which the role will be removed for
      */
 
@@ -357,8 +351,8 @@ public class ManageRoles {
         for (Role role : roles) {
             String roleName = role.getName().toLowerCase();
             if (roleName.equalsIgnoreCase("White belt") || roleName.equalsIgnoreCase("Green belt") || roleName.equalsIgnoreCase("Red Belt")
-            || roleName.equalsIgnoreCase("Black belt") || roleName.equalsIgnoreCase("Purple belt")
-            || roleName.equalsIgnoreCase("Blue belt") || roleName.equalsIgnoreCase("Yellow belt")) {
+                    || roleName.equalsIgnoreCase("Black belt") || roleName.equalsIgnoreCase("Purple belt")
+                    || roleName.equalsIgnoreCase("Blue belt") || roleName.equalsIgnoreCase("Yellow belt")) {
                 guild.removeRoleFromMember(member, role).queue();
             }
         }
@@ -366,6 +360,7 @@ public class ManageRoles {
 
     /**
      * Starts the updating role process
+     *
      * @param event a Slash command event for which the bot starts the process
      */
 
@@ -374,7 +369,7 @@ public class ManageRoles {
         String li = pass.getReletatedLichessName(event.getUser().getId(), Main.collection);
         String cc = pass.getReletatedChessName(event.getUser().getId(), Main.chesscomplayers);
 
-        if(calculateChesscomRoleIndex(event, pass, cc) == -1 && calculateLichessRoleIndex(event, pass, li) == -1){
+        if (calculateChesscomRoleIndex(event, pass, cc) == -1 && calculateLichessRoleIndex(event, pass, li) == -1) {
             event.reply("Error! Lichess.org Rapid and Classical ratings are ? and Chess.com account not linked! " +
                     "I can't give belts. Please play more games or link chess.com account").setEphemeral(true).queue();
             return;
@@ -387,8 +382,9 @@ public class ManageRoles {
 
     /**
      * The main assigner control logic
-     * @param pass verification object
-     * @param event Slash event
+     *
+     * @param pass   verification object
+     * @param event  Slash event
      * @param update update belt or not
      * @throws ChessComPubApiException User not found exception
      * @throws IOException
@@ -401,13 +397,13 @@ public class ManageRoles {
         String cc = pass.getReletatedChessName(event.getUser().getId(), Main.chesscomplayers);
 
 
-        if(calculateChesscomRoleIndex(event, pass, cc) > calculateLichessRoleIndex(event, pass, li)){
+        if (calculateChesscomRoleIndex(event, pass, cc) > calculateLichessRoleIndex(event, pass, li)) {
             removePreviousRoles(event.getGuild(), Objects.requireNonNull(event.getMember()));
-            giveRolesBasedOnChessComRapidRating(cc,event, update);
-        }else if(calculateLichessRoleIndex(event, pass, li) > calculateChesscomRoleIndex(event, pass, cc)){
+            giveRolesBasedOnChessComRapidRating(cc, event, update);
+        } else if (calculateLichessRoleIndex(event, pass, li) > calculateChesscomRoleIndex(event, pass, cc)) {
             removePreviousRoles(event.getGuild(), Objects.requireNonNull(event.getMember()));
             assignRolesBasedOnRating(li, event, update);
-        }else{
+        } else {
             removePreviousRoles(event.getGuild(), Objects.requireNonNull(event.getMember()));
             giveRolesBasedOnChessComRapidRating(cc, event, update);
         }
@@ -416,7 +412,7 @@ public class ManageRoles {
     }
 
 
-    public boolean isInBeltRange(int lowerBound, int upperBound, int targetRating){
+    public boolean isInBeltRange(int lowerBound, int upperBound, int targetRating) {
         return (targetRating >= lowerBound && targetRating <= upperBound);
     }
 

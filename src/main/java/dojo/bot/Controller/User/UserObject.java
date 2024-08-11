@@ -11,21 +11,19 @@ public class UserObject {
     private String userID;
 
 
-    public UserObject(Client client, String userParsing){
+    public UserObject(Client client, String userParsing) {
         this.client = client;
         this.userID = userParsing.toLowerCase().trim();
     }
 
 
-    public Client getClient(){
+    public Client getClient() {
         return this.client;
     }
 
-    public String getUserID(){
+    public String getUserID() {
         return this.userID;
     }
-
-
 
 
 }

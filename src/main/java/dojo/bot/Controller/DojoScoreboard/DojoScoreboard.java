@@ -28,7 +28,7 @@ public class DojoScoreboard {
     private static final String CREATE_TOURNAMENT_URL = "https://g4shdaq6ug.execute-api.us-east-1.amazonaws.com/tournaments";
     private static final String UPDATE_LEADERBOARD_URL = "https://g4shdaq6ug.execute-api.us-east-1.amazonaws.com/tournaments/leaderboard";
 
-    private static final String GET_LEADERBOARD_URL  = "https://g4shdaq6ug.execute-api.us-east-1.amazonaws.com/public/tournaments/leaderboard";
+    private static final String GET_LEADERBOARD_URL = "https://g4shdaq6ug.execute-api.us-east-1.amazonaws.com/public/tournaments/leaderboard";
 
     /**
      * Sends a POST request to the provided URL with the provided body.
@@ -63,7 +63,6 @@ public class DojoScoreboard {
     }
 
 
-
     /**
      * Sends a create tournament request to the Dojo Scoreboard.
      *
@@ -75,7 +74,7 @@ public class DojoScoreboard {
     }
 
 
-     /**
+    /**
      * Sends an update leaderboard request to the Dojo Scoreboard.
      *
      * @param timeControl    The time control of the leaderboard to update.
@@ -125,7 +124,7 @@ public class DojoScoreboard {
      * @param scoreField     The field used to get a player's score.
      */
     public static void updateLeaderboardCC(Time_Control timeControl, String tournamentType,
-                                         MongoCollection<Document> collection, String scoreField) {
+                                           MongoCollection<Document> collection, String scoreField) {
 
         Document body = new Document();
         body.put("timeControl", timeControl.toString());
@@ -143,7 +142,7 @@ public class DojoScoreboard {
             return player;
         }).into(players);
 
-        if (players.size() == 0) {
+        if (players.isEmpty()) {
             return;
         }
         body.put("players", players);
@@ -152,11 +151,11 @@ public class DojoScoreboard {
     }
 
 
-    public static ArrayList<ChessPlayer> getLeaderboard(Time_Control timeControl, String period, String date, Type type){
+    public static ArrayList<ChessPlayer> getLeaderboard(Time_Control timeControl, String period, String date, Type type) {
 
         OkHttpClient client = new OkHttpClient();
 
-        String endpoint = GET_LEADERBOARD_URL + "?timePeriod="+ period + "&tournamentType=" + type.fetchLeaderboard() + "&timeControl=" + timeControl.toString()
+        String endpoint = GET_LEADERBOARD_URL + "?timePeriod=" + period + "&tournamentType=" + type.fetchLeaderboard() + "&timeControl=" + timeControl.toString()
                 + "&date=" + date;
 
         System.out.println(endpoint);
@@ -178,7 +177,7 @@ public class DojoScoreboard {
 
                 JSONObject js = new JSONObject(response.body().string());
 
-                for(int i  = 0; i < 10; i++){
+                for (int i = 0; i < 10; i++) {
                     ChessPlayer player = new ChessPlayer(js.getJSONArray("players").getJSONObject(i).getString("username"), js.getJSONArray("players").getJSONObject(i).getInt("rating"), js.getJSONArray("players").getJSONObject(i).getInt("score"));
                     players.add(player);
                 }
@@ -196,10 +195,9 @@ public class DojoScoreboard {
             e.printStackTrace();
         }
 
-      return null;
+        return null;
 
     }
-
 
 
 }

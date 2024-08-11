@@ -23,7 +23,7 @@ public class DiscordAdmin {
     }
 
 
-    public static boolean isDiscordAdminButton(ButtonInteraction event){
+    public static boolean isDiscordAdminButton(ButtonInteraction event) {
         return event.getUser().getId().equalsIgnoreCase("403639644887056406") ||
                 event.getUser().getId().equalsIgnoreCase("893527007051259954") ||
                 event.getUser().getId().equalsIgnoreCase("338307632232398850") ||
@@ -33,7 +33,7 @@ public class DiscordAdmin {
                 || event.getUser().getId().equalsIgnoreCase("476559788822626305");
     }
 
-    public static boolean isDiscordAdminMessage(MessageReceivedEvent event){
+    public static boolean isDiscordAdminMessage(MessageReceivedEvent event) {
         return event.getMember().getUser().getId().equalsIgnoreCase("403639644887056406") ||
                 event.getMember().getUser().getId().equalsIgnoreCase("893527007051259954") ||
                 event.getMember().getUser().getId().equalsIgnoreCase("338307632232398850") ||
@@ -43,8 +43,5 @@ public class DiscordAdmin {
                 || event.getMember().getUser().getId().equalsIgnoreCase("476559788822626305");
     }
 
-
-
-    
 
 }

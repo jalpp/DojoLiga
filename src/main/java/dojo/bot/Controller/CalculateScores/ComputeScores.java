@@ -81,8 +81,7 @@ public class ComputeScores {
     }
 
 
-
-    public static void checkProv(String username, MongoCollection<Document> collection){
+    public static void checkProv(String username, MongoCollection<Document> collection) {
         Document query = new Document("Lichessname", username);
         Document playerDocument = collection.find(query).first();
 
@@ -94,20 +93,20 @@ public class ComputeScores {
             boolean provBlitzValue = false;
             boolean provClaValue = false;
 
-            if(Client.basic().users().byId(username).isPresent() &&
+            if (Client.basic().users().byId(username).isPresent() &&
                     !Client.basic().users().byId(username).get().tosViolation()
-                    && !Client.basic().users().byId(username).get().disabled()){
+                    && !Client.basic().users().byId(username).get().disabled()) {
                 Profile profile = new Profile(Client.basic(), username);
 
-                if(profile.getSingleBlitzRating() == -1){
+                if (profile.getSingleBlitzRating() == -1) {
                     provBlitzValue = true;
                 }
 
-                if(profile.getSingleClassicalRating() == -1){
+                if (profile.getSingleClassicalRating() == -1) {
                     provClaValue = true;
                 }
 
-                if(profile.getSingleRapidRating() == -1){
+                if (profile.getSingleRapidRating() == -1) {
                     provRapidValue = true;
                 }
             }
@@ -127,8 +126,6 @@ public class ComputeScores {
     }
 
 
-
-
     /**
      * Sets the value for the given player and field name.
      *
@@ -136,8 +133,6 @@ public class ComputeScores {
      * @param value      The new value to set on the player.
      * @param fieldName  The field name to set.
      * @param collection The collection containing the player.
-     *
-     *
      */
     private void updatePlayer(String playerName, int value, String fieldName,
                               MongoCollection<Document> collection) {
@@ -255,7 +250,6 @@ public class ComputeScores {
     }
 
 
-
     /**
      * Calculates and saves the player scores for the provided tournament URL.
      *
@@ -274,7 +268,7 @@ public class ComputeScores {
             return calculateArenaScores(tournamentUrl, arenaCollection);
         } else if (tournamentUrl.contains("https://lichess.org/swiss/")) {
             return calculateSwissScores(tournamentUrl, swissCollection);
-        } else if(tournamentUrl.contains("https://www.chess.com")){
+        } else if (tournamentUrl.contains("https://www.chess.com")) {
             return cc.calculatePlayerScores(tournamentUrl, arenaCollection, swissCollection);
         }
 
@@ -342,15 +336,15 @@ public class ComputeScores {
                 checkUserInDateBase(player.user().name().toLowerCase(), Main.collection);
                 updatePlayerScores(player.user().name().toLowerCase(), player.score(),
                         Main.collection, timeControl);
-                updatePlayerRatings(player.user().name().toLowerCase(), new Profile(client,player.user().name().toLowerCase()).getSingleBlitzRating(), Main.collection, timeControl);
+                updatePlayerRatings(player.user().name().toLowerCase(), new Profile(client, player.user().name().toLowerCase()).getSingleBlitzRating(), Main.collection, timeControl);
                 addCombinedPlayerTotalScores(player.user().name().toLowerCase(), Main.collection,
                         timeControl);
 
             }
 
             insertTournamentID(touryID, Main.computedId);
-            updateStandingsOnDojoScoreBoard(timeControl, Type.ARENA, Mode.OPEN , Main.collection);
-            updateStandingsOnDojoScoreBoard(timeControl, Type.COMB_GRAND_PRIX, Mode.OPEN ,Main.collection);
+            updateStandingsOnDojoScoreBoard(timeControl, Type.ARENA, Mode.OPEN, Main.collection);
+            updateStandingsOnDojoScoreBoard(timeControl, Type.COMB_GRAND_PRIX, Mode.OPEN, Main.collection);
 
             return "Success! Updated player scores for " + arenaResult1.get().fullName();
 
@@ -394,7 +388,7 @@ public class ComputeScores {
             }
 
             insertTournamentID(touryID, Main.computedId);
-            updateStandingsOnDojoScoreBoard(Time_Control.MIX_ENDGAME, Type.SPARRING_ENDGAME, Mode.OPEN ,Main.collection);
+            updateStandingsOnDojoScoreBoard(Time_Control.MIX_ENDGAME, Type.SPARRING_ENDGAME, Mode.OPEN, Main.collection);
 
             return "Success! Updated player scores for " + arenaResult1.get().fullName();
 
@@ -430,8 +424,8 @@ public class ComputeScores {
         }
 
         insertTournamentID(touryID, Main.computedId);
-        updateStandingsOnDojoScoreBoard(timeControl, Type.ARENA, Mode.OPEN ,Main.collection);
-        updateStandingsOnDojoScoreBoard(timeControl, Type.COMB_GRAND_PRIX, Mode.OPEN ,Main.collection);
+        updateStandingsOnDojoScoreBoard(timeControl, Type.ARENA, Mode.OPEN, Main.collection);
+        updateStandingsOnDojoScoreBoard(timeControl, Type.COMB_GRAND_PRIX, Mode.OPEN, Main.collection);
 
         return "Success! Updated player scores for " + arenaResult1.get().fullName();
     }
@@ -483,7 +477,7 @@ public class ComputeScores {
 
             }
             insertTournamentID(touryIDSwiss, Main.computedId);
-            updateStandingsOnDojoScoreBoard(Time_Control.MIX, Type.SPARRING, Mode.OPEN ,Main.collection);
+            updateStandingsOnDojoScoreBoard(Time_Control.MIX, Type.SPARRING, Mode.OPEN, Main.collection);
 
             return "Success! Updated player scores for " + swissOne.get().name();
 
@@ -502,7 +496,7 @@ public class ComputeScores {
 
             }
             insertTournamentID(touryIDSwiss, Main.computedId);
-            updateStandingsOnDojoScoreBoard(Time_Control.MIX_ENDGAME, Type.SPARRING_ENDGAME, Mode.OPEN ,Main.collection);
+            updateStandingsOnDojoScoreBoard(Time_Control.MIX_ENDGAME, Type.SPARRING_ENDGAME, Mode.OPEN, Main.collection);
 
             return "Success! Updated player scores for " + swissOne.get().name();
 
@@ -535,7 +529,7 @@ public class ComputeScores {
             }
         } else {
             for (int g = 0; g < results.size(); g++) {
-                checkUserInDateBase(results.get(g).username().toLowerCase(),swissCollection);
+                checkUserInDateBase(results.get(g).username().toLowerCase(), swissCollection);
                 updatePlayerScoresSwissGp(results.get(g).username().toLowerCase(),
                         10 - g, swissCollection,
                         timeControl);
@@ -555,8 +549,8 @@ public class ComputeScores {
         }
 
         insertTournamentID(touryIDSwiss, Main.computedId);
-        updateStandingsOnDojoScoreBoard(timeControl, Type.SWISS, mode ,swissCollection);
-        updateStandingsOnDojoScoreBoard(timeControl, Type.COMB_GRAND_PRIX, mode ,swissCollection);
+        updateStandingsOnDojoScoreBoard(timeControl, Type.SWISS, mode, swissCollection);
+        updateStandingsOnDojoScoreBoard(timeControl, Type.COMB_GRAND_PRIX, mode, swissCollection);
 
         return "Success! Updated player scores for " + swissOne.get().name();
     }
@@ -568,7 +562,7 @@ public class ComputeScores {
      * @param collection The collection of players to search.
      * @param field      The field name to base the ranking on.
      * @return The rank of the player based on the provided field or -1 if the
-     *         player is not found.
+     * player is not found.
      */
 
     public int getPlayerRankDouble(String playerName, MongoCollection<Document> collection, String field) {
@@ -698,7 +692,7 @@ public class ComputeScores {
                     .append("classical_comb_total", 0).append("classical_comb_total_gp", 0).append("sp_score", 0.0)
                     .append("sparring_rating", 0).append("eg_score", 0.0).append("eg_rating", 0);
             collection.insertOne(document);
-        }else{
+        } else {
             checkProv(playerName, collection);
         }
 

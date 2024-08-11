@@ -15,12 +15,13 @@ public class ComputeLigaWinner {
 
     /**
      * Computes the liga winner for given policy
-     * @param event Discord trigger event
+     *
+     * @param event  Discord trigger event
      * @param policy winner policy
      */
 
-    public void computeLigaWinners(SlashCommandInteractionEvent event, WinnerPolicy policy){
-        if(isDiscordAdmin(event)) {
+    public void computeLigaWinners(SlashCommandInteractionEvent event, WinnerPolicy policy) {
+        if (isDiscordAdmin(event)) {
             DisplayLoading(event);
             switch (event.getOptionsByName("time-picker").get(0).getAsString()) {
 
@@ -32,7 +33,7 @@ public class ComputeLigaWinner {
 
             }
 
-        }else{
+        } else {
             event.reply("Your not an admin!").queue();
         }
     }
@@ -40,40 +41,53 @@ public class ComputeLigaWinner {
 
     /**
      * Internal service to find winner for given policy, time control, tournament type and year
-     * @param event Discord trigger event
-     * @param policy winner policy
-     * @param timeControl chess time control
+     *
+     * @param event          Discord trigger event
+     * @param policy         winner policy
+     * @param timeControl    chess time control
      * @param tournamentType chess tournament type
-     * @param year year the liga was played in
+     * @param year           year the liga was played in
      */
 
-    public void InternalWinnerFinder(SlashCommandInteractionEvent event, WinnerPolicy policy, Time_Control timeControl, Type tournamentType, int year){
+    public void InternalWinnerFinder(SlashCommandInteractionEvent event, WinnerPolicy policy, Time_Control timeControl, Type tournamentType, int year) {
 
-        switch (event.getOptionsByName("month-picker").get(0).getAsString()){
+        switch (event.getOptionsByName("month-picker").get(0).getAsString()) {
 
-            case "jan" -> event.getChannel().sendMessage(policy.findWinner(timeControl, tournamentType, 1, year)).queue();
+            case "jan" ->
+                    event.getChannel().sendMessage(policy.findWinner(timeControl, tournamentType, 1, year)).queue();
 
-            case "feb" -> event.getChannel().sendMessage(policy.findWinner(timeControl, tournamentType, 2, year)).queue();
+            case "feb" ->
+                    event.getChannel().sendMessage(policy.findWinner(timeControl, tournamentType, 2, year)).queue();
 
-            case "marc" -> event.getChannel().sendMessage(policy.findWinner(timeControl, tournamentType, 3, year)).queue();
+            case "marc" ->
+                    event.getChannel().sendMessage(policy.findWinner(timeControl, tournamentType, 3, year)).queue();
 
-            case "apr" -> event.getChannel().sendMessage(policy.findWinner(timeControl, tournamentType, 4, year)).queue();
+            case "apr" ->
+                    event.getChannel().sendMessage(policy.findWinner(timeControl, tournamentType, 4, year)).queue();
 
-            case "may" -> event.getChannel().sendMessage(policy.findWinner(timeControl,tournamentType, 5, year)).queue();
+            case "may" ->
+                    event.getChannel().sendMessage(policy.findWinner(timeControl, tournamentType, 5, year)).queue();
 
-            case "june" -> event.getChannel().sendMessage(policy.findWinner(timeControl, tournamentType, 6, year)).queue();
+            case "june" ->
+                    event.getChannel().sendMessage(policy.findWinner(timeControl, tournamentType, 6, year)).queue();
 
-            case "july" -> event.getChannel().sendMessage(policy.findWinner(timeControl, tournamentType, 7, year)).queue();
+            case "july" ->
+                    event.getChannel().sendMessage(policy.findWinner(timeControl, tournamentType, 7, year)).queue();
 
-            case "aug" -> event.getChannel().sendMessage(policy.findWinner(timeControl, tournamentType, 8, year)).queue();
+            case "aug" ->
+                    event.getChannel().sendMessage(policy.findWinner(timeControl, tournamentType, 8, year)).queue();
 
-            case "sep" -> event.getChannel().sendMessage(policy.findWinner(timeControl, tournamentType, 9, year)).queue();
+            case "sep" ->
+                    event.getChannel().sendMessage(policy.findWinner(timeControl, tournamentType, 9, year)).queue();
 
-            case "oct" -> event.getChannel().sendMessage(policy.findWinner(timeControl, tournamentType, 10, year)).queue();
+            case "oct" ->
+                    event.getChannel().sendMessage(policy.findWinner(timeControl, tournamentType, 10, year)).queue();
 
-            case "nov" -> event.getChannel().sendMessage(policy.findWinner(timeControl, tournamentType, 11, year)).queue();
+            case "nov" ->
+                    event.getChannel().sendMessage(policy.findWinner(timeControl, tournamentType, 11, year)).queue();
 
-            case "dec" -> event.getChannel().sendMessage(policy.findWinner(timeControl, tournamentType, 12, year)).queue();
+            case "dec" ->
+                    event.getChannel().sendMessage(policy.findWinner(timeControl, tournamentType, 12, year)).queue();
 
 
         }
@@ -82,37 +96,38 @@ public class ComputeLigaWinner {
 
     /**
      * Internal service to find winner on given time control
-     * @param event Discord trigger event
-     * @param policy winner policy
+     *
+     * @param event       Discord trigger event
+     * @param policy      winner policy
      * @param timeControl chess time control
      */
 
-    public void InternalWinnerFinderOnTimeControl(SlashCommandInteractionEvent event, WinnerPolicy policy, Time_Control timeControl){
+    public void InternalWinnerFinderOnTimeControl(SlashCommandInteractionEvent event, WinnerPolicy policy, Time_Control timeControl) {
 
         switch (event.getOptionsByName("type-picker").get(0).getAsString()) {
             case "gp" -> {
-                switch (event.getOptionsByName("year-picker").get(0).getAsString()){
+                switch (event.getOptionsByName("year-picker").get(0).getAsString()) {
 
-                    case "2024" -> InternalWinnerFinder(event,policy,timeControl,Type.COMB_GRAND_PRIX,2024);
+                    case "2024" -> InternalWinnerFinder(event, policy, timeControl, Type.COMB_GRAND_PRIX, 2024);
 
-                    case "2023" -> InternalWinnerFinder(event,policy,timeControl,Type.COMB_GRAND_PRIX,2023);
+                    case "2023" -> InternalWinnerFinder(event, policy, timeControl, Type.COMB_GRAND_PRIX, 2023);
                 }
             }
 
             case "ar" -> {
-                switch (event.getOptionsByName("year-picker").get(0).getAsString()){
-                    case "2024" -> InternalWinnerFinder(event,policy,timeControl,Type.ARENA,2024);
+                switch (event.getOptionsByName("year-picker").get(0).getAsString()) {
+                    case "2024" -> InternalWinnerFinder(event, policy, timeControl, Type.ARENA, 2024);
 
-                    case "2023" -> InternalWinnerFinder(event,policy,timeControl,Type.ARENA,2023);
+                    case "2023" -> InternalWinnerFinder(event, policy, timeControl, Type.ARENA, 2023);
                 }
 
             }
             case "sw" -> {
-                switch (event.getOptionsByName("year-picker").get(0).getAsString()){
+                switch (event.getOptionsByName("year-picker").get(0).getAsString()) {
 
-                    case "2024" -> InternalWinnerFinder(event,policy,timeControl,Type.SWISS,2024);
+                    case "2024" -> InternalWinnerFinder(event, policy, timeControl, Type.SWISS, 2024);
 
-                    case "2023" -> InternalWinnerFinder(event,policy,timeControl,Type.SWISS,2023);
+                    case "2023" -> InternalWinnerFinder(event, policy, timeControl, Type.SWISS, 2023);
                 }
 
             }
@@ -123,10 +138,11 @@ public class ComputeLigaWinner {
 
     /**
      * Loading service which beeps in discord channel load animation
+     *
      * @param event
      */
 
-    public void DisplayLoading(SlashCommandInteractionEvent event){
+    public void DisplayLoading(SlashCommandInteractionEvent event) {
         event.reply("Computing Please wait!").queue(msg ->
         {
             Timer timer = new Timer();
@@ -146,7 +162,6 @@ public class ComputeLigaWinner {
 
         });
     }
-
 
 
 }

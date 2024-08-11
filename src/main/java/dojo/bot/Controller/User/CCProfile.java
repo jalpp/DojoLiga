@@ -18,11 +18,10 @@ public class CCProfile {
 
     private String username;
     private EmbedBuilder embedBuilder;
-    private  PlayerClient playerClient;
+    private PlayerClient playerClient;
 
 
-
-    public CCProfile(String username){
+    public CCProfile(String username) {
         this.username = username.toLowerCase().trim();
     }
 
@@ -31,18 +30,18 @@ public class CCProfile {
         this.playerClient = new PlayerClient();
         PlayerStats player = playerClient.getStatsForPlayer(this.username);
 
-       if(player.getChessRapid() != null){
-           return player.getChessRapid().getLast().getRating();
-       }
+        if (player.getChessRapid() != null) {
+            return player.getChessRapid().getLast().getRating();
+        }
 
-       return 0;
+        return 0;
     }
 
     public int getBlitzRating() throws ChessComPubApiException, IOException {
         this.playerClient = new PlayerClient();
         PlayerStats player = playerClient.getStatsForPlayer(this.username);
 
-        if(player.getChessBlitz() != null){
+        if (player.getChessBlitz() != null) {
             return player.getChessBlitz().getLast().getRating();
         }
 
@@ -51,7 +50,7 @@ public class CCProfile {
 
 
     public int getRatingBasedOnTimeControl(Time_Control control) throws ChessComPubApiException, IOException {
-        switch (control){
+        switch (control) {
             case BLITZ -> {
                 return getBlitzRating();
             }
@@ -66,8 +65,7 @@ public class CCProfile {
     }
 
 
-
-    public EmbedBuilder getCCProfile(){
+    public EmbedBuilder getCCProfile() {
 
 
         try {
@@ -75,7 +73,6 @@ public class CCProfile {
             this.embedBuilder = new EmbedBuilder();
             String proSay = "";
             String say = "";
-
 
 
             PlayerStats player = playerClient.getStatsForPlayer(this.username);
@@ -88,22 +85,20 @@ public class CCProfile {
             String blitz = (player.getChessBlitz() == null) ? "0" : String.valueOf(player.getChessBlitz().getLast().getRating().intValue());
             String rush = (player.getPuzzleRush().getBest() == null) ? "0" : String.valueOf(player.getPuzzleRush().getBest().getScore().intValue());
             String tactics = (player.getTactics().getLowest() == null) ? "0" : String.valueOf(player.getTactics().getHighest().getRating().intValue());
-                proSay += " ** \uD83D\uDE85 Bullet**: " +
-                          bullet +
-                        "\n **\uD83D\uDC07 Rapid:**  " +
-                        rapid +
-                        "\n ** \uD83D\uDD25 Blitz:** " +
-                        blitz +
-                        "\n **\uD83E\uDDE9 Puzzle Rush:** " +
-                        rush +
-                        "\n **\uD83D\uDE80 Tactics Rating** " +
-                        tactics
-                ;
+            proSay += " ** \uD83D\uDE85 Bullet**: " +
+                    bullet +
+                    "\n **\uD83D\uDC07 Rapid:**  " +
+                    rapid +
+                    "\n ** \uD83D\uDD25 Blitz:** " +
+                    blitz +
+                    "\n **\uD83E\uDDE9 Puzzle Rush:** " +
+                    rush +
+                    "\n **\uD83D\uDE80 Tactics Rating** " +
+                    tactics
+            ;
 
 
             this.embedBuilder.setThumbnail(pfp).setTitle(username + "'s Chess.com Profile").setDescription(proSay).setColor(Color.green);
-
-
 
 
         } catch (IOException e) {
@@ -115,10 +110,6 @@ public class CCProfile {
         return this.embedBuilder;
 
     }
-
-
-
-
 
 
 }

@@ -18,29 +18,28 @@ public class WinnerPolicy {
     private final Client client = Client.basic();
 
 
+    public String getISOtime(int month, int year) {
 
-   public String getISOtime(int month, int year){
+        LocalDate date = LocalDate.of(year, month, 1); // Setting the day as 1 for simplicity
 
-       LocalDate date = LocalDate.of(year, month, 1); // Setting the day as 1 for simplicity
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
 
-       DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
+        String formattedDate = date.format(formatter);
 
-       String formattedDate = date.format(formatter);
-
-       return formattedDate + "T23:00:00Z";
-   }
-
-
-    public String findWinner(Time_Control timeControl, Type type, int month, int year){
-            ArrayList<ChessPlayer> top10Players = DojoScoreboard.getLeaderboard(timeControl, "monthly", getISOtime(month, year), type);
-            //List<Document> top10Players = new ArrayList<>();
-            List<String> winnersGreaterThan1800 = new ArrayList<>();
-            List<String> winnerLessThan1800 = new ArrayList<>();
-            List<String> isNonWinner = new ArrayList<>();
-            StringBuilder builder = new StringBuilder();
+        return formattedDate + "T23:00:00Z";
+    }
 
 
-        if(top10Players != null) {
+    public String findWinner(Time_Control timeControl, Type type, int month, int year) {
+        ArrayList<ChessPlayer> top10Players = DojoScoreboard.getLeaderboard(timeControl, "monthly", getISOtime(month, year), type);
+        //List<Document> top10Players = new ArrayList<>();
+        List<String> winnersGreaterThan1800 = new ArrayList<>();
+        List<String> winnerLessThan1800 = new ArrayList<>();
+        List<String> isNonWinner = new ArrayList<>();
+        StringBuilder builder = new StringBuilder();
+
+
+        if (top10Players != null) {
             for (ChessPlayer top10Player : top10Players) {
                 String username = top10Player.getUsername();
                 int rating = top10Player.getRating();
@@ -88,49 +87,45 @@ public class WinnerPolicy {
 
             return builder.toString();
 
-        }else{
+        } else {
             return "The following Date data is not collected yet, Winner policy does not apply";
         }
 
     }
 
 
-
-
-    public boolean isWinner(Time_Control timeControl, String username){
+    public boolean isWinner(Time_Control timeControl, String username) {
 
         return !isCheater(username) && !isClosed(username) && !isProv(username, timeControl);
 
     }
 
 
-
-    public boolean isCheater(String username){
-       return client.users().byId(username).get().tosViolation();
+    public boolean isCheater(String username) {
+        return client.users().byId(username).get().tosViolation();
     }
 
 
-    public boolean isClosed(String username){
+    public boolean isClosed(String username) {
         return client.users().byId(username).get().disabled();
     }
-    
 
-    public boolean isProv(String username, Time_Control timeControl){
-       switch (timeControl){
-           case BLITZ -> {
-               return new Profile(client, username).getSingleBlitzRating() == -1;
-           }
-           case RAPID -> {
-               return new Profile(client, username).getSingleRapidRating() == -1;
-           }
-           case CLASSICAL -> {
-               return new Profile(client, username).getSingleClassicalRating() == -1;
-           }
-       }
 
-       return false;
+    public boolean isProv(String username, Time_Control timeControl) {
+        switch (timeControl) {
+            case BLITZ -> {
+                return new Profile(client, username).getSingleBlitzRating() == -1;
+            }
+            case RAPID -> {
+                return new Profile(client, username).getSingleRapidRating() == -1;
+            }
+            case CLASSICAL -> {
+                return new Profile(client, username).getSingleClassicalRating() == -1;
+            }
+        }
+
+        return false;
     }
-
 
 
 }
