@@ -1,16 +1,11 @@
 package dojo.bot.Controller.League;
 
-/**
- * Enum Time control for both Chess.com and Lichess
- */
 public enum Time_Control {
 
     CLASSICAL,
     BLITZ,
     RAPID,
-
     MIX,
-
     MIX_ENDGAME;
 
     /**
@@ -21,17 +16,12 @@ public enum Time_Control {
      * @return A matching Time_Control object.
      */
     public static Time_Control fromString(String timeControl) {
-        switch (timeControl.toLowerCase()) {
-            case "classical":
-                return CLASSICAL;
-
-            case "blitz":
-                return BLITZ;
-
-            case "rapid":
-                return RAPID;
-        }
-        return null;
+        return switch (timeControl.toLowerCase()) {
+            case "classical" -> CLASSICAL;
+            case "blitz" -> BLITZ;
+            case "rapid" -> RAPID;
+            default -> null;
+        };
     }
 
     /**
@@ -44,27 +34,20 @@ public enum Time_Control {
 
     @Override
     public String toString() {
-        switch (this) {
-            case CLASSICAL:
-                return "classical";
+        return switch (this) {
+            case CLASSICAL -> "classical";
+            case BLITZ -> "blitz";
+            case RAPID -> "rapid";
+            case MIX -> "sparring";
+            case MIX_ENDGAME -> "eg";
+        };
 
-            case BLITZ:
-                return "blitz";
-
-            case RAPID:
-                return "rapid";
-
-            case MIX:
-                return "sparring";
-
-            case MIX_ENDGAME:
-                return "eg";
-        }
-
-        return "unknown";
     }
 
-
+    /**
+     * returns the title of the time control
+     * @return
+     */
     public String getTitle() {
         switch (this) {
             case CLASSICAL -> {
@@ -82,22 +65,6 @@ public enum Time_Control {
 
         return "unknown";
     }
-
-
-    public String get_winner_field(){
-        switch (this){
-            case CLASSICAL, RAPID, BLITZ -> {
-                return this + "_score_gp";
-            }
-
-        }
-
-        return "error!";
-    }
-
-
-
-
 
 
 }

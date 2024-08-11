@@ -1,18 +1,11 @@
 package dojo.bot.Controller.League;
 
-
-/**
- * Enum Liga types
- */
-
 public enum Type {
 
     SWISS,
     ARENA,
     SWISS_GRAND_PRIX,
     ARENA_GRAND_PRIX,
-    COMB_TOTAL,
-
     COMB_GRAND_PRIX,
 
     SPARRING,

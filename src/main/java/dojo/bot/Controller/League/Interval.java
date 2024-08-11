@@ -1,8 +1,5 @@
 package dojo.bot.Controller.League;
 
-/**
- * Enum League intervals
- */
 public enum Interval {
 
 
@@ -13,7 +10,6 @@ public enum Interval {
 
 
     MONTHLY_INTERVAL
-
 
 
 }

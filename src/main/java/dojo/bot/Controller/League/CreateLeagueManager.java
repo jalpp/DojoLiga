@@ -23,7 +23,7 @@ public class CreateLeagueManager {
 
     public void createLeagueArena(SlashCommandInteractionEvent event, DayOfWeek day, Interval interval,
                                   MongoCollection<Document> collection) {
-        League league = new League(
+         ArenaLeague league = new ArenaLeague(
                 event.getOption("league-name").getAsString(),
                 event.getOption("league-desc").getAsString(),
                 event.getOption("tournament-count").getAsInt(),
@@ -39,9 +39,7 @@ public class CreateLeagueManager {
                 day);
 
         league.setLEAGUE_TIME_TYPE();
-        event.reply(
-                        "Thinking.. \n Checking inputs... \n Connecting to Dojo Server .. \n Connecting to Lichess server .. \n Watching ChessDojo.. \n Doing endgame ninja workout ..")
-                .queue();
+        DisplayLoading(event);
         event.getChannel().sendMessage(league.createTournament()).queue();
     }
 
@@ -56,7 +54,7 @@ public class CreateLeagueManager {
 
     public void createLeagueSwiss(SlashCommandInteractionEvent event, DayOfWeek day, Interval interval,
                                   MongoCollection<Document> collection) {
-        League league = new League(
+        SwissLeague league = new SwissLeague(
                 event.getOption("league-name-s").getAsString(),
                 event.getOption("league-desc-s").getAsString(),
                 event.getOption("tournament-count-s").getAsInt(),
@@ -80,15 +78,33 @@ public class CreateLeagueManager {
     }
 
 
+    /**
+     * Loading service which beeps in discord channel load animation
+     *
+     * @param event
+     */
+
+    public void DisplayLoading(SlashCommandInteractionEvent event) {
+        String[] tasks = {"Sparring against Jack", "Watching U1000 Grad show", "Doing Tactics Test", "Learning chess"};
+        event.reply("Creating the league! Please wait").queue(msg ->
+        {
+            Timer timer = new Timer();
+            timer.schedule(new TimerTask() {
+                int count = 0;
+
+                @Override
+                public void run() {
+                    msg.editOriginal(tasks[new Random().nextInt(tasks.length)]).queue();
+                    count++;
+                    if (count > 10) {
+                        timer.cancel();
+                    }
+                }
+            }, 0, 1000);
 
 
-
-
-
-
-
-
-
+        });
+    }
 
 
 }
