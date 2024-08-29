@@ -17,6 +17,7 @@ import java.util.ArrayList;
 
 /**
  * Heart of connection to Jack's amazing DojoScoreboard frontend integration
+ * @author Jack Stenglein
  */
 public class DojoScoreboard {
 

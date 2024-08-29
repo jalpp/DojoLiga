@@ -15,6 +15,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Future Tournament Viewer
+ * @author Jack Stenglein
+ */
+
 public class FutureTournamentViewerManager {
 
 
