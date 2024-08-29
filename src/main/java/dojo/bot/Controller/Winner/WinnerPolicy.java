@@ -12,12 +12,22 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The type Winner policy.
+ */
 public class WinnerPolicy {
 
 
     private final Client client = Client.basic();
 
 
+    /**
+     * Gets is otime.
+     *
+     * @param month the month
+     * @param year  the year
+     * @return the is otime
+     */
     public String getISOtime(int month, int year) {
 
         LocalDate date = LocalDate.of(year, month, 1); // Setting the day as 1 for simplicity
@@ -30,6 +40,15 @@ public class WinnerPolicy {
     }
 
 
+    /**
+     * Find winner string.
+     *
+     * @param timeControl the time control
+     * @param type        the type
+     * @param month       the month
+     * @param year        the year
+     * @return the string
+     */
     public String findWinner(Time_Control timeControl, Type type, int month, int year) {
         ArrayList<ChessPlayer> top10Players = DojoScoreboard.getLeaderboard(timeControl, "monthly", getISOtime(month, year), type);
         //List<Document> top10Players = new ArrayList<>();
@@ -94,6 +113,13 @@ public class WinnerPolicy {
     }
 
 
+    /**
+     * Is winner boolean.
+     *
+     * @param timeControl the time control
+     * @param username    the username
+     * @return the boolean
+     */
     public boolean isWinner(Time_Control timeControl, String username) {
 
         return !isCheater(username) && !isClosed(username) && !isProv(username, timeControl);
@@ -101,16 +127,35 @@ public class WinnerPolicy {
     }
 
 
+    /**
+     * Is cheater boolean.
+     *
+     * @param username the username
+     * @return the boolean
+     */
     public boolean isCheater(String username) {
         return client.users().byId(username).get().tosViolation();
     }
 
 
+    /**
+     * Is closed boolean.
+     *
+     * @param username the username
+     * @return the boolean
+     */
     public boolean isClosed(String username) {
         return client.users().byId(username).get().disabled();
     }
 
 
+    /**
+     * Is prov boolean.
+     *
+     * @param username    the username
+     * @param timeControl the time control
+     * @return the boolean
+     */
     public boolean isProv(String username, Time_Control timeControl) {
         switch (timeControl) {
             case BLITZ -> {

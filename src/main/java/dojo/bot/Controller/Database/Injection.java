@@ -7,9 +7,19 @@ import org.bson.Document;
 
 import static dojo.bot.Controller.Discord.DiscordAdmin.isDiscordAdmin;
 
+/**
+ * The type Injection.
+ */
 public class Injection {
 
 
+    /**
+     * Inject.
+     *
+     * @param event the event
+     * @param arena the arena
+     * @param swiss the swiss
+     */
     public void inject(SlashCommandInteractionEvent event, MongoCollection<Document> arena,
                        MongoCollection<Document> swiss) {
         if (isDiscordAdmin(event)) {
@@ -36,6 +46,14 @@ public class Injection {
     }
 
 
+    /**
+     * Inject lichess tournament.
+     *
+     * @param event      the event
+     * @param collection the collection
+     * @param regex      the regex
+     * @param url        the url
+     */
     public void InjectLichessTournament(SlashCommandInteractionEvent event, MongoCollection<Document> collection, String regex, String url) {
         System.out.println("test1");
         String[] spliturl = url.split(regex);
@@ -50,6 +68,15 @@ public class Injection {
 
     }
 
+    /**
+     * Inject chesscom tournament.
+     *
+     * @param event      the event
+     * @param collection the collection
+     * @param regex      the regex
+     * @param target     the target
+     * @param url        the url
+     */
     public void InjectChesscomTournament(SlashCommandInteractionEvent event, MongoCollection<Document> collection, String regex, String target, String url) {
         System.out.println("test2");
         String[] spliturl = url.split(regex);

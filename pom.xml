@@ -38,7 +38,7 @@
         <dependency>
             <groupId>io.github.tors42</groupId>
             <artifactId>chariot</artifactId>
-            <version>0.1.0</version>
+            <version>0.1.6</version>
         </dependency>
         <dependency>
             <groupId>com.github.bhlangonijr</groupId>
@@ -60,7 +60,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.0.0-beta.22</version>
+            <version>5.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>
@@ -70,7 +70,7 @@
         <dependency>
             <groupId>io.github.sornerol</groupId>
             <artifactId>chesscom-pubapi-wrapper</artifactId>
-            <version>1.6.0</version>
+            <version>1.6.2</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -82,8 +82,6 @@
             <artifactId>json</artifactId>
             <version>20231013</version>
         </dependency>
-
-
     </dependencies>
 
 </project>

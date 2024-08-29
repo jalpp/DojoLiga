@@ -7,13 +7,17 @@ import java.util.HashMap;
 /**
  * Class for User's Lichess trophies
  */
-
 public class UserTrophy {
 
     private final String trophyName;
     private Trophy trophy;
 
 
+    /**
+     * Instantiates a new User trophy.
+     *
+     * @param trophy the trophy
+     */
     public UserTrophy(Trophy trophy) {
 
         this.trophy = trophy;
@@ -22,6 +26,11 @@ public class UserTrophy {
     }
 
 
+    /**
+     * Gets image link.
+     *
+     * @return the image link
+     */
     public String getImageLink() {
 
 

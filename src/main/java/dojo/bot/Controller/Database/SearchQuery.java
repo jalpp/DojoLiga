@@ -5,14 +5,27 @@ import dojo.bot.Controller.User.Verification;
 import dojo.bot.Runner.Main;
 import org.bson.Document;
 
+/**
+ * The type Search query.
+ */
 public class SearchQuery {
 
     private final Verification verificationSearch = new Verification();
 
+    /**
+     * Instantiates a new Search query.
+     */
     public SearchQuery() {
 
     }
 
+    /**
+     * Search user by discord id string.
+     *
+     * @param DiscordID  the discord id
+     * @param collection the collection
+     * @return the string
+     */
     public String searchUserByDiscordID(String DiscordID, MongoCollection<Document> collection) {
 
         StringBuilder builder = new StringBuilder();
@@ -27,6 +40,13 @@ public class SearchQuery {
         return "User Discord ID is not present!";
     }
 
+    /**
+     * Search user by lichess user string.
+     *
+     * @param LichessUser the lichess user
+     * @param collection  the collection
+     * @return the string
+     */
     public String searchUserByLichessUser(String LichessUser, MongoCollection<Document> collection) {
         String DiscordID = verificationSearch.getDiscordIdByLichessUsername(collection, LichessUser.toLowerCase());
         StringBuilder builder = new StringBuilder();
@@ -41,6 +61,13 @@ public class SearchQuery {
         return "Lichess User is not present!";
     }
 
+    /**
+     * Search user by chess com user string.
+     *
+     * @param ccUser     the cc user
+     * @param collection the collection
+     * @return the string
+     */
     public String searchUserByChessComUser(String ccUser, MongoCollection<Document> collection) {
         String DiscordID = verificationSearch.getDiscordIdByChesscomUsername(collection, ccUser.toLowerCase());
         StringBuilder builder = new StringBuilder();

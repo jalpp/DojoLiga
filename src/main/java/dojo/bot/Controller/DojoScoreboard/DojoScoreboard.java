@@ -18,7 +18,6 @@ import java.util.ArrayList;
 /**
  * Heart of connection to Jack's amazing DojoScoreboard frontend integration
  */
-
 public class DojoScoreboard {
 
     private static final String BETA = "https://c2qamdaw08.execute-api.us-east-1.amazonaws.com/tournaments";
@@ -81,6 +80,7 @@ public class DojoScoreboard {
      * @param tournamentType The type of the tournament to update.
      * @param collection     The list of players to update.
      * @param scoreField     The field used to get a player's score.
+     * @param mode           the mode
      */
     public static void updateLeaderboard(Time_Control timeControl, String tournamentType,
                                          MongoCollection<Document> collection, String scoreField, Mode mode) {
@@ -151,6 +151,15 @@ public class DojoScoreboard {
     }
 
 
+    /**
+     * Gets leaderboard.
+     *
+     * @param timeControl the time control
+     * @param period      the period
+     * @param date        the date
+     * @param type        the type
+     * @return the leaderboard
+     */
     public static ArrayList<ChessPlayer> getLeaderboard(Time_Control timeControl, String period, String date, Type type) {
 
         OkHttpClient client = new OkHttpClient();
@@ -189,7 +198,7 @@ public class DojoScoreboard {
                 System.out.println("Unexpected response code: " + response.code());
             }
 
-            // Close the response body
+
             response.close();
         } catch (IOException e) {
             e.printStackTrace();

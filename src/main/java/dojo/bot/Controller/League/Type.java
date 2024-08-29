@@ -1,25 +1,47 @@
 package dojo.bot.Controller.League;
 
+/**
+ * The enum Type.
+ */
 public enum Type {
 
+    /**
+     * Swiss type.
+     */
     SWISS,
+    /**
+     * Arena type.
+     */
     ARENA,
+    /**
+     * Swiss grand prix type.
+     */
     SWISS_GRAND_PRIX,
+    /**
+     * Arena grand prix type.
+     */
     ARENA_GRAND_PRIX,
+    /**
+     * Comb grand prix type.
+     */
     COMB_GRAND_PRIX,
 
+    /**
+     * Sparring type.
+     */
     SPARRING,
 
+    /**
+     * Sparring endgame type.
+     */
     SPARRING_ENDGAME;
 
 
     /**
-     * Returns the String value  
-     * @return
+     * Returns the String value
+     *
+     * @return string
      */
-
-
-
     public String fetchLeaderboard(){
         switch (this){
             case ARENA -> { return "ARENA";}
@@ -65,6 +87,11 @@ public enum Type {
     }
 
 
+    /**
+     * Get name string.
+     *
+     * @return the string
+     */
     public String getName(){
         switch (this){
             case ARENA -> {

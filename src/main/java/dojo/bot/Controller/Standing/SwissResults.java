@@ -10,17 +10,31 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import java.awt.*;
 import java.util.List;
 
+/**
+ * The type Swiss results.
+ */
 public class SwissResults {
 
     private final Client client;
     private final String link;
 
+    /**
+     * Instantiates a new Swiss results.
+     *
+     * @param client the client
+     * @param link   the link
+     */
     public SwissResults(Client client, String link) {
         this.client = client;
         this.link = link;
     }
 
 
+    /**
+     * Gets link results.
+     *
+     * @return the link results
+     */
     public EmbedBuilder getLinkResults() {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         String[] emojileaderboard = {"1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "\uD83D\uDD1F"};

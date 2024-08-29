@@ -5,7 +5,13 @@ package dojo.bot.Controller.League;
  */
 public enum Mode {
 
+    /**
+     * Open mode.
+     */
     OPEN,
+    /**
+     * Under 1800 mode.
+     */
     UNDER1800;
 
 
@@ -18,6 +24,12 @@ public enum Mode {
     }
 
 
+    /**
+     * From string mode.
+     *
+     * @param mode the mode
+     * @return the mode
+     */
     public static Mode fromString(String mode) {
         return switch (mode.toLowerCase()) {
             case "open" -> OPEN;

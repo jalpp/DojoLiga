@@ -11,6 +11,9 @@ import org.bson.Document;
 
 import java.io.IOException;
 
+/**
+ * The type Verification.
+ */
 public class Verification {
 
     private final Client client = Client.basic();
@@ -18,9 +21,13 @@ public class Verification {
     private final PlayerClient playerClient = new PlayerClient();
 
 
+    /**
+     * Instantiates a new Verification.
+     */
     public Verification() {
 
     }
+
 
     /**
      * Verifies the user's Lichess profile by checking if the provided Discord ID matches the one stored in the Lichess profile location field.
@@ -31,8 +38,6 @@ public class Verification {
      * @param DiscordId   the Discord ID of the user to be verified
      * @param event       the event triggered by the user's interaction with the bot
      */
-
-
     public void verificationStatus(String Lichessname, String DiscordId, SlashCommandInteractionEvent event) {
         boolean checkClosed = client.users().byId(Lichessname).get().disabled();
         boolean checkTOSViolation = client.users().byId(Lichessname).get().tosViolation();
@@ -55,6 +60,14 @@ public class Verification {
     }
 
 
+    /**
+     * User present boolean.
+     *
+     * @param collection  the collection
+     * @param discordId   the discord id
+     * @param LichessName the lichess name
+     * @return the boolean
+     */
     public boolean userPresent(MongoCollection<Document> collection, String discordId, String LichessName) {
 
         Document queryname = new Document("Lichessname", LichessName);
@@ -71,20 +84,50 @@ public class Verification {
     }
 
 
+    /**
+     * Gets discord id by lichess username.
+     *
+     * @param collection  the collection
+     * @param LichessUser the lichess user
+     * @return the discord id by lichess username
+     */
     public String getDiscordIdByLichessUsername(MongoCollection<Document> collection, String LichessUser) {
         return getGeneralSearchBasedOnParams("Lichessname", LichessUser, collection, "Discordid");
     }
 
+    /**
+     * Gets discord id by chesscom username.
+     *
+     * @param collection the collection
+     * @param ccUser     the cc user
+     * @return the discord id by chesscom username
+     */
     public String getDiscordIdByChesscomUsername(MongoCollection<Document> collection, String ccUser) {
         return getGeneralSearchBasedOnParams("Chesscomname", ccUser, collection, "Discordid");
     }
 
+    /**
+     * User present normal boolean.
+     *
+     * @param collection the collection
+     * @param discordId  the discord id
+     * @return the boolean
+     */
     public boolean userPresentNormal(MongoCollection<Document> collection, String discordId) {
         Document query = new Document("Discordid", discordId);
         FindIterable<Document> result = collection.find(query);
         return result.iterator().hasNext();
     }
 
+    /**
+     * Gets general search based on params.
+     *
+     * @param targetSearch the target search
+     * @param targetID     the target id
+     * @param collection   the collection
+     * @param returnId     the return id
+     * @return the general search based on params
+     */
     public String getGeneralSearchBasedOnParams(String targetSearch, String targetID, MongoCollection<Document> collection, String returnId) {
         Document query = new Document(targetSearch, targetID);
 
@@ -100,6 +143,13 @@ public class Verification {
     }
 
 
+    /**
+     * Gets reletated lichess name.
+     *
+     * @param DiscordId  the discord id
+     * @param collection the collection
+     * @return the reletated lichess name
+     */
     public String getReletatedLichessName(String DiscordId, MongoCollection<Document> collection) {
 
         return getGeneralSearchBasedOnParams("Discordid", DiscordId, collection, "Lichessname");
@@ -107,6 +157,15 @@ public class Verification {
     }
 
 
+    /**
+     * Verification status chesscom.
+     *
+     * @param ccname    the ccname
+     * @param DiscordId the discord id
+     * @param event     the event
+     * @throws ChessComPubApiException the chess com pub api exception
+     * @throws IOException             the io exception
+     */
     public void verificationStatusChesscom(String ccname, String DiscordId, SlashCommandInteractionEvent event) throws ChessComPubApiException, IOException {
         String checkDiscordId = playerClient.getPlayerByUsername(ccname).getLocation();
 
@@ -130,6 +189,14 @@ public class Verification {
     }
 
 
+    /**
+     * User present chesscom boolean.
+     *
+     * @param collection the collection
+     * @param discordId  the discord id
+     * @param ccName     the cc name
+     * @return the boolean
+     */
     public boolean userPresentChesscom(MongoCollection<Document> collection, String discordId, String ccName) {
 
         Document queryname = new Document("Chesscomname", ccName);
@@ -141,6 +208,13 @@ public class Verification {
 
     }
 
+    /**
+     * User present normal chesscom boolean.
+     *
+     * @param collection the collection
+     * @param discordId  the discord id
+     * @return the boolean
+     */
     public boolean userPresentNormalChesscom(MongoCollection<Document> collection, String discordId) {
         Document query = new Document("Discordid", discordId);
         FindIterable<Document> result = collection.find(query);
@@ -148,6 +222,13 @@ public class Verification {
     }
 
 
+    /**
+     * Gets reletated chess name.
+     *
+     * @param DiscordId  the discord id
+     * @param collection the collection
+     * @return the reletated chess name
+     */
     public String getReletatedChessName(String DiscordId, MongoCollection<Document> collection) {
 
         return getGeneralSearchBasedOnParams("Discordid", DiscordId, collection, "Chesscomname");

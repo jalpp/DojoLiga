@@ -12,11 +12,32 @@ import org.bson.Document;
 
 import java.time.ZonedDateTime;
 
+/**
+ * The type Swiss league manager.
+ */
 public class SwissLeagueManager {
 
 
     private final ClientAuth client = Client.auth(Main.botToken);
 
+    /**
+     * Manage swiss league creation.
+     *
+     * @param MaxRating            the max rating
+     * @param DOJO_TEAM            the dojo team
+     * @param League_NAME          the league name
+     * @param LEAGUE_NEXT          the league next
+     * @param fen                  the fen
+     * @param isRated              the is rated
+     * @param interval             the interval
+     * @param finalDaysIndex       the final days index
+     * @param clockTime            the clock time
+     * @param clockIncrement       the clock increment
+     * @param LEAGUE_DES           the league des
+     * @param tournamentCollection the tournament collection
+     * @param nbRounds             the nb rounds
+     * @param addIds               the add ids
+     */
     public void manageSwissLeagueCreation(Integer MaxRating, String DOJO_TEAM, String League_NAME, String LEAGUE_NEXT, String fen, Boolean isRated, Integer interval, ZonedDateTime finalDaysIndex, Integer clockTime, Integer clockIncrement, String LEAGUE_DES, MongoCollection<Document> tournamentCollection, Integer nbRounds, StringBuilder addIds) {
 
 

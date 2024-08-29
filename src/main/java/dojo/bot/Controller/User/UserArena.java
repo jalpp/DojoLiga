@@ -12,18 +12,32 @@ import java.util.Arrays;
 import java.util.List;
 
 
+/**
+ * The type User arena.
+ */
 public class UserArena {
 
     private final Client client;
     private EmbedBuilder embedBuilder;
     private final String arenaID;
 
+    /**
+     * Instantiates a new User arena.
+     *
+     * @param client  the client
+     * @param arenaID the arena id
+     */
     public UserArena(Client client, String arenaID) {
         this.client = client;
         this.arenaID = arenaID;
     }
 
 
+    /**
+     * Gets user arena.
+     *
+     * @return the user arena
+     */
     public EmbedBuilder getUserArena() {
 
         try {

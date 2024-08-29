@@ -5,14 +5,26 @@ import dojo.bot.Runner.Main;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 
+/**
+ * The type Search query manager.
+ */
 public class SearchQueryManager {
 
 
+    /**
+     * Instantiates a new Search query manager.
+     */
     public SearchQueryManager() {
 
     }
 
 
+    /**
+     * Render search results.
+     *
+     * @param event the event
+     * @param query the query
+     */
     public void renderSearchResults(SlashCommandInteractionEvent event, SearchQuery query) {
 
         if (DiscordAdmin.isDiscordAdmin(event)) {

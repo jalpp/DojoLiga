@@ -4,6 +4,9 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonInteraction;
 
+/**
+ * The type Discord admin.
+ */
 public class DiscordAdmin {
 
     /**
@@ -12,7 +15,6 @@ public class DiscordAdmin {
      * @param event Slash command event
      * @return true for is user admin or false
      */
-
     public static boolean isDiscordAdmin(SlashCommandInteractionEvent event) {
         return event.getUser().getId().equalsIgnoreCase("403639644887056406") ||
                 event.getUser().getId().equalsIgnoreCase("893527007051259954") ||
@@ -23,6 +25,12 @@ public class DiscordAdmin {
     }
 
 
+    /**
+     * Is discord admin button boolean.
+     *
+     * @param event the event
+     * @return the boolean
+     */
     public static boolean isDiscordAdminButton(ButtonInteraction event) {
         return event.getUser().getId().equalsIgnoreCase("403639644887056406") ||
                 event.getUser().getId().equalsIgnoreCase("893527007051259954") ||
@@ -33,6 +41,12 @@ public class DiscordAdmin {
                 || event.getUser().getId().equalsIgnoreCase("476559788822626305");
     }
 
+    /**
+     * Is discord admin message boolean.
+     *
+     * @param event the event
+     * @return the boolean
+     */
     public static boolean isDiscordAdminMessage(MessageReceivedEvent event) {
         return event.getMember().getUser().getId().equalsIgnoreCase("403639644887056406") ||
                 event.getMember().getUser().getId().equalsIgnoreCase("893527007051259954") ||

@@ -1,11 +1,29 @@
 package dojo.bot.Controller.League;
 
+/**
+ * The enum Time control.
+ */
 public enum Time_Control {
 
+    /**
+     * Classical time control.
+     */
     CLASSICAL,
+    /**
+     * Blitz time control.
+     */
     BLITZ,
+    /**
+     * Rapid time control.
+     */
     RAPID,
+    /**
+     * Mix time control.
+     */
     MIX,
+    /**
+     * Mix endgame time control.
+     */
     MIX_ENDGAME;
 
     /**
@@ -46,7 +64,8 @@ public enum Time_Control {
 
     /**
      * returns the title of the time control
-     * @return
+     *
+     * @return title
      */
     public String getTitle() {
         switch (this) {

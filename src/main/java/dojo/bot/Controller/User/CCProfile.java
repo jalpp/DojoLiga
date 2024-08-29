@@ -13,7 +13,6 @@ import java.io.IOException;
 /**
  * Class that displays users' chess.com profiles
  */
-
 public class CCProfile {
 
     private String username;
@@ -21,11 +20,23 @@ public class CCProfile {
     private PlayerClient playerClient;
 
 
+    /**
+     * Instantiates a new Cc profile.
+     *
+     * @param username the username
+     */
     public CCProfile(String username) {
         this.username = username.toLowerCase().trim();
     }
 
 
+    /**
+     * Gets rapid rating.
+     *
+     * @return the rapid rating
+     * @throws ChessComPubApiException the chess com pub api exception
+     * @throws IOException             the io exception
+     */
     public int getRapidRating() throws ChessComPubApiException, IOException {
         this.playerClient = new PlayerClient();
         PlayerStats player = playerClient.getStatsForPlayer(this.username);
@@ -37,6 +48,13 @@ public class CCProfile {
         return 0;
     }
 
+    /**
+     * Gets blitz rating.
+     *
+     * @return the blitz rating
+     * @throws ChessComPubApiException the chess com pub api exception
+     * @throws IOException             the io exception
+     */
     public int getBlitzRating() throws ChessComPubApiException, IOException {
         this.playerClient = new PlayerClient();
         PlayerStats player = playerClient.getStatsForPlayer(this.username);
@@ -49,6 +67,14 @@ public class CCProfile {
     }
 
 
+    /**
+     * Gets rating based on time control.
+     *
+     * @param control the control
+     * @return the rating based on time control
+     * @throws ChessComPubApiException the chess com pub api exception
+     * @throws IOException             the io exception
+     */
     public int getRatingBasedOnTimeControl(Time_Control control) throws ChessComPubApiException, IOException {
         switch (control) {
             case BLITZ -> {
@@ -65,6 +91,11 @@ public class CCProfile {
     }
 
 
+    /**
+     * Gets cc profile.
+     *
+     * @return the cc profile
+     */
     public EmbedBuilder getCCProfile() {
 
 

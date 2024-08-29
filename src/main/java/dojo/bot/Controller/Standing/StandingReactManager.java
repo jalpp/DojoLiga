@@ -15,6 +15,9 @@ import java.util.Objects;
 import static dojo.bot.Controller.Discord.DiscordAdmin.isDiscordAdmin;
 
 
+/**
+ * The type Standing react manager.
+ */
 public class StandingReactManager {
 
 
@@ -25,7 +28,6 @@ public class StandingReactManager {
      * @param standings  compute standings object
      * @param collection collection of players
      */
-
     public void StandingsReact(SlashCommandInteractionEvent event, ComputeStandings standings,
                                MongoCollection<Document> collection) {
         if (isDiscordAdmin(event)) {
@@ -239,7 +241,6 @@ public class StandingReactManager {
      * @param client          Lichess java client
      * @param Slow_down_buddy Antispam checker
      */
-
     public void getStandingsForURL(SlashCommandInteractionEvent event, Client client, AntiSpam Slow_down_buddy) {
         if (!Slow_down_buddy.checkSpam(event)) {
             String targetUrl = Objects.requireNonNull(event.getOption("tournament-url")).getAsString();
@@ -264,7 +265,6 @@ public class StandingReactManager {
      * @param event           Discord trigger event
      * @param Slow_down_buddy Antispam checker
      */
-
     public void getPairingsReact(SlashCommandInteractionEvent event, AntiSpam Slow_down_buddy) {
         if (!Slow_down_buddy.checkSpam(event)) {
             String url = Objects.requireNonNull(event.getOption("request-url")).getAsString();
@@ -286,7 +286,6 @@ public class StandingReactManager {
      * @param channelId  Channel ID
      * @param collection collection of players
      */
-
     public void sendStandingEmbeds(JDA jda, String channelId, MongoCollection<Document> collection) {
 
         ComputeStandings standings = new ComputeStandings();

@@ -6,15 +6,53 @@ import org.bson.Document;
 import java.time.DayOfWeek;
 import java.util.Arrays;
 
+/**
+ * The type Swiss league.
+ */
 public class SwissLeague extends League implements TournamentManager {
 
 
     private final SwissLeagueManager swissLeagueManager = new SwissLeagueManager();
 
+    /**
+     * Instantiates a new Swiss league.
+     *
+     * @param LEAGUE_NAME     the league name
+     * @param LEAGUE_DES      the league des
+     * @param tournamentCount the tournament count
+     * @param leagueType      the league type
+     * @param interval        the interval
+     * @param registry        the registry
+     * @param time_zone_start the time zone start
+     * @param clockTime       the clock time
+     * @param clockIncrement  the clock increment
+     * @param duration        the duration
+     * @param fen             the fen
+     * @param maxRating       the max rating
+     * @param dayOfWeek       the day of week
+     */
     public SwissLeague(String LEAGUE_NAME, String LEAGUE_DES, int tournamentCount, Type leagueType, Interval interval, MongoCollection<Document> registry, int time_zone_start, int clockTime, int clockIncrement, int duration, String fen, int maxRating, DayOfWeek dayOfWeek) {
         super(LEAGUE_NAME, LEAGUE_DES, tournamentCount, leagueType, interval, registry, time_zone_start, clockTime, clockIncrement, duration, fen, maxRating, dayOfWeek);
     }
 
+    /**
+     * Instantiates a new Swiss league.
+     *
+     * @param LEAGUE_NAME          the league name
+     * @param LEAGUE_DES           the league des
+     * @param tournamentCount      the tournament count
+     * @param leagueType           the league type
+     * @param interval             the interval
+     * @param registry             the registry
+     * @param time_zone_start      the time zone start
+     * @param clockTime            the clock time
+     * @param clockIncrement       the clock increment
+     * @param swiss_rounds         the swiss rounds
+     * @param swiss_round_interval the swiss round interval
+     * @param fen                  the fen
+     * @param maxRating            the max rating
+     * @param dayOfWeek            the day of week
+     */
     public SwissLeague(String LEAGUE_NAME, String LEAGUE_DES, int tournamentCount, Type leagueType, Interval interval, MongoCollection<Document> registry, int time_zone_start, int clockTime, int clockIncrement, int swiss_rounds, int swiss_round_interval, String fen, int maxRating, DayOfWeek dayOfWeek) {
         super(LEAGUE_NAME, LEAGUE_DES, tournamentCount, leagueType, interval, registry, time_zone_start, clockTime, clockIncrement, swiss_rounds, swiss_round_interval, fen, maxRating, dayOfWeek);
     }
@@ -75,7 +113,11 @@ public class SwissLeague extends League implements TournamentManager {
     }
 
 
-
+    /**
+     * Create swiss with max and fen parameter string.
+     *
+     * @return the string
+     */
     public String createSwissWithMaxAndFENParameter() {
 
         if (getTournamentCount() != splitFENs(getFen()).size() || getTournamentCount() != splitFENs(getLEAGUE_NAME()).size() || splitFENs(getFen()).size() != splitFENs(getLEAGUE_NAME()).size()) {
@@ -120,6 +162,11 @@ public class SwissLeague extends League implements TournamentManager {
     }
 
 
+    /**
+     * Create swiss with fen without max string.
+     *
+     * @return the string
+     */
     public String createSwissWithFENWithoutMax() {
         if (getTournamentCount() != splitFENs(getFen()).size() || getTournamentCount() != splitFENs(getLEAGUE_NAME()).size() || splitFENs(getFen()).size() != splitFENs(getLEAGUE_NAME()).size()) {
             StringBuilder addIds = new StringBuilder("Here are League Tournaments: \n");
@@ -166,6 +213,11 @@ public class SwissLeague extends League implements TournamentManager {
     }
 
 
+    /**
+     * Create swiss with max without fen string.
+     *
+     * @return the string
+     */
     public String createSwissWithMAXWithoutFEN() {
         StringBuilder addIds = new StringBuilder("Here are League Tournaments: \n");
         if (getLEAGUE_NAME().startsWith("-")) {
@@ -200,6 +252,11 @@ public class SwissLeague extends League implements TournamentManager {
     }
 
 
+    /**
+     * Create swiss without max and fen string.
+     *
+     * @return the string
+     */
     public String createSwissWithoutMaxAndFEN() {
         StringBuilder addIds = new StringBuilder("Here are League Tournaments: \n");
         if (getLEAGUE_NAME().startsWith("-")) {

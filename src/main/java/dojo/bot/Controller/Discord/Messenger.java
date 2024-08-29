@@ -9,7 +9,6 @@ import java.util.Random;
 /**
  * Class that represents Lichess team Messenger
  */
-
 public class Messenger {
 
     private final ClientAuth client = Client.auth(Main.botToken);
@@ -27,22 +26,37 @@ public class Messenger {
     };
 
 
-
+    /**
+     * Instantiates a new Messenger.
+     */
     public Messenger(){
 
     }
 
 
+    /**
+     * Send message.
+     */
     public void sendMessage(){
         String DOJO_TEAM = "chessdojo";
         client.teams().messageTeam(DOJO_TEAM, getMessage());
     }
 
 
+    /**
+     * Get message string.
+     *
+     * @return the string
+     */
     public String getMessage(){
         return messages[new Random().nextInt(messages.length)] + "\n\n " + getTeamUrl();
     }
 
+    /**
+     * Get team url string.
+     *
+     * @return the string
+     */
     public String getTeamUrl(){
         return "https://lichess.org/team/chessdojo";
     }

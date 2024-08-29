@@ -7,10 +7,19 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import java.awt.*;
 import java.util.Map;
 
+/**
+ * The type Helper.
+ */
 public class Helper {
 
-    public static final String DOJO_LOGO = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDEcmvHJKxeF0L1dmlpickvkGNpTWPcNSGPV_c-ZiL6T8MsIxey-61J3VkehDCIi6tN5s&usqp=CAU";
+    /**
+     * The constant DOJO_LOGO.
+     */
+    public static final String DOJO_LOGO = "https://raw.githubusercontent.com/jalpp/DojoIcons/main/newIcons/logo192.webp";
 
+    /**
+     * The constant BELT_COLOURS.
+     */
     public static final Map<String, String> BELT_COLOURS = Map.of(
             "Black", "<:blackbelt:1215758642259693568>",
             "White", "<:whitebelt:1215765558570647643>",
@@ -23,20 +32,19 @@ public class Helper {
     );
 
 
-
+    /**
+     * Instantiates a new Helper.
+     */
     public Helper(){
 
     }
 
+
     /**
      * get the helper JDA EmbedBuilder to view all the commands
-     * @return
      *
-     * A JDA embedBuilder that shows all bot commands
+     * @return A  JDA embedBuilder that shows all bot commands
      */
-
-
-
     public EmbedBuilder getHelper(){
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
@@ -101,6 +109,12 @@ public class Helper {
         return embedBuilder;
 
     }
+
+    /**
+     * Get standings help.
+     *
+     * @param event the event
+     */
     public void getStandingsHelp(SlashCommandInteractionEvent event){
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setFooter("for information about commands run /help");
@@ -151,6 +165,11 @@ public class Helper {
     }
 
 
+    /**
+     * Get league help.
+     *
+     * @param event the event
+     */
     public void getLeagueHelp(SlashCommandInteractionEvent event){
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
@@ -217,6 +236,11 @@ public class Helper {
     }
 
 
+    /**
+     * Start helper.
+     *
+     * @param event the event
+     */
     public void startHelper(SlashCommandInteractionEvent event){
         event.replyEmbeds(this.getHelper().build()).addActionRow(Button.link("https://www.chessdojo.club/", "Website")).queue();
     }

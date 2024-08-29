@@ -12,6 +12,9 @@ import org.bson.Document;
 import java.io.IOException;
 
 
+/**
+ * The type Vertification manager.
+ */
 public class VertificationManager {
 
 
@@ -21,8 +24,9 @@ public class VertificationManager {
      * @param event      Slash command event
      * @param passport   Verification object
      * @param collection collection of players
+     * @throws ChessComPubApiException the chess com pub api exception
+     * @throws IOException             the io exception
      */
-
     public void startVerificationProcessLichess(SlashCommandInteractionEvent event, Verification passport,
                                                 MongoCollection<Document> collection) throws ChessComPubApiException, IOException {
         ManageRoles manageRoles = new ManageRoles();
@@ -70,6 +74,15 @@ public class VertificationManager {
     }
 
 
+    /**
+     * Start verification process chess com.
+     *
+     * @param event      the event
+     * @param passport   the passport
+     * @param collection the collection
+     * @throws ChessComPubApiException the chess com pub api exception
+     * @throws IOException             the io exception
+     */
     public void startVerificationProcessChessCom(SlashCommandInteractionEvent event, Verification passport,
                                                  MongoCollection<Document> collection) throws ChessComPubApiException, IOException {
         ManageRoles manageRoles = new ManageRoles();

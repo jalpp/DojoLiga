@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+/**
+ * The type Anti spam.
+ */
 public class AntiSpam {
 
     private final Map<String, Long> userRequestMap;
@@ -14,12 +17,24 @@ public class AntiSpam {
 
     private final int maxRequests;
 
+    /**
+     * Instantiates a new Anti spam.
+     *
+     * @param timeFrame   the time frame
+     * @param maxRequests the max requests
+     */
     public AntiSpam(long timeFrame, int maxRequests) {
         userRequestMap = new HashMap<>();
         this.timeFrame = timeFrame;
         this.maxRequests = maxRequests;
     }
 
+    /**
+     * Check spam boolean.
+     *
+     * @param event the event
+     * @return the boolean
+     */
     public boolean checkSpam(SlashCommandInteractionEvent event) {
         String userId = event.getUser().getId();
 

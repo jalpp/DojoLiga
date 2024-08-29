@@ -25,18 +25,28 @@ import java.util.Objects;
 /**
  * A object that takes care of managing user roles based on player ratings
  */
-
 public class ManageRoles {
 
 
     private final Client client = Client.basic();
 
 
+    /**
+     * Instantiates a new Manage roles.
+     */
     public ManageRoles() {
 
     }
 
 
+    /**
+     * Update roles chesscom.
+     *
+     * @param DiscordId the discord id
+     * @param event     the event
+     * @throws ChessComPubApiException the chess com pub api exception
+     * @throws IOException             the io exception
+     */
     public void updateRolesChesscom(String DiscordId, SlashCommandInteractionEvent event) throws ChessComPubApiException, IOException {
         Verification verification = new Verification();
         if (verification.userPresentNormalChesscom(Main.chesscomplayers, DiscordId)) {
@@ -55,8 +65,6 @@ public class ManageRoles {
      * @param DiscordId user Discord Id
      * @param event     slashCommand event
      */
-
-
     public void updateRoles(String DiscordId, SlashCommandInteractionEvent event) {
         Verification verification = new Verification();
         if (verification.userPresentNormal(Main.collection, DiscordId)) {
@@ -69,6 +77,15 @@ public class ManageRoles {
     }
 
 
+    /**
+     * Update live ratings.
+     *
+     * @param username         the username
+     * @param collection       the collection
+     * @param blitz_rating     the blitz rating
+     * @param classical_rating the classical rating
+     * @param rapid_rating     the rapid rating
+     */
     public void updateLiveRatings(String username, MongoCollection<Document> collection, int blitz_rating, int classical_rating, int rapid_rating) {
         updatePlayer(username, blitz_rating, "blitz_rating", collection);
         updatePlayer(username, rapid_rating, "rapid_rating", collection);
@@ -105,6 +122,15 @@ public class ManageRoles {
     }
 
 
+    /**
+     * Give roles based on chess com rapid rating.
+     *
+     * @param ccName the cc name
+     * @param event  the event
+     * @param update the update
+     * @throws ChessComPubApiException the chess com pub api exception
+     * @throws IOException             the io exception
+     */
     public void giveRolesBasedOnChessComRapidRating(String ccName, SlashCommandInteractionEvent event, boolean update) throws ChessComPubApiException, IOException {
         CCProfile profile = new CCProfile(ccName);
         int rapid_rating = profile.getRapidRating();
@@ -133,6 +159,16 @@ public class ManageRoles {
     }
 
 
+    /**
+     * Calculate chesscom role index int.
+     *
+     * @param event the event
+     * @param pass  the pass
+     * @param cc    the cc
+     * @return the int
+     * @throws ChessComPubApiException the chess com pub api exception
+     * @throws IOException             the io exception
+     */
     public int calculateChesscomRoleIndex(SlashCommandInteractionEvent event, Verification pass, String cc) throws ChessComPubApiException, IOException {
         if (pass.userPresentNormalChesscom(Main.chesscomplayers, event.getUser().getId())) {
             CCProfile profile = new CCProfile(cc);
@@ -173,6 +209,14 @@ public class ManageRoles {
     // W Y O G B P R Bl
     // 0  1 2 3 4 5 6 7
 
+    /**
+     * Calculate lichess role index int.
+     *
+     * @param event the event
+     * @param pass  the pass
+     * @param li    the li
+     * @return the int
+     */
     public int calculateLichessRoleIndex(SlashCommandInteractionEvent event, Verification pass, String li) {
         if (pass.userPresentNormal(Main.collection, event.getUser().getId())) {
             Profile profile = new Profile(client, li);
@@ -256,8 +300,6 @@ public class ManageRoles {
      * @param event           SlashcommandEvent
      * @param update          true or false if its updating or not
      */
-
-
     public void assignRolesBasedOnRating(String LichessUsername, SlashCommandInteractionEvent event, boolean update) {
 
         Profile profile = new Profile(client, LichessUsername.toLowerCase());
@@ -322,6 +364,7 @@ public class ManageRoles {
      * @param beltName the belt name
      * @param event    SlashCommandEvent
      * @param update   true or false if its updating or not
+     * @param reason   the reason
      */
     public void calculateRoles(String beltName, SlashCommandInteractionEvent event, boolean update, String reason) {
 
@@ -344,7 +387,6 @@ public class ManageRoles {
      * @param guild  the Discord guild in which the bot has to remove the role
      * @param member the member for which the role will be removed for
      */
-
     public static void removePreviousRoles(Guild guild, Member member) {
         List<Role> roles = member.getRoles();
 
@@ -362,8 +404,10 @@ public class ManageRoles {
      * Starts the updating role process
      *
      * @param event a Slash command event for which the bot starts the process
+     * @param pass  the pass
+     * @throws ChessComPubApiException the chess com pub api exception
+     * @throws IOException             the io exception
      */
-
     public void startUpdatingRoles(SlashCommandInteractionEvent event, Verification pass) throws ChessComPubApiException, IOException {
         event.deferReply().setEphemeral(true).queue();
         String li = pass.getReletatedLichessName(event.getUser().getId(), Main.collection);
@@ -387,10 +431,8 @@ public class ManageRoles {
      * @param event  Slash event
      * @param update update belt or not
      * @throws ChessComPubApiException User not found exception
-     * @throws IOException
+     * @throws IOException             the io exception
      */
-
-
     public void assignTheHighestRole(Verification pass, SlashCommandInteractionEvent event, boolean update) throws ChessComPubApiException, IOException {
 
         String li = pass.getReletatedLichessName(event.getUser().getId(), Main.collection);
@@ -412,6 +454,14 @@ public class ManageRoles {
     }
 
 
+    /**
+     * Is in belt range boolean.
+     *
+     * @param lowerBound   the lower bound
+     * @param upperBound   the upper bound
+     * @param targetRating the target rating
+     * @return the boolean
+     */
     public boolean isInBeltRange(int lowerBound, int upperBound, int targetRating) {
         return (targetRating >= lowerBound && targetRating <= upperBound);
     }

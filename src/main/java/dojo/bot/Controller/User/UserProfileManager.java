@@ -11,20 +11,22 @@ import org.bson.Document;
 
 import java.awt.*;
 
+/**
+ * The type User profile manager.
+ */
 public class UserProfileManager {
-
 
 
     /**
      * Discord Action to look up Lichess user profile based on verification object
      *
-     * @param passport   Verification object
-     * @param event      Slash command event
-     * @param collection collection of players
-     * @param client     Lichess java client
-     * @param helper     Helper object
+     * @param passport        Verification object
+     * @param event           Slash command event
+     * @param collection      collection of players
+     * @param client          Lichess java client
+     * @param helper          Helper object
+     * @param Slow_down_buddy the slow down buddy
      */
-
     public void lookUpProfile(Verification passport, SlashCommandInteractionEvent event,
                               MongoCollection<Document> collection, Client client, Helper helper, AntiSpam Slow_down_buddy) {
         if (!Slow_down_buddy.checkSpam(event)) {
@@ -56,12 +58,12 @@ public class UserProfileManager {
 
     /**
      * Lookup chesscom profile for given user
-     * @param passport Verification passport
-     * @param event Discord trigger event
-     * @param collection Collection of players
+     *
+     * @param passport        Verification passport
+     * @param event           Discord trigger event
+     * @param collection      Collection of players
      * @param Slow_down_buddy Antispam checker
      */
-
     public void lookupProfileChessCom(Verification passport, SlashCommandInteractionEvent event, MongoCollection<Document> collection, AntiSpam Slow_down_buddy){
         if(!Slow_down_buddy.checkSpam(event)){
             if(!passport.userPresentNormalChesscom(collection, event.getUser().getId())){
