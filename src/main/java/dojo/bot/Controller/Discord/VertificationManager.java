@@ -1,20 +1,16 @@
 package dojo.bot.Controller.Discord;
 
 import com.mongodb.client.MongoCollection;
-import dojo.bot.Controller.User.Verification;
+import dojo.bot.Controller.Database.MongoConnect;
 import dojo.bot.Controller.User.CCProfile;
 import dojo.bot.Controller.User.ChessPlayer;
-import dojo.bot.Runner.Main;
+import dojo.bot.Controller.User.Verification;
 import io.github.sornerol.chess.pubapi.exception.ChessComPubApiException;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import org.bson.Document;
 
 import java.io.IOException;
 
-
-/**
- * The type Vertification manager.
- */
 public class VertificationManager {
 
 
@@ -24,24 +20,26 @@ public class VertificationManager {
      * @param event      Slash command event
      * @param passport   Verification object
      * @param collection collection of players
-     * @throws ChessComPubApiException the chess com pub api exception
-     * @throws IOException             the io exception
      */
+
+    // TODO: FIX the manageRoles logic for different Dojo server
+
     public void startVerificationProcessLichess(SlashCommandInteractionEvent event, Verification passport,
                                                 MongoCollection<Document> collection) throws ChessComPubApiException, IOException {
         ManageRoles manageRoles = new ManageRoles();
         String name = event.getOption("lichess-username").getAsString().toLowerCase().trim();
         if (passport.userPresent(collection, event.getUser().getId(), name)) {
-            event.reply(
-                            "You have already been verified, Join our ChessDojo Lichess team if you have not already [**Join**](https://lichess.org/team/chessdojo). you can also run **/profile** to view your linked Lichess profile!")
-                    .setEphemeral(true).queue();
-            String cc = passport.getReletatedChessName(event.getUser().getId(), Main.chesscomplayers);
+            String cc = passport.getReletatedChessName(event.getUser().getId(), MongoConnect.getChesscomplayers());
 
-            if (manageRoles.calculateChesscomRoleIndex(event, passport, cc) == -1 && manageRoles.calculateLichessRoleIndex(event, passport, name) == -1) {
+            if(manageRoles.calculateChesscomRoleIndex(event, passport, cc) == -1 && manageRoles.calculateLichessRoleIndex(event, passport, name) == -1){
                 event.reply("Error! Lichess.org Rapid and Classical ratings are ? and Chess.com account not linked! " +
                         "I can't give belts. Please play more games or link chess.com account").setEphemeral(true).queue();
                 return;
             }
+
+            event.reply(
+                            "You have already been verified, Join our ChessDojo Lichess team if you have not already [**Join**](https://lichess.org/team/chessdojo). you can also run **/profile** to view your linked Lichess profile!")
+                    .setEphemeral(true).queue();
 
             manageRoles.assignTheHighestRole(passport, event, false);
         } else {
@@ -74,27 +72,21 @@ public class VertificationManager {
     }
 
 
-    /**
-     * Start verification process chess com.
-     *
-     * @param event      the event
-     * @param passport   the passport
-     * @param collection the collection
-     * @throws ChessComPubApiException the chess com pub api exception
-     * @throws IOException             the io exception
-     */
+
+    // TODO: FIX the manageRoles logic for different Dojo server
+
     public void startVerificationProcessChessCom(SlashCommandInteractionEvent event, Verification passport,
                                                  MongoCollection<Document> collection) throws ChessComPubApiException, IOException {
         ManageRoles manageRoles = new ManageRoles();
 
         String name = event.getOption("chesscom-username").getAsString().toLowerCase().trim();
         if (passport.userPresentChesscom(collection, event.getUser().getId(), name)) {
-            event.reply("You are now verified!").setEphemeral(true).queue();
+            event.reply("You are already verified!").setEphemeral(true).queue();
 
-            String li = passport.getReletatedLichessName(event.getUser().getId(), Main.collection);
-            String cc = passport.getReletatedChessName(event.getUser().getId(), Main.chesscomplayers);
+            String li = passport.getReletatedLichessName(event.getUser().getId(), MongoConnect.getChesscomplayers());
+            String cc = passport.getReletatedChessName(event.getUser().getId(), MongoConnect.getChesscomplayers());
 
-            if (manageRoles.calculateChesscomRoleIndex(event, passport, cc) == -1 && manageRoles.calculateLichessRoleIndex(event, passport, li) == -1) {
+            if(manageRoles.calculateChesscomRoleIndex(event, passport, cc) == -1 && manageRoles.calculateLichessRoleIndex(event, passport, li) == -1){
                 event.reply("Error! Lichess.org Rapid and Classical ratings are ? and Chess.com account not linked! " +
                         "I can't give belts. Please play more games or link chess.com account").setEphemeral(true).queue();
                 return;
@@ -126,3 +118,6 @@ public class VertificationManager {
         }
     }
 }
+
+
+
