@@ -9,14 +9,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-
 public class ScoresUtil {
 
 
     /**
      * Inserts a tournament id into the database.
      *
-     * @param id         The tournament id to insert.
+     * @param id The tournament id to insert.
      * @param collection The collection to insert into.
      */
 
@@ -31,7 +30,7 @@ public class ScoresUtil {
     /**
      * Checks if a tournament id is present in the database.
      *
-     * @param id         The tournament id to check.
+     * @param id The tournament id to check.
      * @param collection The collection to check in.
      * @return True if the tournament id is present, false otherwise.
      */
@@ -44,10 +43,11 @@ public class ScoresUtil {
     }
 
 
+
     /**
      * Gets the index of a team in a tournament.
      *
-     * @param id     The tournament id to get the team index from.
+     * @param id The tournament id to get the team index from.
      * @param client The client to get the team index from.
      * @return The index of the team in the tournament.
      */
@@ -58,7 +58,7 @@ public class ScoresUtil {
 
         List<String> getTeamNames = new ArrayList<>();
 
-        for (chariot.model.TeamBattleResults.Teams t : client.tournaments().teamBattleResultsById(id).get().teams()) {
+        for(chariot.model.TeamBattleResults.Teams t: client.tournaments().teamBattleResultsById(id).get().teams()){
             getTeamNames.add(t.id().toLowerCase());
         }
 
@@ -71,7 +71,7 @@ public class ScoresUtil {
     /**
      * Binary search algorithm.
      *
-     * @param list   The list to search in.
+     * @param list The list to search in.
      * @param target The target value to search for.
      * @return The index of the target value if found, -1 otherwise.
      */
@@ -94,7 +94,9 @@ public class ScoresUtil {
             if (result > 0) {
                 System.out.println(left);
                 left = mid + 1;
-            } else {
+            }
+
+            else {
                 System.out.println(right);
                 right = mid - 1;
             }
@@ -103,8 +105,21 @@ public class ScoresUtil {
         return -1;
     }
 
+    public static int getTeamLinearIndex(String id, Client client) {
+
+        for (int i = 0; i < client.tournaments().teamBattleResultsById(id).get().teams().size(); i++) {
+            if (client.tournaments().teamBattleResultsById(id).get().teams().get(i).id()
+                    .equalsIgnoreCase("chessdojo")) {
+                return i;
+            }
+        }
+
+        return -1;
+
+    }
+
     /**
-     * Returns true if the provided tournament exists in the provided collection.
+     * Returns true if the provided tournament does not exist in the provided collection.
      *
      * @param collection   The collection to check for the tournament.
      * @param tournamentID The ID of the tournament to check for.
@@ -116,6 +131,7 @@ public class ScoresUtil {
         FindIterable<Document> result = collection.find(query);
         return !result.iterator().hasNext();
     }
+
 
 
 }

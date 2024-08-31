@@ -27,6 +27,7 @@ replay_pid*
 
 *.class
 
+.env
 
 target/
 build/

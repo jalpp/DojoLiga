@@ -14,7 +14,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 
-
 /**
  * Heart of connection to Jack's amazing DojoScoreboard frontend integration
  * @author Jack Stenglein
@@ -28,7 +27,7 @@ public class DojoScoreboard {
     private static final String CREATE_TOURNAMENT_URL = "https://g4shdaq6ug.execute-api.us-east-1.amazonaws.com/tournaments";
     private static final String UPDATE_LEADERBOARD_URL = "https://g4shdaq6ug.execute-api.us-east-1.amazonaws.com/tournaments/leaderboard";
 
-    private static final String GET_LEADERBOARD_URL = "https://g4shdaq6ug.execute-api.us-east-1.amazonaws.com/public/tournaments/leaderboard";
+    private static final String GET_LEADERBOARD_URL  = "https://g4shdaq6ug.execute-api.us-east-1.amazonaws.com/public/tournaments/leaderboard";
 
     /**
      * Sends a POST request to the provided URL with the provided body.
@@ -44,7 +43,7 @@ public class DojoScoreboard {
 
         Request request = new Request.Builder()
                 .url(url)
-                .addHeader("Authorization", "Basic " + System.getenv("score_board_token"))
+                .addHeader("Authorization", "Basic " + Main.dotenv.get("CHESSDOJO_API_TOKEN"))
                 .post(requestBody)
                 .build();
 
@@ -63,16 +62,17 @@ public class DojoScoreboard {
     }
 
 
+
     /**
      * Sends a create tournament request to the Dojo Scoreboard.
      *
      * @param tournamentUrl The URL of the tournament to create.
      */
     public static void createTournament(String tournamentUrl) {
+        String URL = Main.IS_BETA ? BETA : CREATE_TOURNAMENT_URL;
         String jsonBody = "{\"url\": \"" + tournamentUrl + "\"}";
-        post(CREATE_TOURNAMENT_URL, jsonBody);
+        post(URL, jsonBody);
     }
-
 
     /**
      * Sends an update leaderboard request to the Dojo Scoreboard.
@@ -81,7 +81,6 @@ public class DojoScoreboard {
      * @param tournamentType The type of the tournament to update.
      * @param collection     The list of players to update.
      * @param scoreField     The field used to get a player's score.
-     * @param mode           the mode
      */
     public static void updateLeaderboard(Time_Control timeControl, String tournamentType,
                                          MongoCollection<Document> collection, String scoreField, Mode mode) {
@@ -127,6 +126,8 @@ public class DojoScoreboard {
     public static void updateLeaderboardCC(Time_Control timeControl, String tournamentType,
                                            MongoCollection<Document> collection, String scoreField) {
 
+        String URL = Main.IS_BETA ? BETA_UPDATE : UPDATE_LEADERBOARD_URL;
+
         Document body = new Document();
         body.put("timeControl", timeControl.toString());
         body.put("type", tournamentType);
@@ -143,29 +144,20 @@ public class DojoScoreboard {
             return player;
         }).into(players);
 
-        if (players.isEmpty()) {
+        if (players.size() == 0) {
             return;
         }
         body.put("players", players);
 
-        post(UPDATE_LEADERBOARD_URL, body.toJson());
+        post(URL, body.toJson());
     }
 
 
-    /**
-     * Gets leaderboard.
-     *
-     * @param timeControl the time control
-     * @param period      the period
-     * @param date        the date
-     * @param type        the type
-     * @return the leaderboard
-     */
-    public static ArrayList<ChessPlayer> getLeaderboard(Time_Control timeControl, String period, String date, Type type) {
+    public static ArrayList<ChessPlayer> getLeaderboard(Time_Control timeControl, String period, String date, Type type){
 
         OkHttpClient client = new OkHttpClient();
 
-        String endpoint = GET_LEADERBOARD_URL + "?timePeriod=" + period + "&tournamentType=" + type.fetchLeaderboard() + "&timeControl=" + timeControl.toString()
+        String endpoint = GET_LEADERBOARD_URL + "?timePeriod="+ period + "&tournamentType=" + type.fetchLeaderboard() + "&timeControl=" + timeControl.toString()
                 + "&date=" + date;
 
         System.out.println(endpoint);
@@ -174,20 +166,21 @@ public class DojoScoreboard {
                 .url(endpoint)
                 .build();
 
+        // Perform the request and handle the response
         try {
-
+            // Execute the request
             Response response = client.newCall(request).execute();
 
-
+            // Check if the request was successful (status code 200)
             if (response.isSuccessful()) {
-
+                // Get the response body as a string
                 assert response.body() != null;
 
                 ArrayList<ChessPlayer> players = new ArrayList<>();
 
                 JSONObject js = new JSONObject(response.body().string());
 
-                for (int i = 0; i < 10; i++) {
+                for(int i  = 0; i < 10; i++){
                     ChessPlayer player = new ChessPlayer(js.getJSONArray("players").getJSONObject(i).getString("username"), js.getJSONArray("players").getJSONObject(i).getInt("rating"), js.getJSONArray("players").getJSONObject(i).getInt("score"));
                     players.add(player);
                 }
@@ -199,7 +192,7 @@ public class DojoScoreboard {
                 System.out.println("Unexpected response code: " + response.code());
             }
 
-
+            // Close the response body
             response.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -208,6 +201,7 @@ public class DojoScoreboard {
         return null;
 
     }
+
 
 
 }

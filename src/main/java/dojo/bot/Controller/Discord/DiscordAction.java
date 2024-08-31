@@ -33,7 +33,6 @@ import static dojo.bot.Controller.Discord.DiscordAdmin.isDiscordAdmin;
  * An Object that provides methods for DojoSwissManager to act upon Discord
  * events related to creating Leagues, checking admins, etc
  */
-
 public class DiscordAction {
 
     private final AntiSpam Slow_down_buddy = new AntiSpam(60000, 5);
@@ -48,6 +47,9 @@ public class DiscordAction {
     private final AutomaticComputeManager automaticComputeManager = new AutomaticComputeManager();
     private final Injection injectionManager = new Injection();
 
+    /**
+     * Instantiates a new Discord action.
+     */
     public DiscordAction() {
 
     }
@@ -59,7 +61,6 @@ public class DiscordAction {
      * @param standings  compute standings object
      * @param collection collection of players
      */
-
     public void StandingsReact(SlashCommandInteractionEvent event, ComputeStandings standings,
                                MongoCollection<Document> collection) {
         if (!Slow_down_buddy.checkSpam(event)) {
@@ -76,7 +77,6 @@ public class DiscordAction {
      * @param event                 Slash command event
      * @param arenaLeagueCollection collection of arenas
      */
-
     public void configLeagueArena(SlashCommandInteractionEvent event, MongoCollection<Document> arenaLeagueCollection) {
         if (!Slow_down_buddy.checkSpam(event)) {
             configLeagueManager.configLeagueArena(event, arenaLeagueCollection);
@@ -91,7 +91,6 @@ public class DiscordAction {
      * @param event                 Slash command event
      * @param swissLeagueCollection collection of swiss tournaments
      */
-
     public void configLeagueSwiss(SlashCommandInteractionEvent event, MongoCollection<Document> swissLeagueCollection) {
 
         if (!Slow_down_buddy.checkSpam(event)) {
@@ -108,8 +107,9 @@ public class DiscordAction {
      * @param compute               Compute scores object
      * @param arenaLeagueCollection collection of arena ids
      * @param swissLeagueCollection collection of swiss ids
+     * @throws ChessComPubApiException the chess com pub api exception
+     * @throws IOException             the io exception
      */
-
     public void startComputingScores(SlashCommandInteractionEvent event, ComputeScores compute,
                                      MongoCollection<Document> arenaLeagueCollection, MongoCollection<Document> swissLeagueCollection) throws ChessComPubApiException, IOException {
         automaticComputeManager.startComputingScores(event, compute, arenaLeagueCollection, swissLeagueCollection, Slow_down_buddy);
@@ -121,8 +121,9 @@ public class DiscordAction {
      * @param event      Slash command event
      * @param passport   Verification object
      * @param collection collection of players
+     * @throws ChessComPubApiException the chess com pub api exception
+     * @throws IOException             the io exception
      */
-
     public void startVerificationProcess(SlashCommandInteractionEvent event, Verification passport,
                                          MongoCollection<Document> collection) throws ChessComPubApiException, IOException {
         if (Slow_down_buddy.checkSpam(event)) {
@@ -133,6 +134,15 @@ public class DiscordAction {
     }
 
 
+    /**
+     * Start verification process chess com.
+     *
+     * @param event      the event
+     * @param passport   the passport
+     * @param collection the collection
+     * @throws ChessComPubApiException the chess com pub api exception
+     * @throws IOException             the io exception
+     */
     public void startVerificationProcessChessCom(SlashCommandInteractionEvent event, Verification passport,
                                                  MongoCollection<Document> collection) throws ChessComPubApiException, IOException {
         if (Slow_down_buddy.checkSpam(event)) {
@@ -149,7 +159,6 @@ public class DiscordAction {
      * @param passport   Verification object
      * @param collection collection of players
      */
-
     public void leagueRegister(SlashCommandInteractionEvent event, Verification passport,
                                MongoCollection<Document> collection) {
         if (!Slow_down_buddy.checkSpam(event)) {
@@ -168,7 +177,6 @@ public class DiscordAction {
      * @param client     Lichess java client
      * @param helper     Helper object
      */
-
     public void lookUpProfile(Verification passport, SlashCommandInteractionEvent event,
                               MongoCollection<Document> collection, Client client, Helper helper) {
         profileManager.lookUpProfile(passport, event, collection, client, helper, Slow_down_buddy);
@@ -181,7 +189,6 @@ public class DiscordAction {
      * @param event      Discord trigger event
      * @param collection Collection of players
      */
-
     public void lookupProfileChessCom(Verification passport, SlashCommandInteractionEvent event, MongoCollection<Document> collection) {
         profileManager.lookupProfileChessCom(passport, event, collection, Slow_down_buddy);
     }
@@ -192,7 +199,6 @@ public class DiscordAction {
      * @param event  Slash command event
      * @param client Lichess java client
      */
-
     public void getStandingsForURL(SlashCommandInteractionEvent event, Client client) {
         standingReactManager.getStandingsForURL(event, client, Slow_down_buddy);
     }
@@ -202,7 +208,6 @@ public class DiscordAction {
      *
      * @param event Discord trigger event
      */
-
     public void getPairingsReact(SlashCommandInteractionEvent event) {
         standingReactManager.getPairingsReact(event, Slow_down_buddy);
     }
@@ -214,7 +219,6 @@ public class DiscordAction {
      * @param compute    Compute scores object
      * @param collection collection of players
      */
-
     public void getRankReact(SlashCommandInteractionEvent event, ComputeScores compute,
                              MongoCollection<Document> collection) {
         playerLeagueActionManager.getRankReact(event, compute, collection, Slow_down_buddy);
@@ -227,7 +231,6 @@ public class DiscordAction {
      * @param compute    Compute scores object
      * @param collection collection of players
      */
-
     public void getScoreReact(SlashCommandInteractionEvent event, ComputeScores compute,
                               MongoCollection<Document> collection) {
         playerLeagueActionManager.getScoreReact(event, compute, collection, Slow_down_buddy);
@@ -240,7 +243,6 @@ public class DiscordAction {
      * @param channelId  Channel ID
      * @param collection collection of players
      */
-
     public void sendStandingEmbeds(JDA jda, String channelId, MongoCollection<Document> collection) {
         standingReactManager.sendStandingEmbeds(jda, channelId, collection);
     }
@@ -250,15 +252,21 @@ public class DiscordAction {
      *
      * @param event      Slash command event
      * @param collection collection of players
+     * @param cc         the cc
      * @param standings  Standings object
      */
-
     public void sendTop10(SlashCommandInteractionEvent event, MongoCollection<Document> collection,
                           MongoCollection<Document> cc,
                           ComputeStandings standings) {
         playerLeagueActionManager.sendTop10(event, collection, cc, standings, Slow_down_buddy);
     }
 
+    /**
+     * Send league help.
+     *
+     * @param event  the event
+     * @param helper the helper
+     */
     public void sendLeagueHelp(SlashCommandInteractionEvent event, Helper helper) {
         if (isDiscordAdmin(event)) {
             helper.getLeagueHelp(event);
@@ -273,7 +281,6 @@ public class DiscordAction {
      *
      * @param event The slash command that kicked off the next() request.
      */
-
     public void next(SlashCommandInteractionEvent event) {
         tournamentViewerManager.next(event);
     }
@@ -296,7 +303,6 @@ public class DiscordAction {
      * @param arena Arena collection
      * @param swiss Swiss collection
      */
-
     public void inject(SlashCommandInteractionEvent event, MongoCollection<Document> arena,
                        MongoCollection<Document> swiss) {
         injectionManager.inject(event, arena, swiss);
@@ -308,14 +314,13 @@ public class DiscordAction {
      * Automatically Chesscom computes scores for any finished tournaments that haven't
      * already been computed.
      *
-     * @param event     The message that kicked off the
-     *                  automaticComputeScores() event.
-     * @param computecc The ComputeScores object to use when calculating
-     *                  player scores.
+     * @param event     The message that kicked off the                  automaticComputeScores() event.
+     * @param computecc The ComputeScores object to use when calculating                  player scores.
      * @param arenacc   The collection of Arena tournaments in the database.
      * @param swisscc   The collection of Swiss tournaments in the database.
+     * @throws ChessComPubApiException the chess com pub api exception
+     * @throws IOException             the io exception
      */
-
     public void automaticCCComputeScores(MessageReceivedEvent event, ComputeScorescc computecc, MongoCollection<Document> arenacc, MongoCollection<Document> swisscc) throws ChessComPubApiException, IOException {
         automaticComputeManager.automaticCCComputeScores(event, computecc, arenacc, swisscc);
     }
@@ -325,12 +330,12 @@ public class DiscordAction {
      * Automatically computes scores for any finished tournaments that haven't
      * already been computed.
      *
-     * @param event           The message that kicked off the
-     *                        automaticComputeScores() event.
-     * @param compute         The ComputeScores object to use when calculating
-     *                        player scores.
+     * @param event           The message that kicked off the                        automaticComputeScores() event.
+     * @param compute         The ComputeScores object to use when calculating                        player scores.
      * @param arenaCollection The collection of Arena tournaments in the database.
      * @param swissCollection The collection of Swiss tournaments in the database.
+     * @throws ChessComPubApiException the chess com pub api exception
+     * @throws IOException             the io exception
      */
     public void automaticComputeScores(MessageReceivedEvent event, ComputeScores compute,
                                        MongoCollection<Document> arenaCollection, MongoCollection<Document> swissCollection) throws ChessComPubApiException, IOException {
@@ -367,7 +372,6 @@ public class DiscordAction {
      * @param tpchannel       Training program channel
      * @param tacchannel      feedback channel
      */
-
     public void ticketFormSystem(ModalInteractionEvent event, String senseiChannelId, String techChannelID, String tpchannel, String tacchannel) {
         ticketSystem.ticketFormSystem(event, senseiChannelId, techChannelID, tpchannel, tacchannel);
 
@@ -378,27 +382,49 @@ public class DiscordAction {
      *
      * @param event Discord trigger event
      */
-
     public void sentTheForms(ButtonInteraction event) {
         ticketSystem.sentTheForms(event);
     }
 
 
+    /**
+     * Compute chess dojo lichess liga scores.
+     *
+     * @param event   the event
+     * @param arena   the arena
+     * @param swiss   the swiss
+     * @param compute the compute
+     */
     public void computeChessDojoLichessLigaScores(MessageReceivedEvent event, MongoCollection<Document> arena, MongoCollection<Document> swiss, ComputeScores compute) {
         automaticComputeManager.computeChessDojoLichessLigaScores(event, arena, swiss, compute);
     }
 
 
+    /**
+     * Send liga message.
+     *
+     * @param event the event
+     */
     public void sendLigaMessage(MessageReceivedEvent event) {
         configLeagueManager.sendLigaMessage(event);
     }
 
 
+    /**
+     * Unlinke user belt.
+     *
+     * @param event the event
+     */
     public void unlinkeUserBelt(SlashCommandInteractionEvent event) {
         playerLeagueActionManager.unlinkeUserBelt(event);
     }
 
 
+    /**
+     * Perform search.
+     *
+     * @param event the event
+     */
     public void performSearch(SlashCommandInteractionEvent event) {
         SearchQueryManager queryManager = new SearchQueryManager();
         queryManager.renderSearchResults(event, new SearchQuery());
