@@ -40,7 +40,7 @@ public class Main extends ListenerAdapter {
 
     private static JDA jda;
 
-    public final static boolean IS_BETA = true;
+    public final static boolean IS_BETA = false;
 
     public static final Dotenv dotenv = Dotenv.load();
 
@@ -80,7 +80,7 @@ public class Main extends ListenerAdapter {
 
         jdaBuilder.setStatus(OnlineStatus.DO_NOT_DISTURB);
 
-        jdaBuilder.setActivity(Activity.playing("V7.8 Date: Aug 31 2024 Author: Jalp"));
+        jdaBuilder.setActivity(Activity.playing("V7.8 Date: Sep 1 2024 Author: Jalp"));
 
         jdaBuilder.addEventListeners(new Main());
 
@@ -239,6 +239,59 @@ public class Main extends ListenerAdapter {
                             .addChoice("Dec", "dec")
             ));
 
+            commands.addCommands(Commands.slash("configroundrobin", "Create a round robin tournament (Admin only)")
+                    .addOption(OptionType.STRING, "rrname", "Give the round robin tournament a name", true)
+                    .addOption(OptionType.STRING, "rrdesc", "Give public viewable short description", true)
+                    .addOption(OptionType.BOOLEAN, "rrautomode", "Automatically generate Lichess URLs for player games", true)
+                    .addOption(OptionType.INTEGER, "start-cohort", "Enter start cohort value", true)
+                    .addOption(OptionType.INTEGER, "end-cohort", "Enter end cohort value", true));
+
+            commands.addCommands(Commands.slash("register", "Register for upcoming Dojo Round Robin tournament"));
+
+            commands.addCommands(Commands.slash("withdraw", "Withdraw from registered tournament"));
+
+            commands.addCommands(Commands.slash("generatepairings", "Generate pairings for given Round robin ID").addOption(
+                    OptionType.STRING, "rrid", "Provide round robin tournament ID", true
+            ));
+
+            commands.addCommands(Commands.slash("displaypairings", "Display pairings for given Round robin ID").addOption(
+                    OptionType.STRING, "rrdisid", "Provide round robin tournament ID", true
+            ));
+
+            commands.addCommands(Commands.slash("publishtournament", "Display tournament info to users").addOption(
+                    OptionType.STRING, "publishid", "Provide round robin tournament ID", true
+            ));
+
+            commands.addCommands(Commands.slash("opentournament", "Open tournament to players").addOption(
+                    OptionType.STRING, "openid", "Provide round robin tournament ID", true
+            ));
+
+            commands.addCommands(Commands.slash("closetournament", "declare the tournament is finished").addOption(
+                    OptionType.STRING, "closeid", "Provide round robin tournament ID", true
+            ));
+
+            commands.addCommands(Commands.slash("adminaddplayer", "force push a player in a given tournament")
+                    .addOption(
+                            OptionType.STRING, "tour-id", "Provide round robin tournament ID", true
+                    )
+                    .addOption(
+                            OptionType.STRING, "player-username", "for Lichess/Chesscom add username, for Discord add discordid", true
+                    )
+                    .addOptions(new OptionData(OptionType.STRING, "platform", "Select a platform to add the info", true)
+                            .addChoice("Lichess", "li-pl")
+                            .addChoice("Chess.com", "cc-pl")
+                            .addChoice("Discord", "di-pl"))
+            );
+
+
+            commands.addCommands(Commands.slash("viewtournamentgames", "View tournament submitted games").addOption(
+                    OptionType.STRING, "viewid", "Provide round robin tournament ID", true
+            ));
+
+            commands.addCommands(Commands.slash("submitgame", "submit game to Tournament Director for Round Robin"));
+
+            commands.addCommands(Commands.slash("helprr", "View admin commands for Round Robin"));
+
             commands.queue();
 
 
@@ -268,6 +321,30 @@ public class Main extends ListenerAdapter {
         WinnerPolicy policy = new WinnerPolicy();
 
         switch (event.getName()){
+
+            case "configroundrobin" -> DiscordReactor.configRoundRobinTournament(event, RRcollection);
+
+            case "register" -> DiscordReactor.playerRegister(event, RRplayercollection, RRcollection);
+
+            case "withdraw" -> DiscordReactor.withdraw(event, RRcollection);
+
+            case "generatepairings" -> DiscordReactor.generatePairings(event, RRcollection);
+
+            case "displaypairings" -> DiscordReactor.displayPairings(event, RRcollection);
+
+            case "opentournament" -> DiscordReactor.openTournament(event, RRcollection);
+
+            case "closetournament" -> DiscordReactor.closeTournament(event, RRcollection);
+
+            case "viewtournamentgames" -> DiscordReactor.viewSubmittedGames(event, RRcollection);
+
+            case "submitgame" -> DiscordReactor.playerSubmitGame(event);
+
+            case "publishtournament" -> DiscordReactor.publishTournament(event, RRcollection);
+
+            case "adminaddplayer" -> DiscordReactor.adminaddplayer(event, RRplayercollection, RRcollection);
+
+            case "helprr" -> DiscordReactor.roundRobinHelper(event);
 
             case "leaguehelp" -> DiscordReactor.sendLeagueHelp(event, helper);
 
@@ -367,7 +444,9 @@ public class Main extends ListenerAdapter {
             DiscordReactor.ticketFormSystem(event, Keys.BETA_CHANNEL_ID_SENSEI, Keys.BETA_CHANNEL_ID_TECH, Keys.BETA_CHANNEL_ID_TP, Keys.BETA_CHANNEL_FEEDBACK);
 
         }
-
+        if(event.getModalId().equalsIgnoreCase("rr-modal")){
+            DiscordReactor.handleGameModal(event, RRplayercollection, RRcollection);
+        }
     }
 
     @Override

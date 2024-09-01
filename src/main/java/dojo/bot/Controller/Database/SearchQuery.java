@@ -78,6 +78,6 @@ public class SearchQuery {
         return "ChessCom User is not present!";
     }
 
-    
+
 
 }
