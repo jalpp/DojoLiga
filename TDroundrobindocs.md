@@ -49,4 +49,17 @@ Manually calculate the players' scores. This command is admin-only.
 
 ---
 
+## Round Robin Tournament management lifecycle
+
+- create a tournament using the /configroundrobin command with valid parameters above, create as many as you want as player size limit is 10 per cohort
+- players must verify their accounts with /verify
+- the tournament is now automatically open for players to start registration via /register
+- there are 10 player max limit
+- once the registration max limit is reached the same cohort players must ask TD to create a different tournament of same cohort
+- players can also withdraw with /withdraw
+- pairings are automatically generated but the backup command can be used to do so
+- leaderboards and crosstable are auto generated
+- TDs can publish a tournament in a Discord channel
+
+
 Use these commands to effectively manage and participate in Round Robin tournaments. Ensure you have the correct permissions to use admin-level commands.
