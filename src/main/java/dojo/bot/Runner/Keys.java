@@ -1,7 +1,7 @@
 package dojo.bot.Runner;
 
 /**
- * The type Keys.
+ * the Discord Guild, channel keys (values) Not actual keys.
  */
 public class Keys {
 
