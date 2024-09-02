@@ -1,7 +1,7 @@
 package dojo.bot.Runner;
 
 /**
- * Discord server channel public chat IDs, (THIS ARE NOT KEYS!)
+ * The type Keys.
  */
 public class Keys {
 
@@ -41,7 +41,20 @@ public class Keys {
      */
     public static String BETA_CHANNEL_ID_TECH = "1176283564208308296";
 
-    
+    /**
+     * The constant TRAINING_PROGRAM_GUILD.
+     */
+    public static String TRAINING_PROGRAM_GUILD = "951958534113886238";
+
+    /**
+     * The constant MAIN_GUILD.
+     */
+    public static String MAIN_GUILD = "419042970558398469";
+
+    /**
+     * The constant BETA_GUILD.
+     */
+    public static String BETA_GUILD = "722843511132520549";
 
 
 }

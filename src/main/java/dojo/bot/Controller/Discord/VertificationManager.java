@@ -5,6 +5,7 @@ import dojo.bot.Controller.Database.MongoConnect;
 import dojo.bot.Controller.User.CCProfile;
 import dojo.bot.Controller.User.ChessPlayer;
 import dojo.bot.Controller.User.Verification;
+import dojo.bot.Runner.Keys;
 import io.github.sornerol.chess.pubapi.exception.ChessComPubApiException;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import org.bson.Document;
@@ -22,7 +23,6 @@ public class VertificationManager {
      * @param collection collection of players
      */
 
-    // TODO: FIX the manageRoles logic for different Dojo server
 
     public void startVerificationProcessLichess(SlashCommandInteractionEvent event, Verification passport,
                                                 MongoCollection<Document> collection) throws ChessComPubApiException, IOException {
@@ -31,17 +31,21 @@ public class VertificationManager {
         if (passport.userPresent(collection, event.getUser().getId(), name)) {
             String cc = passport.getReletatedChessName(event.getUser().getId(), MongoConnect.getChesscomplayers());
 
-            if(manageRoles.calculateChesscomRoleIndex(event, passport, cc) == -1 && manageRoles.calculateLichessRoleIndex(event, passport, name) == -1){
+            if (manageRoles.calculateChesscomRoleIndex(event, passport, cc) == -1 && manageRoles.calculateLichessRoleIndex(event, passport, name) == -1) {
                 event.reply("Error! Lichess.org Rapid and Classical ratings are ? and Chess.com account not linked! " +
                         "I can't give belts. Please play more games or link chess.com account").setEphemeral(true).queue();
                 return;
             }
 
-            event.reply(
-                            "You have already been verified, Join our ChessDojo Lichess team if you have not already [**Join**](https://lichess.org/team/chessdojo). you can also run **/profile** to view your linked Lichess profile!")
-                    .setEphemeral(true).queue();
+            if (event.getGuild().getId().equalsIgnoreCase(Keys.MAIN_GUILD)) {
+                event.reply(
+                                "You have already been verified, Join our ChessDojo Lichess team if you have not already [**Join**](https://lichess.org/team/chessdojo). you can also run **/profile** to view your linked Lichess profile!")
+                        .setEphemeral(true).queue();
 
-            manageRoles.assignTheHighestRole(passport, event, false);
+                manageRoles.assignTheHighestRole(passport, event, false);
+            } else {
+                event.reply("You have successfully connected your Lichess account for round robins").queue();
+            }
         } else {
             ChessPlayer player = new ChessPlayer(name, event.getUser().getId(), 0, 0, 0, 0, 0, 0,
                     0, 0, 0, 0, 0, 0,
@@ -72,9 +76,6 @@ public class VertificationManager {
     }
 
 
-
-    // TODO: FIX the manageRoles logic for different Dojo server
-
     public void startVerificationProcessChessCom(SlashCommandInteractionEvent event, Verification passport,
                                                  MongoCollection<Document> collection) throws ChessComPubApiException, IOException {
         ManageRoles manageRoles = new ManageRoles();
@@ -86,13 +87,18 @@ public class VertificationManager {
             String li = passport.getReletatedLichessName(event.getUser().getId(), MongoConnect.getChesscomplayers());
             String cc = passport.getReletatedChessName(event.getUser().getId(), MongoConnect.getChesscomplayers());
 
-            if(manageRoles.calculateChesscomRoleIndex(event, passport, cc) == -1 && manageRoles.calculateLichessRoleIndex(event, passport, li) == -1){
+            if (manageRoles.calculateChesscomRoleIndex(event, passport, cc) == -1 && manageRoles.calculateLichessRoleIndex(event, passport, li) == -1) {
                 event.reply("Error! Lichess.org Rapid and Classical ratings are ? and Chess.com account not linked! " +
                         "I can't give belts. Please play more games or link chess.com account").setEphemeral(true).queue();
                 return;
             }
 
-            manageRoles.assignTheHighestRole(passport, event, false);
+            if (event.getGuild().getId().equalsIgnoreCase(Keys.MAIN_GUILD)) {
+                manageRoles.assignTheHighestRole(passport, event, false);
+            } else {
+                event.reply("You have successfully connected your Chess.com account for round robins").queue();
+            }
+
         } else {
             ChessPlayer player = new ChessPlayer(name, event.getUser().getId());
             CCProfile profile = new CCProfile(name);
@@ -117,7 +123,7 @@ public class VertificationManager {
 
         }
     }
+
+
 }
-
-
 
