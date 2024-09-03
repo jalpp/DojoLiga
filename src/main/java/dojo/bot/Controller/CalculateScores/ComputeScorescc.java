@@ -289,16 +289,22 @@ public class ComputeScorescc {
 
         TournamentClient client = new TournamentClient();
 
-
-        if (!tournamentPresent(tournamentCollection, arenaID)) {
-            return "Arena not made by bot! Please inject this tournament in /inject to process computing this arena!";
-        }
-
+        System.out.println(arenaID);
         if (isTournamentIDresent(arenaID, MongoConnect.getComputedId())) {
             return "This Tournament is already computed! Try another tournament";
         }
 
-        Time_Control timeControl = Time_Control.fromString(client.getTournamentByUrlId(arenaID).getSettings().getTimeClass().getValue().toLowerCase());
+        String tc = client.getTournamentByUrlId(arenaID).getSettings().getTimeClass().getValue().toLowerCase();
+
+        String passer;
+
+        if(tc.equalsIgnoreCase("standard")){
+            passer = arenaID;
+        }else{
+            passer = tc;
+        }
+
+        Time_Control timeControl = Time_Control.fromString(passer);
         if (timeControl == null) {
             return "Invalid time control: " + null;
         }
@@ -365,14 +371,19 @@ public class ComputeScorescc {
         }
 
         for (TournamentPlayer player : players) {
-            int rating = new CCProfile(player.getUsername()).getRatingBasedOnTimeControl(timeControl);
-            checkUserInDateBase(player.getUsername().toLowerCase(), MongoConnect.getChesscomplayers());
-            updatePlayerScores(player.getUsername().toLowerCase(), player.getPoints().intValue(),
-                    MongoConnect.getChesscomplayers(), timeControl);
-            updatePlayerRatings(player.getUsername().toLowerCase(), rating,
-                    MongoConnect.getChesscomplayers(), timeControl);
-            addCombinedPlayerTotalScores(player.getUsername().toLowerCase(),MongoConnect.getChesscomplayers(),
-                    timeControl);
+            try{
+                int rating = new CCProfile(player.getUsername()).getRatingBasedOnTimeControl(timeControl);
+                checkUserInDateBase(player.getUsername().toLowerCase(), MongoConnect.getChesscomplayers());
+                updatePlayerScores(player.getUsername().toLowerCase(), player.getPoints().intValue(),
+                        MongoConnect.getChesscomplayers(), timeControl);
+                updatePlayerRatings(player.getUsername().toLowerCase(), rating,
+                        MongoConnect.getChesscomplayers(), timeControl);
+                addCombinedPlayerTotalScores(player.getUsername().toLowerCase(),MongoConnect.getChesscomplayers(),
+                        timeControl);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                continue;
+            }
         }
 
         insertTournamentID(arenaID, MongoConnect.getComputedId());
@@ -398,106 +409,128 @@ public class ComputeScorescc {
      * @return A String description of the calculation result.
      */
     private String calculateSwissScores(String swissUrl, MongoCollection<Document> tournamentCollection) throws ChessComPubApiException, IOException {
-        String live = swissUrl.split("live/")[1];
-
-        TournamentClient client = new TournamentClient();
-
-
-        if (!tournamentPresent(tournamentCollection, live)) {
-            return "Swiss not made by bot! Please inject this tournament in /inject to process computing this arena!";
-        }
-
-        if (isTournamentIDresent(live, MongoConnect.getComputedId())) {
-            return "This Tournament is already computed! Try another tournament";
-        }
-
-        Time_Control timeControl = Time_Control.fromString(client.getTournamentByUrlId(live).getSettings().getTimeClass().getValue().toLowerCase());
-        if (timeControl == null) {
-            return "Invalid time control: " + null;
-        }
+        try{
+            String live = swissUrl.split("live/")[1];
+            System.out.println(live);
+            TournamentClient client = new TournamentClient();
 
 
-        int rounds = client.getTournamentByUrlId(live).getSettings().getTotalRounds();
+            if (isTournamentIDresent(live, MongoConnect.getComputedId())) {
+                return "This Tournament is already computed! Try another tournament";
+            }
 
-        String url = client.getTournamentRound(live, rounds).getGroupsApiUrls().get(0);
+            String tc = client.getTournamentByUrlId(live).getSettings().getTimeClass().getValue().toLowerCase();
 
-        List<TournamentPlayer> pl = client.getTournamentRoundGroupByApiUrl(url).getPlayers();
+            String passer;
 
-        pl.sort((player1, player2) -> Double.compare(player2.getPoints().doubleValue(), player1.getPoints().doubleValue()));
+            if(tc.equalsIgnoreCase("standard")){
+                passer = live;
+            }else{
+                passer = tc;
+            }
 
-        // middlegame
+            Time_Control timeControl = Time_Control.fromString(passer);
+            if (timeControl == null) {
+                return "Invalid time control: " + null;
+            }
 
 
-        if(live.contains("middlegame") || live.contains("MIDDLEGAME") || live.contains("Middlegame")){
-            // middlegame logic
+            int rounds = client.getTournamentByUrlId(live).getSettings().getTotalRounds();
+
+            if(!(client.getTournamentRound(live, rounds).getGroupsApiUrls().size() > 1)){
+                return "Invalid pairings size!";
+            }
+
+            String url = client.getTournamentRound(live, rounds).getGroupsApiUrls().getFirst();
+
+            List<TournamentPlayer> pl = client.getTournamentRoundGroupByApiUrl(url).getPlayers();
+
+            System.out.println(url);
+            System.out.println(rounds);
+            System.out.println(pl);
+
+            pl.sort((player1, player2) -> Double.compare(player2.getPoints().doubleValue(), player1.getPoints().doubleValue()));
+
+            // middlegame
+
+
+            if(live.contains("middlegame") || live.contains("MIDDLEGAME") || live.contains("Middlegame")){
+                // middlegame logic
+
+                for (TournamentPlayer player : pl) {
+                    int rating = new CCProfile(player.getUsername()).getRatingBasedOnTimeControl(timeControl);
+                    checkUserInDateBase(player.getUsername().toLowerCase(), MongoConnect.getChesscomplayers());
+                    updateSparringScores(player.getUsername().toLowerCase(), player.getPoints().doubleValue(),
+                            MongoConnect.getChesscomplayers());
+                    updatePlayerRatings(player.getUsername().toLowerCase(), rating,
+                            MongoConnect.getChesscomplayers(), Time_Control.MIX);
+                }
+                insertTournamentID(live, MongoConnect.getComputedId());
+                updateStandingsOnDojoScoreBoard(Time_Control.MIX, Type.SPARRING, MongoConnect.getChesscomplayers());
+
+                return "Success! Updated player scores for " + live.replace("-", " ");
+            }
+
+
+            // endgame
+
+            if(live.contains("endgame") || live.contains("ENDGAME") || live.contains("Endgame")){
+
+                for (TournamentPlayer player : pl) {
+                    int rating = new CCProfile(player.getUsername()).getRatingBasedOnTimeControl(timeControl);
+                    checkUserInDateBase(player.getUsername().toLowerCase(), MongoConnect.getChesscomplayers());
+                    updateEndgameSparringScores(player.getUsername().toLowerCase(), player.getPoints().doubleValue(),
+                            MongoConnect.getChesscomplayers());
+                    updatePlayerRatings(player.getUsername().toLowerCase(), rating,
+                            MongoConnect.getChesscomplayers(), Time_Control.MIX_ENDGAME);
+                }
+                insertTournamentID(live, MongoConnect.getComputedId());
+                updateStandingsOnDojoScoreBoard(Time_Control.MIX_ENDGAME, Type.SPARRING, MongoConnect.getChesscomplayers());
+
+                return "Success! Updated player scores for " + live.replace("-", " ");
+            }
+
+            //standard
+
+            if (pl.size() >= 10) {
+
+                for (int g = 0; g < 10; g++) {
+                    checkUserInDateBase(pl.get(g).getUsername().toLowerCase(), MongoConnect.getChesscomplayers());
+                    updatePlayerScoresSwissGp(pl.get(g).getUsername().toLowerCase(), 10 - g,
+                            MongoConnect.getChesscomplayers(), timeControl);
+                }
+            } else {
+                for (int g = 0; g < pl.size(); g++) {
+                    checkUserInDateBase(pl.get(g).getUsername().toLowerCase(), MongoConnect.getChesscomplayers());
+                    updatePlayerScoresArenaGp(pl.get(g).getUsername().toLowerCase(), 10 - g,
+                            MongoConnect.getChesscomplayers(), timeControl);
+                }
+            }
 
             for (TournamentPlayer player : pl) {
-                int rating = new CCProfile(player.getUsername()).getRatingBasedOnTimeControl(timeControl);
-                checkUserInDateBase(player.getUsername().toLowerCase(), MongoConnect.getChesscomplayers());
-                updateSparringScores(player.getUsername().toLowerCase(), player.getPoints().intValue(),
-                        MongoConnect.getChesscomplayers());
-                updatePlayerRatings(player.getUsername().toLowerCase(), rating,
-                        MongoConnect.getChesscomplayers(), Time_Control.MIX);
+                try{
+                    int rating = new CCProfile(player.getUsername()).getRatingBasedOnTimeControl(timeControl);
+                    checkUserInDateBase(player.getUsername().toLowerCase(), MongoConnect.getChesscomplayers());
+                    updatePlayerSwissScores(player.getUsername().toLowerCase(), player.getPoints().doubleValue(),
+                            MongoConnect.getChesscomplayers(), timeControl);
+                    updatePlayerRatings(player.getUsername().toLowerCase(), rating,
+                            MongoConnect.getChesscomplayers(), timeControl);
+                    addCombinedPlayerTotalScores(player.getUsername().toLowerCase(),MongoConnect.getChesscomplayers(),
+                            timeControl);
+                }catch (Exception e){
+                    System.out.println(e.getMessage());
+                }
             }
+
             insertTournamentID(live, MongoConnect.getComputedId());
-            updateStandingsOnDojoScoreBoard(Time_Control.MIX, Type.SPARRING, MongoConnect.getChesscomplayers());
+            updateStandingsOnDojoScoreBoard(timeControl, Type.ARENA, MongoConnect.getChesscomplayers());
+            updateStandingsOnDojoScoreBoard(timeControl, Type.COMB_GRAND_PRIX, MongoConnect.getChesscomplayers());
+
 
             return "Success! Updated player scores for " + live.replace("-", " ");
+        }catch (Exception e){
+            return e.getMessage();
         }
-
-
-        // endgame
-
-        if(live.contains("endgame") || live.contains("ENDGAME") || live.contains("Endgame")){
-
-            for (TournamentPlayer player : pl) {
-                int rating = new CCProfile(player.getUsername()).getRatingBasedOnTimeControl(timeControl);
-                checkUserInDateBase(player.getUsername().toLowerCase(), MongoConnect.getChesscomplayers());
-                updateEndgameSparringScores(player.getUsername().toLowerCase(), player.getPoints().doubleValue(),
-                        MongoConnect.getChesscomplayers());
-                updatePlayerRatings(player.getUsername().toLowerCase(), rating,
-                        MongoConnect.getChesscomplayers(), Time_Control.MIX_ENDGAME);
-            }
-            insertTournamentID(live, MongoConnect.getComputedId());
-            updateStandingsOnDojoScoreBoard(Time_Control.MIX_ENDGAME, Type.SPARRING, MongoConnect.getChesscomplayers());
-
-            return "Success! Updated player scores for " + live.replace("-", " ");
-        }
-
-        //standard
-
-        if (pl.size() >= 10) {
-
-            for (int g = 0; g < 10; g++) {
-                checkUserInDateBase(pl.get(g).getUsername().toLowerCase(), MongoConnect.getChesscomplayers());
-                updatePlayerScoresSwissGp(pl.get(g).getUsername().toLowerCase(), 10 - g,
-                        MongoConnect.getChesscomplayers(), timeControl);
-            }
-        } else {
-            for (int g = 0; g < pl.size(); g++) {
-                checkUserInDateBase(pl.get(g).getUsername().toLowerCase(), MongoConnect.getChesscomplayers());
-                updatePlayerScoresArenaGp(pl.get(g).getUsername().toLowerCase(), 10 - g,
-                        MongoConnect.getChesscomplayers(), timeControl);
-            }
-        }
-
-        for (TournamentPlayer player : pl) {
-            int rating = new CCProfile(player.getUsername()).getRatingBasedOnTimeControl(timeControl);
-            checkUserInDateBase(player.getUsername().toLowerCase(), MongoConnect.getChesscomplayers());
-            updatePlayerSwissScores(player.getUsername().toLowerCase(), player.getPoints().doubleValue(),
-                    MongoConnect.getChesscomplayers(), timeControl);
-            updatePlayerRatings(player.getUsername().toLowerCase(), rating,
-                    MongoConnect.getChesscomplayers(), timeControl);
-            addCombinedPlayerTotalScores(player.getUsername().toLowerCase(),MongoConnect.getChesscomplayers(),
-                    timeControl);
-        }
-
-        insertTournamentID(live, MongoConnect.getComputedId());
-        updateStandingsOnDojoScoreBoard(timeControl, Type.ARENA, MongoConnect.getChesscomplayers());
-        updateStandingsOnDojoScoreBoard(timeControl, Type.COMB_GRAND_PRIX, MongoConnect.getChesscomplayers());
-
-
-        return "Success! Updated player scores for " + live.replace("-", " ");
     }
 
 
@@ -522,8 +555,8 @@ public class ComputeScorescc {
                     0, 0);
             Document document = new Document("Chesscomname", player.getLichessname())
                     .append("Discordid", player.getDiscordId())
-                    .append("blitz_score", player.getBLITZ_SCORE())
-                    .append("rapid_score", player.getRAPID_SCORE())
+                    .append("blitz_score", 0)
+                    .append("rapid_score", 0)
                     .append("blitz_rating", 0)
                     .append("rapid_rating", 0).append("blitz_score_gp", 0)
                     .append("rapid_score_gp", 0)
@@ -578,7 +611,7 @@ public class ComputeScorescc {
                                                 MongoCollection<Document> collection) {
         switch (type) {
             case ARENA, SWISS, COMB_GRAND_PRIX -> DojoScoreboard.updateLeaderboardCC(timeControl, type.getName(),
-                    collection, timeControl.toString() + type.toString());
+                    collection, timeControl + type.toString());
 
             case SPARRING, SPARRING_ENDGAME ->
                     DojoScoreboard.updateLeaderboardCC(timeControl, type.getName(), collection, type.toString());
