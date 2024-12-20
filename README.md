@@ -49,4 +49,4 @@ to run the full chess league and round robins you would need
 
 
 ## License:
-DojoLiga is licensed as GPL-3.0, please read license requirements
+DojoLiga has unknown license, any code/logic that is used, the dev must ask for permission and consult with authors
