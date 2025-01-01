@@ -177,7 +177,9 @@ public class TicketManager {
                 messageID.set(message.getId());
             });
             String DiscordURL = "https://discord.com/channels/" + event.getGuild().getId() + "/" + channelId + "/" + messageID;
-            GithubManager.createIssue(dotenv.get("GITHUB_TOKEN_PROD"), dotenv.get("GITHUB_OWNER"), dotenv.get("GITHUB_REPO"), title + " " + ticketNumber, description + "\n\n" + builder.getFields().getLast().getName() + " " + event.getUser().getEffectiveName() + "\n" + DiscordURL);
+            String[] labels = new String[]{"bug", "user-submitted"};
+            String message = GitHubIssueCreator.createIssue(dotenv.get("GITHUB_OWNER"), dotenv.get("GITHUB_REPO"), dotenv.get("GITHUB_TOKEN_PROD"),  title + " " + ticketNumber, description + "\n\n" + builder.getFields().getLast().getName() + " " + event.getUser().getEffectiveName() + "\n" + DiscordURL, labels );
+            System.out.println(message);
         }
         else {
             event.getGuild().getTextChannelById(channelId).sendMessageEmbeds(builder.build()).setActionRow(Button.success("reply", "Admin Reply")).queue();
