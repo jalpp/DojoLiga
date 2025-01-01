@@ -21,16 +21,28 @@ public enum Time_Control {
             return RAPID;
         }
 
-        if(timeControl.contains("classical")){
+        if(timeControl.toLowerCase().contains("classical")){
             return CLASSICAL;
         }
 
-        return switch (timeControl.toLowerCase()) {
-            case "classical" -> CLASSICAL;
-            case "blitz" -> BLITZ;
-            case "rapid" -> RAPID;
-            default -> null;
-        };
+        if(timeControl.toLowerCase().contains("friday night")){
+            return CLASSICAL;
+        }
+
+        switch (timeControl.toLowerCase()) {
+            case "classical" -> {
+                return CLASSICAL;
+            }
+            case "blitz" -> {
+                return BLITZ;
+            }
+            case "rapid" -> {
+                return RAPID;
+            }
+            default -> {
+                return null;
+            }
+        }
     }
 
     /**

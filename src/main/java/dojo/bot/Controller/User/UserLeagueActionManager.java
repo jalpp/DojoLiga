@@ -27,27 +27,27 @@ public class UserLeagueActionManager {
                           MongoCollection<Document> cc,
                           ComputeStandings standings, AntiSpam Slow_down_buddy) {
         if (!Slow_down_buddy.checkSpam(event)) {
-            switch (event.getOptionsByName("select-site").get(0).getAsString()) {
+            switch (event.getOptionsByName("select-site").getFirst().getAsString()) {
                 case "li" -> {
-                    switch (event.getOptionsByName("select-tc").get(0).getAsString()) {
+                    switch (event.getOptionsByName("select-tc").getFirst().getAsString()) {
 
                         case "btc" -> {
-                            event.reply("generating..").setEphemeral(true).queue();
-                            event.getChannel()
+                            event.deferReply().queue();
+                            event.getHook()
                                     .sendMessageEmbeds(standings.getTop10Leaderboard(collection, Time_Control.BLITZ, "Lichessname").build())
                                     .queue();
                         }
 
                         case "rtc" -> {
-                            event.reply("generating..").setEphemeral(true).queue();
-                            event.getChannel()
+                            event.deferReply().queue();
+                            event.getHook()
                                     .sendMessageEmbeds(standings.getTop10Leaderboard(collection, Time_Control.RAPID, "Lichessname").build())
                                     .queue();
                         }
 
                         case "ctc" -> {
-                            event.reply("generating..").setEphemeral(true).queue();
-                            event.getChannel().sendMessageEmbeds(
+                            event.deferReply().queue();
+                            event.getHook().sendMessageEmbeds(
                                     standings.getTop10Leaderboard(collection, Time_Control.CLASSICAL, "Lichessname").build()).queue();
                         }
 
@@ -58,15 +58,15 @@ public class UserLeagueActionManager {
                     switch (event.getOptionsByName("select-tc").get(0).getAsString()) {
 
                         case "btc" -> {
-                            event.reply("generating..").setEphemeral(true).queue();
-                            event.getChannel()
+                            event.deferReply().queue();
+                            event.getHook()
                                     .sendMessageEmbeds(standings.getTop10Leaderboard(cc, Time_Control.BLITZ, "Chesscomname").build())
                                     .queue();
                         }
 
                         case "rtc" -> {
-                            event.reply("generating..").setEphemeral(true).queue();
-                            event.getChannel()
+                            event.deferReply().queue();
+                            event.getHook()
                                     .sendMessageEmbeds(standings.getTop10Leaderboard(cc, Time_Control.RAPID, "Chesscomname").build())
                                     .queue();
                         }
@@ -96,8 +96,8 @@ public class UserLeagueActionManager {
     public void getRankReact(SlashCommandInteractionEvent event, ComputeScores compute,
                              MongoCollection<Document> collection, AntiSpam Slow_down_buddy) {
         if (!Slow_down_buddy.checkSpam(event)) {
-            event.reply("generating..").setEphemeral(true).queue();
-            event.getChannel().sendMessageEmbeds(compute.getPlayerRankCard(event.getUser().getId(), collection).build())
+            event.deferReply(false).queue();
+            event.getHook().sendMessageEmbeds(compute.getPlayerRankCard(event.getUser().getId(), collection).build())
                     .queue();
         } else {
             event.reply("Slow Down buddy, go watch ChessDojo and run the command after 1 min!").setEphemeral(true).queue();
@@ -116,8 +116,8 @@ public class UserLeagueActionManager {
     public void getScoreReact(SlashCommandInteractionEvent event, ComputeScores compute,
                               MongoCollection<Document> collection, AntiSpam Slow_down_buddy) {
         if (!Slow_down_buddy.checkSpam(event)) {
-            event.reply("generating..").setEphemeral(true).queue();
-            event.getChannel().sendMessageEmbeds(compute.getPlayerScore(event.getUser().getId(), collection).build())
+            event.deferReply(false).queue();
+            event.getHook().sendMessageEmbeds(compute.getPlayerScore(event.getUser().getId(), collection).build())
                     .queue();
         } else {
             event.reply("Slow Down buddy, go watch ChessDojo and run the command after 1 min!").setEphemeral(true).queue();

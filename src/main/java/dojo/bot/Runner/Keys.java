@@ -1,7 +1,7 @@
 package dojo.bot.Runner;
 
 /**
- * the Discord Guild, channel keys (values) Not actual keys.
+ * The type Keys.
  */
 public class Keys {
 
@@ -18,11 +18,14 @@ public class Keys {
      * The constant PROD_CHANNEL_ID_TECH.
      */
     public static String PROD_CHANNEL_ID_TECH = "1026952329804644372";
+
+    public static String PROD_CHANNEL_BUG_TECH = "1299913797045325957";
     /**
      * The constant PROD_CHANNEL_FEEDBACK.
      */
     public static String PROD_CHANNEL_FEEDBACK = "1249822008536072233";
 
+    public static String LEADERBOARD_CHANNEL = "1169386870849929246";
 
     /**
      * The constant BETA_CHANNEL_ID_SENSEI.
@@ -40,6 +43,9 @@ public class Keys {
      * The constant BETA_CHANNEL_ID_TECH.
      */
     public static String BETA_CHANNEL_ID_TECH = "1176283564208308296";
+
+
+    public static String BETA_CHANNEL_BUG_TECH = "1176283564208308296";
 
     /**
      * The constant TRAINING_PROGRAM_GUILD.

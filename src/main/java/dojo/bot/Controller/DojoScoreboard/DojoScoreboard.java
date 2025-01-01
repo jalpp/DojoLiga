@@ -21,12 +21,9 @@ import java.util.ArrayList;
 public class DojoScoreboard {
 
     private static final String BETA = "https://c2qamdaw08.execute-api.us-east-1.amazonaws.com/tournaments";
-
     private static final String BETA_UPDATE = "https://c2qamdaw08.execute-api.us-east-1.amazonaws.com/tournaments/leaderboard";
-
     private static final String CREATE_TOURNAMENT_URL = "https://g4shdaq6ug.execute-api.us-east-1.amazonaws.com/tournaments";
     private static final String UPDATE_LEADERBOARD_URL = "https://g4shdaq6ug.execute-api.us-east-1.amazonaws.com/tournaments/leaderboard";
-
     private static final String GET_LEADERBOARD_URL  = "https://g4shdaq6ug.execute-api.us-east-1.amazonaws.com/public/tournaments/leaderboard";
 
     /**
@@ -124,7 +121,7 @@ public class DojoScoreboard {
      * @param scoreField     The field used to get a player's score.
      */
     public static void updateLeaderboardCC(Time_Control timeControl, String tournamentType,
-                                           MongoCollection<Document> collection, String scoreField) {
+                                         MongoCollection<Document> collection, String scoreField) {
 
         String URL = Main.IS_BETA ? BETA_UPDATE : UPDATE_LEADERBOARD_URL;
 
@@ -198,7 +195,7 @@ public class DojoScoreboard {
             e.printStackTrace();
         }
 
-        return null;
+      return null;
 
     }
 

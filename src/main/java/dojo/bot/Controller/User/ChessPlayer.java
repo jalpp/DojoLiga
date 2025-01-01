@@ -29,7 +29,7 @@ public class ChessPlayer {
      * @param name      the name
      * @param discordId the discord id
      */
-    public ChessPlayer(String name, String discordId) {
+    public ChessPlayer(String name, String discordId){
         this.DiscordId = discordId;
         this.chesscomname = name;
     }
@@ -63,10 +63,10 @@ public class ChessPlayer {
      * @param classical_rating                    the classical rating
      */
     public ChessPlayer(String lichessname, String discordId, int blitz, int rapid, int classical,
-                       int blitz_arena_gp, int rapid_arena_gp, int classical_arena_gp, int blitz_swiss, int rapid_swiss, int classical_swiss
-            , int blitz_swiss_gp, int classical_swiss_gp, int rapid_swiss_gp, int comb_blitz_arena_swiss_score, int comb_rapid_arena_swiss_score, int
-                               comb_classical_arena_swiss_score, int comb_blitz_arena_swiss_gp_score, int comb_rapid_arena_swiss_gp_score, int comb_classical_arena_swiss_gp_score,
-                       int blitz_rating, int rapid_rating, int classical_rating) {
+    int blitz_arena_gp, int rapid_arena_gp, int classical_arena_gp, int blitz_swiss, int rapid_swiss, int classical_swiss
+    , int blitz_swiss_gp, int classical_swiss_gp, int rapid_swiss_gp, int comb_blitz_arena_swiss_score, int comb_rapid_arena_swiss_score, int
+                       comb_classical_arena_swiss_score, int comb_blitz_arena_swiss_gp_score, int comb_rapid_arena_swiss_gp_score, int comb_classical_arena_swiss_gp_score,
+                       int blitz_rating, int rapid_rating, int classical_rating){
         this.Lichessname = lichessname;
         this.DiscordId = discordId;
         this.BLITZ_SCORE = blitz;
@@ -82,7 +82,7 @@ public class ChessPlayer {
      * @param rating   the rating
      * @param score    the score
      */
-    public ChessPlayer(String username, int rating, int score) {
+    public ChessPlayer(String username, int rating, int score){
         this.username = username;
         this.rating = rating;
         this.score = score;

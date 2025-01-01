@@ -26,9 +26,6 @@ import static dojo.bot.Controller.Discord.DiscordAdmin.isDiscordAdmin;
 public class AutomaticComputeManager {
 
 
-
-
-
     /**
      * Discord Action to start computing scores
      *
@@ -84,6 +81,9 @@ public class AutomaticComputeManager {
         List<String> arenaids = ComputeScorescc.compareCollections(arenacc, MongoConnect.getComputedId(), "arenacc");
 
         arenaids.removeIf(Objects::isNull);
+
+        System.out.println(swissids);
+        System.out.println(arenaids);
 
 
         if(arenaids.isEmpty() && swissids.isEmpty()){
@@ -153,7 +153,7 @@ public class AutomaticComputeManager {
 
         for (Tournament tournament : arenaList) {
 
-            if(tournament.startsTime().getMonthValue() != now.getMonthValue() && tournament.startsTime().getYear() == now.getYear()){
+            if(tournament.startsTime().getMonth() != now.getMonth() && tournament.startsTime().getYear() == now.getYear()){
                 System.out.println("Arena was ignored due last month");
                 continue;
             }
@@ -224,24 +224,21 @@ public class AutomaticComputeManager {
         List<Tournament> listMega = new ArrayList<>(Client.basic().teams().arenaByTeamId("chessdojo", 50).stream().filter(tournament -> tournament.fullName().contains("Lichess Mega ")).filter(tournament -> tournament.finishesTime().getMonthValue() == now.getMonthValue()).toList());
 
 
-        List<Tournament> list = new ArrayList<>();
-
-        list.addAll(listLiga);
-        list.addAll(listMega);
 
 
-        if(list.isEmpty()){
+
+        if(listLiga.isEmpty()){
             event.getChannel().sendMessage("No new completed Lichess Dojo Liga tournaments found. Scores cannot be computed.").queue();
             return;
         }
 
-        for(Tournament t: list){
+        for(Tournament t: listLiga){
             injection.InjectLigaTournament(event, arena, "tournament/", "https://lichess.org/tournament/" + t.id());
         }
 
-        event.getChannel().sendMessage("Computing Lichess Dojo Liga tournaments of size " + list.size() + "  Please wait!").queue();
+        event.getChannel().sendMessage("Computing Lichess Dojo Liga tournaments of size " + listLiga.size() + "  Please wait!").queue();
 
-        for(Tournament t: list){
+        for(Tournament t: listLiga){
             String res = compute.calculateLichessLigaScores("https://lichess.org/tournament/" + t.id(), arena);
             event.getChannel().sendMessage(res).queue();
         }

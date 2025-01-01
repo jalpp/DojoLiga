@@ -11,15 +11,14 @@ import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 
-
 /**
  * The type User arena.
  */
 public class UserArena {
 
-    private final Client client;
+    private Client client;
     private EmbedBuilder embedBuilder;
-    private final String arenaID;
+    private String arenaID;
 
     /**
      * Instantiates a new User arena.
@@ -57,6 +56,7 @@ public class UserArena {
             }
 
 
+
             One<Arena> arenaResult1 = client.tournaments().arenaById(touryID);
 
             if (arenaResult1.isPresent() && spliturl[0].startsWith("http") && spliturl[0].contains("lichess")) {
@@ -64,6 +64,7 @@ public class UserArena {
                 Arena arena = arenaResult1.get();
 
                 System.out.println(arena);
+
 
 
                 String name = arena.fullName();
@@ -81,6 +82,8 @@ public class UserArena {
 
 
                 Arena.Standing standing = arena.standing();
+
+
 
 
                 List<Arena.Standing.Player> players = standing.players();
@@ -103,11 +106,11 @@ public class UserArena {
 
                 this.embedBuilder = new EmbedBuilder();
                 this.embedBuilder.setColor(Color.BLACK);
-                this.embedBuilder.setTitle("\uD83C\uDF96️ " + name + " \uD83C\uDF96️");
-                this.embedBuilder.setDescription("** Tournament Name:** " + name + "\n **Variant:** " + perfname + "\n **Time Duration :** " + timeLeft + " mins" + "\n **Total Players:** " + numPlayers + "\n **Standings:**" + "\n  **Rank**  **Username**  **Rating:**  **Score** \n \n " + " **Podium** \n " + standPodium + "\n\n **Leaderboard** \n" + stand + "\n" + "[View on Lichess](" + this.arenaID + ")");
+                this.embedBuilder.setTitle( "\uD83C\uDF96️ " + name  + " \uD83C\uDF96️");
+                this.embedBuilder.setDescription("** Tournament Name:** " + name + "\n **Variant:** " + perfname  + "\n **Time Duration :** " + timeLeft + " mins" + "\n **Total Players:** " + numPlayers + "\n **Standings:**" + "\n  **Rank**  **Username**  **Rating:**  **Score** \n \n " + " **Podium** \n " + standPodium + "\n\n **Leaderboard** \n" + stand + "\n" + "[View on Lichess](" + this.arenaID + ")");
 
 
-            } else {
+            }else{
                 this.embedBuilder = new EmbedBuilder();
                 String[] splitswiss = this.arenaID.split("swiss/");
 
@@ -122,7 +125,7 @@ public class UserArena {
 
                 One<Swiss> swissResult = this.client.tournaments().swissById(touryIDSwiss);
 
-                if (swissResult.isPresent()) {
+                if(swissResult.isPresent()){
                     SwissResults swissResults = new SwissResults(client, touryIDSwiss);
                     return swissResults.getLinkResults();
                 }
@@ -130,7 +133,7 @@ public class UserArena {
                 return this.embedBuilder.setDescription("Error occurred, please provide valid Lichess URL");
             }
 
-        } catch (Exception e) {
+        }catch (Exception e){
             e.printStackTrace();
             this.embedBuilder = new EmbedBuilder();
             return this.embedBuilder.setDescription("Error occurred, please provide valid Lichess arena url");
@@ -143,3 +146,4 @@ public class UserArena {
 
 
 }
+

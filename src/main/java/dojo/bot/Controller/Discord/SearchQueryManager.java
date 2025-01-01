@@ -27,24 +27,24 @@ public class SearchQueryManager {
      */
     public void renderSearchResults(SlashCommandInteractionEvent event, SearchQuery query){
 
-        if(DiscordAdmin.isDiscordAdmin(event)){
-            event.deferReply(true).queue();
-            String mode = event.getOptionsByName("query-mode").get(0).getAsString();
-            String searchVal = event.getOption("value-search").getAsString();
-            switch (mode){
-                case "limode" -> {
-                    event.getHook().sendMessage(query.searchUserByLichessUser(searchVal, MongoConnect.getLichessplayers())).queue();
-                }
-                case "ccmode" -> {
-                    event.getHook().sendMessage(query.searchUserByChessComUser(searchVal, MongoConnect.getChesscomplayers())).queue();
-                }
-                case "dimode" -> {
-                    event.getHook().sendMessage(query.searchUserByDiscordID(searchVal, MongoConnect.getLichessplayers())).queue();
-                }
-            }
-        } else{
-            event.reply("Your not an admin!").queue();
-        }
+       if(DiscordAdmin.isDiscordAdmin(event)){
+           event.deferReply(true).queue();
+           String mode = event.getOptionsByName("query-mode").get(0).getAsString();
+           String searchVal = event.getOption("value-search").getAsString();
+           switch (mode){
+               case "limode" -> {
+                   event.getHook().sendMessage(query.searchUserByLichessUser(searchVal, MongoConnect.getLichessplayers())).queue();
+               }
+               case "ccmode" -> {
+                   event.getHook().sendMessage(query.searchUserByChessComUser(searchVal, MongoConnect.getChesscomplayers())).queue();
+               }
+               case "dimode" -> {
+                   event.getHook().sendMessage(query.searchUserByDiscordID(searchVal, MongoConnect.getLichessplayers())).queue();
+               }
+           }
+       } else{
+           event.reply("Your not an admin!").queue();
+       }
 
     }
 

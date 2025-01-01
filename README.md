@@ -1,8 +1,7 @@
 # DojoLiga
 
-DojoLiga is an open source serverless Discord backed backend system that allows Dojo community admins to create/config and manage Lichess and Chess.com arena, swiss and round robin tournaments, while allows users to play in Dojo yearly tournaments and qualify for Dojo candidates! More info [here](https://www.chessdojo.club/tournaments?type=info)
-
-
+This repo contains source code for the backend of DojoLiga, a chess league management system. 
+Also foundation code for ChessDojo.club's round robin system
 ## Tech Stack
 
 - Java 21
@@ -14,9 +13,7 @@ DojoLiga is an open source serverless Discord backed backend system that allows 
 - Discord API 
 - Lichess API 
 - ChessCom API 
-- AWS API Gateway
-- AWS EventBridge
-- AWS lambda
+
 
 
 ## Features:
@@ -29,7 +26,7 @@ DojoLiga is an open source serverless Discord backed backend system that allows 
 
 ## User docs
 
-```TDdocs.md``` and ```TDroundrobindocs``` contain tournament director/admin and user
+```TDdocs.md``` contain tournament director/admin and user
 command docs 
 
 ## Set up
@@ -48,5 +45,3 @@ to run the full chess league and round robins you would need
 - @jackstenglein main developer of frontend ChessDojo.club site, also helping with API integration
 
 
-## License:
-DojoLiga is licensed as GPL-3.0, please read license requirements

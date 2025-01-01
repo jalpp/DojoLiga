@@ -2,20 +2,19 @@ package dojo.bot.Controller.Discord;
 
 import chariot.Client;
 import com.mongodb.client.MongoCollection;
+import dojo.bot.Controller.CalculateScores.AutomaticComputeManager;
+import dojo.bot.Controller.CalculateScores.ComputeScores;
+import dojo.bot.Controller.CalculateScores.ComputeScorescc;
 import dojo.bot.Controller.Database.Injection;
 import dojo.bot.Controller.Database.SearchQuery;
+import dojo.bot.Controller.League.ConfigLeagueManager;
 import dojo.bot.Controller.League.FutureTournamentViewerManager;
-import dojo.bot.Controller.RoundRobin.RoundRobinManager;
+import dojo.bot.Controller.Standing.ComputeStandings;
 import dojo.bot.Controller.Standing.StandingReactManager;
 import dojo.bot.Controller.TicketSystem.TicketManager;
 import dojo.bot.Controller.User.UserLeagueActionManager;
 import dojo.bot.Controller.User.UserProfileManager;
 import dojo.bot.Controller.User.Verification;
-import dojo.bot.Controller.CalculateScores.AutomaticComputeManager;
-import dojo.bot.Controller.CalculateScores.ComputeScores;
-import dojo.bot.Controller.CalculateScores.ComputeScorescc;
-import dojo.bot.Controller.League.ConfigLeagueManager;
-import dojo.bot.Controller.Standing.ComputeStandings;
 import dojo.bot.Controller.Winner.ComputeLigaWinner;
 import dojo.bot.Controller.Winner.WinnerPolicy;
 import io.github.sornerol.chess.pubapi.exception.ChessComPubApiException;
@@ -31,7 +30,7 @@ import java.io.IOException;
 import static dojo.bot.Controller.Discord.DiscordAdmin.isDiscordAdmin;
 
 /**
- * An Object that provides methods for DojoLiga to act upon Discord
+ * An Object that provides methods for DojoSwissManager to act upon Discord
  * events related to creating Leagues, checking admins, etc
  */
 public class DiscordAction {
@@ -48,7 +47,7 @@ public class DiscordAction {
     private final AutomaticComputeManager automaticComputeManager = new AutomaticComputeManager();
     private final Injection injectionManager = new Injection();
     private final SearchQueryManager queryManager = new SearchQueryManager();
-    private final RoundRobinManager roundRobinManager = new RoundRobinManager();
+
 
     /**
      * Instantiates a new Discord action.
@@ -97,7 +96,7 @@ public class DiscordAction {
     public void configLeagueSwiss(SlashCommandInteractionEvent event, MongoCollection<Document> swissLeagueCollection) {
 
         if (!Slow_down_buddy.checkSpam(event)) {
-            configLeagueManager.configLeagueSwiss(event,swissLeagueCollection);
+           configLeagueManager.configLeagueSwiss(event,swissLeagueCollection);
         } else {
             event.reply("Slow down Admin ;) Try again in 1 min").setEphemeral(true).queue();
         }
@@ -115,7 +114,7 @@ public class DiscordAction {
      */
     public void startComputingScores(SlashCommandInteractionEvent event, ComputeScores compute,
                                      MongoCollection<Document> arenaLeagueCollection, MongoCollection<Document> swissLeagueCollection) throws ChessComPubApiException, IOException {
-        automaticComputeManager.startComputingScores(event,compute,arenaLeagueCollection,swissLeagueCollection, Slow_down_buddy);
+         automaticComputeManager.startComputingScores(event,compute,arenaLeagueCollection,swissLeagueCollection, Slow_down_buddy);
     }
 
     /**
@@ -132,7 +131,7 @@ public class DiscordAction {
         if (Slow_down_buddy.checkSpam(event)) {
             event.reply("Slow Down buddy, go watch ChessDojo and run the command after a 1 min!").setEphemeral(true).queue();
         }else{
-            vertificationManager.startVerificationProcessLichess(event,passport,collection);
+           vertificationManager.startVerificationProcessLichess(event,passport,collection);
         }
     }
 
@@ -147,11 +146,11 @@ public class DiscordAction {
      * @throws IOException             the io exception
      */
     public void startVerificationProcessChessCom(SlashCommandInteractionEvent event, Verification passport,
-                                                 MongoCollection<Document> collection) throws ChessComPubApiException, IOException {
+                                         MongoCollection<Document> collection) throws ChessComPubApiException, IOException {
         if (Slow_down_buddy.checkSpam(event)) {
             event.reply("Slow Down buddy, go watch ChessDojo and run the command after a 1 min!").setEphemeral(true).queue();
         }else{
-            vertificationManager.startVerificationProcessChessCom(event,passport,collection);
+           vertificationManager.startVerificationProcessChessCom(event,passport,collection);
         }
     }
 
@@ -236,7 +235,7 @@ public class DiscordAction {
      */
     public void getScoreReact(SlashCommandInteractionEvent event, ComputeScores compute,
                               MongoCollection<Document> collection) {
-        playerLeagueActionManager.getScoreReact(event,compute,collection,Slow_down_buddy);
+         playerLeagueActionManager.getScoreReact(event,compute,collection,Slow_down_buddy);
     }
 
     /**
@@ -246,8 +245,8 @@ public class DiscordAction {
      * @param channelId  Channel ID
      * @param collection collection of players
      */
-    public void sendStandingEmbeds(JDA jda, String channelId, MongoCollection<Document> collection) {
-        standingReactManager.sendStandingEmbeds(jda, channelId, collection);
+    public void sendStandingEmbeds(JDA jda, String channelId, MongoCollection<Document> collection, MongoCollection<Document> ccCollection) {
+         standingReactManager.sendStandingEmbeds(jda, channelId, collection, ccCollection);
     }
 
     /**
@@ -308,7 +307,7 @@ public class DiscordAction {
      */
     public void inject(SlashCommandInteractionEvent event, MongoCollection<Document> arena,
                        MongoCollection<Document> swiss) {
-        injectionManager.inject(event,arena,swiss);
+     injectionManager.inject(event,arena,swiss);
 
     }
 
@@ -342,7 +341,7 @@ public class DiscordAction {
      */
     public void automaticComputeScores(MessageReceivedEvent event, ComputeScores compute,
                                        MongoCollection<Document> arenaCollection, MongoCollection<Document> swissCollection) throws ChessComPubApiException, IOException {
-        automaticComputeManager.automaticComputeScores(event,compute,arenaCollection,swissCollection);
+       automaticComputeManager.automaticComputeScores(event,compute,arenaCollection,swissCollection);
     }
 
 
@@ -375,8 +374,12 @@ public class DiscordAction {
      * @param tpchannel       Training program channel
      * @param tacchannel      feedback channel
      */
-    public void ticketFormSystem(ModalInteractionEvent event, String senseiChannelId, String techChannelID, String tpchannel, String tacchannel){
-        ticketSystem.ticketFormSystem(event,senseiChannelId,techChannelID,tpchannel, tacchannel);
+    public void ticketFormSystem(ModalInteractionEvent event, String senseiChannelId, String techChannelID, String tpchannel, String tacchannel, String techBugID){
+       try{
+           ticketSystem.ticketFormSystem(event,senseiChannelId,techChannelID,tpchannel, tacchannel, techBugID);
+       }catch (Exception e){
+           System.out.println(e.getMessage());
+       }
 
     }
 
@@ -386,7 +389,7 @@ public class DiscordAction {
      * @param event Discord trigger event
      */
     public void sentTheForms(ButtonInteraction event){
-        ticketSystem.sentTheForms(event);
+       ticketSystem.sentTheForms(event);
     }
 
 
@@ -419,7 +422,7 @@ public class DiscordAction {
      * @param event the event
      */
     public void unlinkeUserBelt(SlashCommandInteractionEvent event){
-        playerLeagueActionManager.unlinkeUserBelt(event);
+       playerLeagueActionManager.unlinkeUserBelt(event);
     }
 
     /**
@@ -431,15 +434,6 @@ public class DiscordAction {
         queryManager.renderSearchResults(event, new SearchQuery());
     }
 
-    /**
-     * Config round robin tournament.
-     *
-     * @param event        the event
-     * @param RRcollection the r rcollection
-     */
-    public void configRoundRobinTournament(SlashCommandInteractionEvent event, MongoCollection<Document> RRcollection){
-        roundRobinManager.configRoundRobinTournament(event, RRcollection);
-    }
 
     /**
      * Player register.
@@ -449,48 +443,9 @@ public class DiscordAction {
      * @param RRcollection       the r rcollection
      */
     public void playerRegister(SlashCommandInteractionEvent event, MongoCollection<Document> RRplayerCollection, MongoCollection<Document> RRcollection){
-        roundRobinManager.playerRegister(event, RRplayerCollection, RRcollection);
+        event.reply("Player Registration has been migrated to ChessDojo.club!").queue();
     }
 
-    /**
-     * Generate pairings.
-     *
-     * @param event        the event
-     * @param RRcollection the r rcollection
-     */
-    public void generatePairings(SlashCommandInteractionEvent event, MongoCollection<Document> RRcollection){
-        roundRobinManager.generatePairings(event, RRcollection);
-    }
-
-    /**
-     * Display pairings.
-     *
-     * @param event        the event
-     * @param RRcollection the r rcollection
-     */
-    public void displayPairings(SlashCommandInteractionEvent event, MongoCollection<Document> RRcollection){
-        roundRobinManager.displayPairings(event, RRcollection);
-    }
-
-    /**
-     * Open tournament.
-     *
-     * @param event        the event
-     * @param RRcollection the r rcollection
-     */
-    public void openTournament(SlashCommandInteractionEvent event, MongoCollection<Document> RRcollection){
-        roundRobinManager.openTournament(event, RRcollection);
-    }
-
-    /**
-     * Close tournament.
-     *
-     * @param event        the event
-     * @param RRcollection the r rcollection
-     */
-    public void closeTournament(SlashCommandInteractionEvent event, MongoCollection<Document> RRcollection){
-        roundRobinManager.closeTournament(event,RRcollection);
-    }
 
     /**
      * Player submit game.
@@ -498,48 +453,9 @@ public class DiscordAction {
      * @param event the event
      */
     public void playerSubmitGame(SlashCommandInteractionEvent event){
-        roundRobinManager.playerSubmitGame(event);
+        event.reply("Submitting game has been migrated to Chessdojo.club!").queue();
     }
 
-    /**
-     * View submitted games.
-     *
-     * @param event        the event
-     * @param RRcollection the r rcollection
-     */
-    public void viewSubmittedGames(SlashCommandInteractionEvent event, MongoCollection<Document> RRcollection){
-        roundRobinManager.viewSubmittedGames(event, RRcollection);
-    }
-
-    /**
-     * Publish tournament.
-     *
-     * @param event        the event
-     * @param RRcollection the r rcollection
-     */
-    public void publishTournament(SlashCommandInteractionEvent event, MongoCollection<Document> RRcollection){
-        roundRobinManager.publishTournament(event, RRcollection);
-    }
-
-    /**
-     * Round robin helper.
-     *
-     * @param event the event
-     */
-    public void roundRobinHelper(SlashCommandInteractionEvent event){
-        roundRobinManager.roundRobinHelper(event);
-    }
-
-    /**
-     * Adminaddplayer.
-     *
-     * @param event              the event
-     * @param RRplayercollection the r rplayercollection
-     * @param RRcollection       the r rcollection
-     */
-    public void adminaddplayer(SlashCommandInteractionEvent event, MongoCollection<Document> RRplayercollection, MongoCollection<Document> RRcollection){
-        roundRobinManager.adminForcePushPlayer(event, RRcollection, RRplayercollection);
-    }
 
     /**
      * Handle game modal.
@@ -549,18 +465,9 @@ public class DiscordAction {
      * @param RRcollection       the r rcollection
      */
     public void handleGameModal(ModalInteractionEvent event, MongoCollection<Document> RRplayercollection, MongoCollection<Document> RRcollection){
-        roundRobinManager.handleGameModal(event, RRplayercollection, RRcollection);
+        event.reply("Handling Game Modal is not required!").queue();
     }
 
-    /**
-     * Withdraw.
-     *
-     * @param event        the event
-     * @param RRcollection the r rcollection
-     */
-    public void withdraw(SlashCommandInteractionEvent event, MongoCollection<Document> RRcollection){
-        roundRobinManager.playerWithdraw(event, RRcollection);
-    }
 
 
 

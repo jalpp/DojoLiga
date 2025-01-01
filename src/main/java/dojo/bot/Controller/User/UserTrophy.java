@@ -1,17 +1,16 @@
 package dojo.bot.Controller.User;
 
 import chariot.model.Trophy;
-
 import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Class for User's Lichess trophies
+ * The type User trophy.
  */
 public class UserTrophy {
 
     private final String trophyName;
-    private Trophy trophy;
-
+    private final Trophy trophy;
 
     /**
      * Instantiates a new User trophy.
@@ -19,24 +18,17 @@ public class UserTrophy {
      * @param trophy the trophy
      */
     public UserTrophy(Trophy trophy) {
-
         this.trophy = trophy;
         this.trophyName = trophy.name();
-
     }
 
-
     /**
-     * Gets image link.
+     * Get image link string.
      *
-     * @return the image link
+     * @return the string
      */
     public String getImageLink() {
-
-
-        HashMap<String, String> getLink = new HashMap<>();
-
-
+        Map<String, String> getLink = new HashMap<>();
         getLink.put("Marathon Winner", "\uD83D\uDD2E");
         getLink.put("Marathon Top 10", "\uD83C\uDF15");
         getLink.put("Other", "\uD83C\uDFC6");
@@ -45,29 +37,7 @@ public class UserTrophy {
         getLink.put("Lichess content team", "✍️");
         getLink.put("Lichess developer", "\uD83D\uDEE0️");
 
-
-        String imageLink;
-        if (this.trophyName.equals("Marathon Winner")) {
-            imageLink = getLink.get("Marathon Winner");
-        } else if (this.trophyName.equals("Marathon Top 10")) {
-            imageLink = getLink.get("Marathon Top 10");
-        } else if (!this.trophyName.equals("Verified account") && !this.trophyName.equals("Lichess moderator") && !this.trophyName.equals("Lichess content team") && !this.trophyName.equals("Lichess developer")) {
-            imageLink = getLink.get("Other");
-        } else if (this.trophyName.equals("Verified account")) {
-            imageLink = getLink.get("Verified account");
-        } else if (this.trophyName.equals("Lichess moderator")) {
-            imageLink = getLink.get("Lichess moderator");
-        } else if (this.trophyName.equals("Lichess content team")) {
-            imageLink = getLink.get("Lichess content team");
-        } else {
-            imageLink = getLink.get("Lichess developer");
-        }
-
-
-        return imageLink + " " + this.trophyName;
-
-
+        String imageLink = getLink.getOrDefault(trophyName, getLink.get("Other"));
+        return imageLink + " " + trophyName;
     }
-
-
 }

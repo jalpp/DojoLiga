@@ -109,7 +109,7 @@ public class ManageRoles {
     }
 
     private void updatePlayerCC(String playerName, int value, String fieldName,
-                                MongoCollection<Document> collection) {
+                              MongoCollection<Document> collection) {
         Document query = new Document("Chesscomname", playerName);
 
         if (collection.countDocuments() <= 0) {
@@ -275,7 +275,7 @@ public class ManageRoles {
                 }
 
             }
-
+            
         }
 
         return -1;
@@ -385,8 +385,8 @@ public class ManageRoles {
         for (Role role : roles) {
             String roleName = role.getName().toLowerCase();
             if (roleName.equalsIgnoreCase("White belt") || roleName.equalsIgnoreCase("Green belt") || roleName.equalsIgnoreCase("Red Belt")
-                    || roleName.equalsIgnoreCase("Black belt") || roleName.equalsIgnoreCase("Purple belt")
-                    || roleName.equalsIgnoreCase("Blue belt") || roleName.equalsIgnoreCase("Yellow belt")) {
+            || roleName.equalsIgnoreCase("Black belt") || roleName.equalsIgnoreCase("Purple belt")
+            || roleName.equalsIgnoreCase("Blue belt") || roleName.equalsIgnoreCase("Yellow belt")) {
                 guild.removeRoleFromMember(member, role).queue();
             }
         }
@@ -401,27 +401,27 @@ public class ManageRoles {
      * @throws IOException             the io exception
      */
     public void startUpdatingRoles(SlashCommandInteractionEvent event, Verification pass) throws ChessComPubApiException, IOException {
-        try{
-            System.out.println("test");
-            event.deferReply().setEphemeral(true).queue();
-            String li = pass.getReletatedLichessName(event.getUser().getId(), MongoConnect.getLichessplayers());
-            String cc = pass.getReletatedChessName(event.getUser().getId(), MongoConnect.getChesscomplayers());
+       try{
+           System.out.println("test");
+           event.deferReply().setEphemeral(true).queue();
+           String li = pass.getReletatedLichessName(event.getUser().getId(), MongoConnect.getLichessplayers());
+           String cc = pass.getReletatedChessName(event.getUser().getId(), MongoConnect.getChesscomplayers());
 
-            System.out.println(li);
-            System.out.println(cc);
+           System.out.println(li);
+           System.out.println(cc);
 
 
 
-            if(calculateChesscomRoleIndex(event, pass, cc) == -1 && calculateLichessRoleIndex(event, pass, li) == -1){
-                event.getHook().sendMessage("Error! Lichess.org Rapid and Classical ratings are ? and Chess.com account not linked! " +
-                        "I can't give belts. Please play more games or link chess.com account").queue();
-                return;
-            }
+           if(calculateChesscomRoleIndex(event, pass, cc) == -1 && calculateLichessRoleIndex(event, pass, li) == -1){
+               event.getHook().sendMessage("Error! Lichess.org Rapid and Classical ratings are ? and Chess.com account not linked! " +
+                       "I can't give belts. Please play more games or link chess.com account").queue();
+               return;
+           }
 
-            this.assignTheHighestRole(pass, event, true);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+           this.assignTheHighestRole(pass, event, true);
+       }catch (Exception e){
+           e.printStackTrace();
+       }
 
     }
 

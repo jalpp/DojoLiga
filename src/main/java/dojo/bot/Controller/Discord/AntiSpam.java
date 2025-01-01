@@ -5,7 +5,6 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import java.util.HashMap;
 import java.util.Map;
 
-
 /**
  * The type Anti spam.
  */
@@ -58,3 +57,4 @@ public class AntiSpam {
 
 
 }
+

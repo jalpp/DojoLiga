@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.util.List;
 
 import static dojo.bot.Controller.CalculateScores.ScoresUtil.*;
-import static dojo.bot.Controller.CalculateScores.ScoresUtil.getTeamLinearIndex;
 
 public class ComputeScores {
 
@@ -309,9 +308,9 @@ public class ComputeScores {
                     "if you are trying to compute Lichess liga results run /inject [URL] to inject the URL in the database.";
         }
 
-        if (isTournamentIDresent(touryID, MongoConnect.getComputedId())) {
-            return "This Tournament is already computed! Try another tournament";
-        }
+//        if (isTournamentIDresent(touryID, MongoConnect.getComputedId())) {
+//            return "This Tournament is already computed! Try another tournament";
+//        }
 
 
         Time_Control timeControl = Time_Control.fromString(arenaResult1.get().perf().key());
@@ -627,57 +626,57 @@ public class ComputeScores {
      * @return A JDA EmbedBuilder containing the player's rank card.
      */
     public EmbedBuilder getPlayerRankCard(String playerName, MongoCollection<Document> collection) {
-        try{
-            Document query = new Document("Discordid", playerName);
-            Document result = collection.find(query).first();
-            EmbedBuilder embedBuilder = new EmbedBuilder();
+       try{
+           Document query = new Document("Discordid", playerName);
+           Document result = collection.find(query).first();
+           EmbedBuilder embedBuilder = new EmbedBuilder();
 
-            if (collection.countDocuments(query) <= 0) {
-                return new EmbedBuilder().setDescription("You have not verified your Lichess account, run /verify!")
-                        .setColor(Color.red);
-            }
-            assert result != null;
+           if (collection.countDocuments(query) <= 0) {
+               return new EmbedBuilder().setDescription("You have not verified your Lichess account, run /verify!")
+                       .setColor(Color.red);
+           }
+           assert result != null;
 
-            embedBuilder.setColor(Color.GREEN);
-            embedBuilder.setThumbnail(
-                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDEcmvHJKxeF0L1dmlpickvkGNpTWPcNSGPV_c-ZiL6T8MsIxey-61J3VkehDCIi6tN5s&usqp=CAU");
-            embedBuilder.setTitle(result.getString("Lichessname") + "'s Ranks:");
-            embedBuilder.setDescription(
-                    " **League Player Count:** " + collection.countDocuments() + " \n\n \uD83D\uDD25 **Blitz**"
-                            + "\n **Arena Rank:** "
-                            + "\n" + getPlayerRank(playerName, collection, "blitz_score") + "\n" +
-                            "**Swiss Rank:** " + "\n" + getPlayerRankDouble(playerName, collection, "blitz_score_swiss")
-                            + "\n" +
-                            "**Grand Prix:** " + "\n"
-                            + getPlayerRank(playerName, collection, "blitz_comb_total_gp") + "\n\n" +
-                            "  **\uD83D\uDC07 Rapid**"
-                            + "\n **Arena Rank:** " + "\n"
-                            + getPlayerRank(playerName, collection, "rapid_score") + "\n" +
-                            "**Swiss Rank:** " + "\n" + getPlayerRankDouble(playerName, collection, "rapid_score_swiss")
-                            + "\n" +
-                            "**Grand Prix:**" + "\n"
-                            + getPlayerRank(playerName, collection, "rapid_comb_total_gp") + "\n\n" +
-                            " \uD83D\uDC22 **Classical**"
-                            + "\n **Arena Rank:** " + "\n"
-                            + getPlayerRank(playerName, collection, "classical_score") + "\n" +
-                            "**Swiss Rank:** " + "\n"
-                            + getPlayerRankDouble(playerName, collection, "classical_score_swiss") + "\n" +
-                            "**Grand Prix: **" + "\n"
-                            + getPlayerRank(playerName, collection, "classical_comb_total_gp") + "\n\n" +
-                            "♻️ **Sparring**" + "\n **Middlegame Sparring Rank:** " + "\n"
-                            + getPlayerRank(playerName, collection, "sp_score") + "\n"
-                            + "**Endgame Sparring Rank:** \n" + getPlayerRank(playerName, collection, "eg_score"));
+           embedBuilder.setColor(Color.GREEN);
+           embedBuilder.setThumbnail(
+                   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDEcmvHJKxeF0L1dmlpickvkGNpTWPcNSGPV_c-ZiL6T8MsIxey-61J3VkehDCIi6tN5s&usqp=CAU");
+           embedBuilder.setTitle(result.getString("Lichessname") + "'s Ranks:");
+           embedBuilder.setDescription(
+                   " **League Player Count:** " + collection.countDocuments() + " \n\n \uD83D\uDD25 **Blitz**"
+                           + "\n **Arena Rank:** "
+                           + "\n" + getPlayerRank(playerName, collection, "blitz_score") + "\n" +
+                           "**Swiss Rank:** " + "\n" + getPlayerRankDouble(playerName, collection, "blitz_score_swiss")
+                           + "\n" +
+                           "**Grand Prix:** " + "\n"
+                           + getPlayerRank(playerName, collection, "blitz_comb_total_gp") + "\n\n" +
+                           "  **\uD83D\uDC07 Rapid**"
+                           + "\n **Arena Rank:** " + "\n"
+                           + getPlayerRank(playerName, collection, "rapid_score") + "\n" +
+                           "**Swiss Rank:** " + "\n" + getPlayerRankDouble(playerName, collection, "rapid_score_swiss")
+                           + "\n" +
+                           "**Grand Prix:**" + "\n"
+                           + getPlayerRank(playerName, collection, "rapid_comb_total_gp") + "\n\n" +
+                           " \uD83D\uDC22 **Classical**"
+                           + "\n **Arena Rank:** " + "\n"
+                           + getPlayerRank(playerName, collection, "classical_score") + "\n" +
+                           "**Swiss Rank:** " + "\n"
+                           + getPlayerRankDouble(playerName, collection, "classical_score_swiss") + "\n" +
+                           "**Grand Prix: **" + "\n"
+                           + getPlayerRank(playerName, collection, "classical_comb_total_gp") + "\n\n" +
+                           "♻️ **Sparring**" + "\n **Middlegame Sparring Rank:** " + "\n"
+                           + getPlayerRank(playerName, collection, "sp_score") + "\n"
+                           + "**Endgame Sparring Rank:** \n" + getPlayerRank(playerName, collection, "eg_score"));
 
-            embedBuilder.setFooter(
-                    "**Note: Players can view their league scores with /score");
-            System.out.println(embedBuilder.getDescriptionBuilder().toString());
+           embedBuilder.setFooter(
+                   "**Note: Players can view their league scores with /score");
+           System.out.println(embedBuilder.getDescriptionBuilder().toString());
 
-            return embedBuilder;
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-            return new EmbedBuilder().setDescription("Error!");
-        }
+           return embedBuilder;
+       }catch (Exception e){
+           System.out.println(e.getMessage());
+           e.printStackTrace();
+           return new EmbedBuilder().setDescription("Error!");
+       }
     }
 
     /**
@@ -729,49 +728,49 @@ public class ComputeScores {
      * @return A JDA EmbedBuilder containing the player's score card.
      */
     public EmbedBuilder getPlayerScore(String playerName, MongoCollection<Document> collection) {
-        try{
-            Document query = new Document("Discordid", playerName);
-            Document result = collection.find(query).first();
-            EmbedBuilder embedBuilder = new EmbedBuilder();
+       try{
+           Document query = new Document("Discordid", playerName);
+           Document result = collection.find(query).first();
+           EmbedBuilder embedBuilder = new EmbedBuilder();
 
-            if (collection.countDocuments(query) <= 0) {
-                return new EmbedBuilder().setDescription("You have not verified your Lichess account, run /verify!")
-                        .setColor(Color.red);
-            }
-            assert result != null;
+           if (collection.countDocuments(query) <= 0) {
+               return new EmbedBuilder().setDescription("You have not verified your Lichess account, run /verify!")
+                       .setColor(Color.red);
+           }
+           assert result != null;
 
-            embedBuilder.setColor(Color.GREEN);
-            embedBuilder.setThumbnail(
-                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDEcmvHJKxeF0L1dmlpickvkGNpTWPcNSGPV_c-ZiL6T8MsIxey-61J3VkehDCIi6tN5s&usqp=CAU");
-            embedBuilder.setTitle(result.getString("Lichessname") + "'s Scores:");
-            embedBuilder.setDescription(" **League Player Count:** " + collection.countDocuments() +
-                    "\n\n \uD83D\uDD25 **Blitz**"
-                    + "\n**Arena Score:** " + "\n" + result.getInteger("blitz_score") + "\n" +
-                    "**Swiss Score:** " + "\n" + result.getDouble("blitz_score_swiss") + "\n" +
-                    "**Grand Prix:** " + "\n" + result.getInteger("blitz_comb_total_gp") + "\n" +
-                    " \n \uD83D\uDC07 **Rapid**" + "\n **Arena Score:** "
-                    + "\n" + result.getInteger("rapid_score") + "\n" +
-                    "**Swiss Score:** " + "\n" + result.getDouble("rapid_score_swiss") + "\n" +
-                    "**Grand Prix:**" + "\n" + result.getInteger("rapid_comb_total_gp") + "\n" +
-                    " \n \uD83D\uDC22 **Classical**" +
-                    "\n **Arena Score:** " + "\n" + result.getInteger("classical_score") + "\n" +
-                    "**Swiss Score:** " + "\n" + result.getDouble("classical_score_swiss") + "\n" +
-                    "**Grand Prix: **" + "\n" + result.getInteger("classical_comb_total_gp") + "\n" +
-                    "\n ♻️ **Sparring**" + "\n **Middlegame Sparring Score:** " + "\n"
-                    + result.getInteger("sp_score") + "\n" + "**Endgame Sparring Score:** \n"
-                    + result.getInteger("eg_score"));
+           embedBuilder.setColor(Color.GREEN);
+           embedBuilder.setThumbnail(
+                   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDEcmvHJKxeF0L1dmlpickvkGNpTWPcNSGPV_c-ZiL6T8MsIxey-61J3VkehDCIi6tN5s&usqp=CAU");
+           embedBuilder.setTitle(result.getString("Lichessname") + "'s Scores:");
+           embedBuilder.setDescription(" **League Player Count:** " + collection.countDocuments() +
+                   "\n\n \uD83D\uDD25 **Blitz**"
+                   + "\n**Arena Score:** " + "\n" + result.getInteger("blitz_score") + "\n" +
+                   "**Swiss Score:** " + "\n" + result.getDouble("blitz_score_swiss") + "\n" +
+                   "**Grand Prix:** " + "\n" + result.getInteger("blitz_comb_total_gp") + "\n" +
+                   " \n \uD83D\uDC07 **Rapid**" + "\n **Arena Score:** "
+                   + "\n" + result.getInteger("rapid_score") + "\n" +
+                   "**Swiss Score:** " + "\n" + result.getDouble("rapid_score_swiss") + "\n" +
+                   "**Grand Prix:**" + "\n" + result.getInteger("rapid_comb_total_gp") + "\n" +
+                   " \n \uD83D\uDC22 **Classical**" +
+                   "\n **Arena Score:** " + "\n" + result.getInteger("classical_score") + "\n" +
+                   "**Swiss Score:** " + "\n" + result.getDouble("classical_score_swiss") + "\n" +
+                   "**Grand Prix: **" + "\n" + result.getInteger("classical_comb_total_gp") + "\n" +
+                   "\n ♻️ **Sparring**" + "\n **Middlegame Sparring Score:** " + "\n"
+                   + result.getInteger("sp_score") + "\n" + "**Endgame Sparring Score:** \n"
+                   + result.getInteger("eg_score"));
 
-            embedBuilder.setFooter(
-                    "**Note: scores of 0 means the player did not participate/play or earned zero points in a league, players can view their ranks with /rank");
+           embedBuilder.setFooter(
+                   "**Note: scores of 0 means the player did not participate/play or earned zero points in a league, players can view their ranks with /rank");
 
-            System.out.println(embedBuilder.getDescriptionBuilder().toString());
+           System.out.println(embedBuilder.getDescriptionBuilder().toString());
 
-            return embedBuilder;
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-            return new EmbedBuilder().setDescription("Error!");
-        }
+           return embedBuilder;
+       }catch (Exception e){
+           System.out.println(e.getMessage());
+           e.printStackTrace();
+           return new EmbedBuilder().setDescription("Error!");
+       }
     }
 
     /**

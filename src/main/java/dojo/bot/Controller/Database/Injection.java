@@ -107,18 +107,18 @@ public class Injection {
      * @param url        the url
      */
     public void InjectChesscomTournament(SlashCommandInteractionEvent event, MongoCollection<Document> collection, String regex, String target, String url){
-        System.out.println("test2");
-        String[] spliturl = url.split(regex);
-        String touryID = spliturl[1];
-        DbTournamentEntry entry = new DbTournamentEntry(touryID, touryID);
-        Document document = new Document("Name", entry.getTournamentName())
-                .append("Id", entry.getLichessTournamentId())
-                .append(target, entry.getLichessTournamentId());
-        collection.insertOne(document);
-        DojoScoreboard.createTournament(url);
-        event.getChannel().sendMessage("Success! Injected URL " + url + " In the database and the site!")
-                .queue();
-    }
+       System.out.println("test2");
+       String[] spliturl = url.split(regex);
+       String touryID = spliturl[1];
+       DbTournamentEntry entry = new DbTournamentEntry(touryID, touryID);
+       Document document = new Document("Name", entry.getTournamentName())
+               .append("Id", entry.getLichessTournamentId())
+               .append(target, entry.getLichessTournamentId());
+       collection.insertOne(document);
+       DojoScoreboard.createTournament(url);
+       event.getChannel().sendMessage("Success! Injected URL " + url + " In the database and the site!")
+               .queue();
+   }
 
 
 

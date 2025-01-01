@@ -20,29 +20,31 @@ public class UserObject {
      * @param client      the client
      * @param userParsing the user parsing
      */
-    public UserObject(Client client, String userParsing) {
+    public UserObject(Client client, String userParsing){
         this.client = client;
         this.userID = userParsing.toLowerCase().trim();
     }
 
 
     /**
-     * Gets client.
+     * Get client client.
      *
      * @return the client
      */
-    public Client getClient() {
+    public Client getClient(){
         return this.client;
     }
 
     /**
-     * Gets user id.
+     * Get user id string.
      *
-     * @return the user id
+     * @return the string
      */
-    public String getUserID() {
+    public String getUserID(){
         return this.userID;
     }
+
+
 
 
 }

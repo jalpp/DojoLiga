@@ -6,6 +6,8 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Sorts;
 import dojo.bot.Controller.Discord.Helper;
 import dojo.bot.Controller.League.Time_Control;
+
+import dojo.bot.Runner.Main;
 import net.dv8tion.jda.api.EmbedBuilder;
 import org.bson.Document;
 
@@ -15,20 +17,15 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
-
-/**
- * Class to compute Lichess standings
- */
-
 public class ComputeStandings {
 
-    private static final String DOJO_LOGO = "https://cdn-icons-png.flaticon.com/512/3150/3150116.png";
-    private static final String[] PODIUM = {"\uD83C\uDFC6", "\uD83E\uDD48", "\uD83E\uDD49"};
+    private static final String DOJO_LOGO = Helper.DOJO_LOGO;
+    private static final String[] PODIUM = { "\uD83C\uDFC6", "\uD83E\uDD48", "\uD83E\uDD49" };
     private final Calendar calendar = Calendar.getInstance();
 
     private final String MonthName = calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.ENGLISH);
-    private static final String[] EMOJI_LEADERBOARD = {"1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣",
-            "\uD83D\uDD1F"};
+    private static final String[] EMOJI_LEADERBOARD = { "1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣",
+            "\uD83D\uDD1F" };
 
     /**
      * Constructs a default ComputeStandings object.
@@ -37,8 +34,9 @@ public class ComputeStandings {
     }
 
 
+
     private static void addPodiumdouble(StringBuilder sb, List<Document> top10Players, String scoreFieldName,
-                                        String ratingFieldName) {
+                                  String ratingFieldName) {
         sb.append("**Podium**\n");
 
         for (int j = 0; j < 3; j++) {
@@ -71,7 +69,7 @@ public class ComputeStandings {
      * @param ratingFieldName The field name used to fetch a player's rating.
      */
     private static void addLeaderboarddouble(StringBuilder sb, List<Document> top10Players, String scoreFieldName,
-                                             String ratingFieldName) {
+                                       String ratingFieldName) {
         sb.append("**Leaderboard**\n");
 
         for (int i = 0; i < top10Players.size(); i++) {
@@ -107,8 +105,8 @@ public class ComputeStandings {
      * @return An EmbedBuilder containing the requested standings.
      */
     private static EmbedBuilder calculateStandingsdouble(MongoCollection<Document> collection, String title,
-                                                         String scoreFieldName,
-                                                         String ratingFieldName) {
+                                                   String scoreFieldName,
+                                                   String ratingFieldName) {
         List<Document> top10Players = new ArrayList<>();
         StringBuilder standing = new StringBuilder();
 
@@ -128,11 +126,15 @@ public class ComputeStandings {
         embedBuilder.setThumbnail(DOJO_LOGO);
         embedBuilder.setDescription("**League Players Count**: " + collection.countDocuments() + "\n"
                 + "**Rank | Lichess Username (Rating) | Score** \n\n" + standing.toString());
-        embedBuilder.setColor(Color.GREEN);
+        embedBuilder.setColor(Color.ORANGE);
         embedBuilder.setFooter("Pro tip: Players can view their ranks and scores with /rank and /score");
 
         return embedBuilder;
     }
+
+
+
+
 
 
     /**
@@ -144,12 +146,12 @@ public class ComputeStandings {
      * @param ratingFieldName The field name used to fetch a player's rating.
      */
     private static void addPodium(StringBuilder sb, List<Document> top10Players, String scoreFieldName,
-                                  String ratingFieldName) {
+                                  String ratingFieldName, Platform platform) {
         sb.append("**Podium**\n");
 
         for (int j = 0; j < 3; j++) {
             Document player = top10Players.get(j);
-            String name = player.getString("Lichessname");
+            String name = player.getString(platform.toString());
             int score = player.getInteger(scoreFieldName);
             int rating = player.getInteger(ratingFieldName);
             sb.append(PODIUM[j])
@@ -177,12 +179,12 @@ public class ComputeStandings {
      * @param ratingFieldName The field name used to fetch a player's rating.
      */
     private static void addLeaderboard(StringBuilder sb, List<Document> top10Players, String scoreFieldName,
-                                       String ratingFieldName) {
+                                       String ratingFieldName, Platform platform) {
         sb.append("**Leaderboard**\n");
 
         for (int i = 0; i < top10Players.size(); i++) {
             Document player = top10Players.get(i);
-            String name = player.getString("Lichessname");
+            String name = player.getString(platform.toString());
             int score = player.getInteger(scoreFieldName);
             int rating = player.getInteger(ratingFieldName);
             sb.append(EMOJI_LEADERBOARD[i])
@@ -224,17 +226,32 @@ public class ComputeStandings {
             }
         }
 
-        addPodium(standing, top10Players, scoreFieldName, ratingFieldName);
-        standing.append("\n\n");
-        addLeaderboard(standing, top10Players, scoreFieldName, ratingFieldName);
+        if(title.toLowerCase().contains("chess.com")){
+            addPodium(standing, top10Players, scoreFieldName, ratingFieldName, Platform.CHESSCOM);
+            standing.append("\n\n");
+            addLeaderboard(standing, top10Players, scoreFieldName, ratingFieldName, Platform.CHESSCOM);
+        }else{
+            addPodium(standing, top10Players, scoreFieldName, ratingFieldName, Platform.LICHESS);
+            standing.append("\n\n");
+            addLeaderboard(standing, top10Players, scoreFieldName, ratingFieldName, Platform.LICHESS);
+        }
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setTitle(title);
-        embedBuilder.setThumbnail(DOJO_LOGO);
-        embedBuilder.setDescription("**League Players Count**: " + collection.countDocuments() + "\n"
-                + "**Rank | Lichess Username (Rating) | Score** \n\n" + standing.toString());
-        embedBuilder.setColor(Color.GREEN);
-        embedBuilder.setFooter("Pro tip: Players can view their ranks and scores with /rank and /score");
+        if(title.toLowerCase().contains("chess.com")){
+            embedBuilder.setTitle(title);
+            embedBuilder.setThumbnail(DOJO_LOGO);
+            embedBuilder.setDescription("**Combined League Players Count**: " + Main.getPlayerSize() + "\n"
+                    + "**Rank | Chess.com Username (Rating) | Score** \n\n" + standing.toString());
+            embedBuilder.setColor(Color.GREEN);
+            embedBuilder.setFooter("Pro tip: Players can view their ranks and scores with /rank and /score", "https://images.chesscomfiles.com/uploads/v1/images_users/tiny_mce/SamCopeland/phpmeXx6V.png");
+        }else{
+            embedBuilder.setTitle(title);
+            embedBuilder.setThumbnail(DOJO_LOGO);
+            embedBuilder.setDescription("**Combined League Players Count**: " + Main.getPlayerSize() + "\n"
+                    + "**Rank | Lichess Username (Rating) | Score** \n\n" + standing.toString());
+            embedBuilder.setColor(Color.WHITE);
+            embedBuilder.setFooter("Pro tip: Players can view their ranks and scores with /rank and /score", "https://cdn-1.webcatalog.io/catalog/lichess/lichess-icon.png");
+        }
 
         return embedBuilder;
     }
@@ -247,7 +264,7 @@ public class ComputeStandings {
      */
     public EmbedBuilder calculateClassicalCombTotalGPStandings(MongoCollection<Document> collection) {
         return calculateStandings(collection,
-                MonthName + " Classical Grand Prix Leaderboard",
+                MonthName +" Classical Grand Prix Lichess Leaderboard",
                 "classical_comb_total_gp",
                 "classical_rating");
     }
@@ -260,7 +277,7 @@ public class ComputeStandings {
      */
     public EmbedBuilder calculateRapidCombTotalGPStandings(MongoCollection<Document> collection) {
         return calculateStandings(collection,
-                MonthName + " Rapid Grand Prix Leaderboard",
+                MonthName + " Rapid Grand Prix Chess.com Leaderboard",
                 "rapid_comb_total_gp",
                 "rapid_rating");
     }
@@ -273,7 +290,7 @@ public class ComputeStandings {
      */
     public EmbedBuilder calculateBlitzCombTotalGPStandings(MongoCollection<Document> collection) {
         return calculateStandings(collection,
-                MonthName + " Blitz Grand Prix Leaderboard",
+                MonthName + " Blitz Grand Prix Lichess Leaderboard",
                 "blitz_comb_total_gp",
                 "blitz_rating");
     }
@@ -417,7 +434,7 @@ public class ComputeStandings {
      */
     public EmbedBuilder calculateRapidArenaTotalStandings(MongoCollection<Document> collection) {
         return calculateStandings(collection,
-                MonthName + " Rapid Arena Leaderboard",
+                MonthName +" Rapid Arena Leaderboard",
                 "rapid_score",
                 "rapid_rating");
     }
@@ -478,27 +495,25 @@ public class ComputeStandings {
 
     /**
      * Returns a JDA EmbedBuilder containing the Mix Middlegame Sparring standings.
-     *
      * @param collection the collection of players to calculate the standings for.
      * @return An EmbedBuilder containing the standings.
      */
 
 
-    public EmbedBuilder calculateSparringMixStandings(MongoCollection<Document> collection) {
-        return calculateStandingsdouble(collection, MonthName + " Middlegame Sparring Total Standings | Top10",
+    public EmbedBuilder calculateSparringMixStandings(MongoCollection<Document> collection){
+        return calculateStandingsdouble(collection, MonthName +" Middlegame Sparring Total Standings | Top10",
                 "sp_score",
                 "sparring_rating");
     }
 
     /**
      * Returns a JDA EmbedBuilder containing the Mix Endgame Sparring standings.
-     *
      * @param collection the collection of players to calculate the standings for.
      * @return An EmbedBuilder containing the standings.
      */
 
 
-    public EmbedBuilder calculateEndgameSparringMixStandings(MongoCollection<Document> collection) {
+    public EmbedBuilder calculateEndgameSparringMixStandings(MongoCollection<Document> collection){
         return calculateStandingsdouble(collection, MonthName + " Endgame Sparring Total Standings | Top10",
                 "eg_score",
                 "eg_rating");
@@ -506,9 +521,8 @@ public class ComputeStandings {
 
     /**
      * Returns the top10 Embed leaderboard for given time control ratings
-     *
      * @param playersCollection the collection of players to calculate the standings for.
-     * @param timeControl       the time control of rating
+     * @param timeControl the time control of rating
      * @return JDA EmbedBuilder containing leaderboard
      */
 
@@ -518,7 +532,7 @@ public class ComputeStandings {
         EmbedBuilder builder = new EmbedBuilder();
         builder.setThumbnail(Helper.DOJO_LOGO);
         builder.setTitle(timeControl.getTitle() + " Rating Top10");
-        FindIterable<Document> sortedPlayers = playersCollection.find().sort(new Document(timeControl.toString() + "_rating", -1));
+        FindIterable<Document> sortedPlayers = playersCollection.find().sort(new Document( timeControl.toString() + "_rating", -1));
 
         List<Document> top10Players = sortedPlayers.limit(10).into(new ArrayList<>());
 
@@ -541,6 +555,12 @@ public class ComputeStandings {
 
 
     }
+
+
+
+
+
+
 
 
 }

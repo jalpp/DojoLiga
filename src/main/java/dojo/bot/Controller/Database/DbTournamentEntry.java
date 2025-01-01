@@ -6,8 +6,8 @@ package dojo.bot.Controller.Database;
 public class DbTournamentEntry {
 
 
-    private final String tournamentName;
-    private final String LichessTournamentId;
+    private String tournamentName;
+    private String LichessTournamentId;
 
 
     /**

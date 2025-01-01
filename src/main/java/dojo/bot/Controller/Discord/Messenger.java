@@ -7,7 +7,7 @@ import dojo.bot.Runner.Main;
 import java.util.Random;
 
 /**
- * Class that represents Lichess team Messenger
+ * The type Messenger.
  */
 public class Messenger {
 
@@ -32,7 +32,6 @@ public class Messenger {
     public Messenger(){
 
     }
-
 
     /**
      * Send message.
@@ -60,8 +59,6 @@ public class Messenger {
     public String getTeamUrl(){
         return "https://lichess.org/team/chessdojo";
     }
-
-
 
 
 

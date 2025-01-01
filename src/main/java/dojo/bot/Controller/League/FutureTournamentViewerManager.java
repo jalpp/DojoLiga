@@ -22,8 +22,6 @@ import java.util.List;
 
 public class FutureTournamentViewerManager {
 
-
-
     /**
      * Generates a list of the next few upcoming arena and swiss tournaments in
      * response to a slash command ran by admins.
