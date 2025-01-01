@@ -13,15 +13,15 @@ Also foundation code for ChessDojo.club's round robin system
 - Discord API 
 - Lichess API 
 - ChessCom API 
-
+- Github API
 
 
 ## Features:
 - Creating yearly/monthly/daily arena/swiss Lichess leagues for a Lichess team
 - Creating yearly/monthly/daily arena/swiss Chess.com leagues for a chess.com club
-- Leaderboards/crosstables with different point systems (grandprix/normal)
-- Round robins support, ability to create round robins on Lichess/Chess.com
-- Ticket management for users to be able to communicate with teachers/teach team
+- Leaderboards with different point systems (grandprix/normal)
+- foundation for round robin system API for ChessDojo.club 
+- Ticket management for users to be able to communicate with admins, tech tickets for devs (Github issues)
 - Anti-cheat detection system
 
 ## User docs
@@ -31,12 +31,21 @@ command docs
 
 ## Set up
 
-- to run the Discord side for admins to create the tournaments must have the env variables for the following
+to run the Discord side for admins to create the tournaments must have the env variables for the following
 - ```DOJ0_LIGA_BETA ``` the Discord bots token
 - ```LICHESS_BOT_TOKEN```the Lichess bots token
 
-to run the full chess league and round robins you would need 
+to run Discord to Github Ticket system set
+- ```GITHUB_PROD_TOKEN``` the Github token for the bot to create issues
 
+to run the full chess league on Lichess/Chess.com set
+- ```CONNECTION_STRING``` your MongoDB db connection string
+
+to run the logical Round robin API need to have
+
+- AWS SAM CLI
+- AWS account
+- AWS API GATEWAY
 - ```CONNECTION_STRING``` your MongoDB db connection string
 
 ## Authors:
@@ -47,5 +56,5 @@ to run the full chess league and round robins you would need
 
 
 ## License:
-DojoLiga has unknown license, any code/logic that is used, the dev must ask for permission and consult with authors
+DojoLiga has unknown license, any code/logic that is used/modified, the devs must ask for permission and consult with authors
 
