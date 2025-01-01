@@ -45,3 +45,7 @@ to run the full chess league and round robins you would need
 - @jackstenglein main developer of frontend ChessDojo.club site, also helping with API integration
 
 
+
+## License:
+DojoLiga has unknown license, any code/logic that is used, the dev must ask for permission and consult with authors
+
