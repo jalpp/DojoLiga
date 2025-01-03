@@ -36,7 +36,7 @@ public class ComputeStandings {
 
 
     private static void addPodiumdouble(StringBuilder sb, List<Document> top10Players, String scoreFieldName,
-                                  String ratingFieldName) {
+                                        String ratingFieldName) {
         sb.append("**Podium**\n");
 
         for (int j = 0; j < 3; j++) {
@@ -69,7 +69,7 @@ public class ComputeStandings {
      * @param ratingFieldName The field name used to fetch a player's rating.
      */
     private static void addLeaderboarddouble(StringBuilder sb, List<Document> top10Players, String scoreFieldName,
-                                       String ratingFieldName) {
+                                             String ratingFieldName) {
         sb.append("**Leaderboard**\n");
 
         for (int i = 0; i < top10Players.size(); i++) {
@@ -105,8 +105,8 @@ public class ComputeStandings {
      * @return An EmbedBuilder containing the requested standings.
      */
     private static EmbedBuilder calculateStandingsdouble(MongoCollection<Document> collection, String title,
-                                                   String scoreFieldName,
-                                                   String ratingFieldName) {
+                                                         String scoreFieldName,
+                                                         String ratingFieldName) {
         List<Document> top10Players = new ArrayList<>();
         StringBuilder standing = new StringBuilder();
 
@@ -151,7 +151,7 @@ public class ComputeStandings {
 
         for (int j = 0; j < 3; j++) {
             Document player = top10Players.get(j);
-            String name = player.getString(platform.toString());
+            String name = player.getString(platform.getPlayerField());
             int score = player.getInteger(scoreFieldName);
             int rating = player.getInteger(ratingFieldName);
             sb.append(PODIUM[j])
@@ -184,7 +184,7 @@ public class ComputeStandings {
 
         for (int i = 0; i < top10Players.size(); i++) {
             Document player = top10Players.get(i);
-            String name = player.getString(platform.toString());
+            String name = player.getString(platform.getPlayerField());
             int score = player.getInteger(scoreFieldName);
             int rating = player.getInteger(ratingFieldName);
             sb.append(EMOJI_LEADERBOARD[i])
@@ -555,11 +555,6 @@ public class ComputeStandings {
 
 
     }
-
-
-
-
-
 
 
 
