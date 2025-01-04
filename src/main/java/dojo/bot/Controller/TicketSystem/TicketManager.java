@@ -172,7 +172,7 @@ public class TicketManager {
         }
 
         AtomicReference<String> messageID = new AtomicReference<>("");
-        if(ticketPrefix.equalsIgnoreCase("tech_bug")) {
+        if(ticketPrefix.toLowerCase().contains("tech")) {
             event.getGuild().getTextChannelById(channelId).sendMessageEmbeds(builder.build()).setActionRow(Button.success("reply", "Admin Reply")).queue(message -> {
                 messageID.set(message.getId());
             });
@@ -197,7 +197,7 @@ public class TicketManager {
                 + "\n\uD83D\uDD28 Platform: " + Objects.requireNonNull(event.getValue("bugpl")).getAsString()
                 + "\n\uD83D\uDCF1 Device Type: " + Objects.requireNonNull(event.getValue("bugde")).getAsString()
                 + "\n\uD83C\uDF10 Browser Type: " + Objects.requireNonNull(event.getValue("bugbr")).getAsString();
-        handleTicket(event, techBugID, "\uD83D\uDC1B" + Objects.requireNonNull(event.getValue("bugtl")).getAsString(), description, Color.RED, "Tech_BUG", "developer");
+        handleTicket(event, techBugID, Objects.requireNonNull(event.getValue("bugtl")).getAsString(), description, Color.RED, "Tech_BUG", "developer");
     }
 
     /**
