@@ -154,6 +154,7 @@ public class TicketManager {
      * @param ticketRole the role to mention for the ticket
      */
     private void handleTicket(ModalInteractionEvent event, String channelId, String title, String description, Color color, String ticketPrefix, String ticketRole) {
+        GitHubIssueCreator git = new GitHubIssueCreator();
         event.reply("Feedback Ticket issued! Please wait for our Admins to get back to you!").setEphemeral(true).queue();
         String ticketNumber = ticketPrefix + "#" + generateRandomTicketNumber(new Random());
         EmbedBuilder builder = new EmbedBuilder()
@@ -165,9 +166,12 @@ public class TicketManager {
                 .addField("\uD83D\uDC64 Author @:", event.getUser().getAsMention(), true)
                 .addField("\uD83D\uDC64 Author name: ", "@" + event.getUser().getEffectiveName(), true);
 
+
+
         if(!ticketPrefix.equalsIgnoreCase("tp")){
             Role getAsMention = event.getGuild().getRolesByName(ticketRole, true).get(0);
             String mention = getAsMention.getAsMention();
+            System.out.println("DEBUGGER: pinging role");
             event.getGuild().getTextChannelById(channelId).sendMessage(mention).queue();
         }
 
@@ -176,8 +180,10 @@ public class TicketManager {
             event.getGuild().getTextChannelById(channelId).sendMessageEmbeds(builder.build()).setActionRow(Button.success("reply", "Admin Reply")).queue(message -> {
                 messageID.set(message.getId());
             });
+
             String DiscordURL = "https://discord.com/channels/" + event.getGuild().getId() + "/" + channelId + "/" + messageID;
-            String[] labels = new String[]{"bug", "user-submitted"};
+            String techtag = ticketPrefix.equalsIgnoreCase("techgen") ? "enhancement" : "bug";
+            String[] labels = new String[]{techtag, "user-submitted"};
             String message = GitHubIssueCreator.createIssue(dotenv.get("GITHUB_OWNER"), dotenv.get("GITHUB_REPO"), dotenv.get("GITHUB_TOKEN_PROD"),  title + " " + ticketNumber, description + "\n\n" + builder.getFields().getLast().getName() + " " + event.getUser().getEffectiveName() + "\n" + DiscordURL, labels );
             System.out.println(message);
         }
@@ -208,7 +214,7 @@ public class TicketManager {
      */
     private void TechGenTicketHandler(ModalInteractionEvent event, String techChannelID) {
         String description = "**\uD83D\uDCAC Content:** \n  > " + Objects.requireNonNull(event.getValue("asktech")).getAsString();
-        handleTicket(event, techChannelID, "\uD83D\uDEE0\uFE0F Tech Feedback Ticket", description, Color.GREEN, "TECHGEN", "developer");
+        handleTicket(event, techChannelID, Objects.requireNonNull(event.getValue("asktechtl").getAsString()), description, Color.GREEN, "TECHGEN", "developer");
     }
 
     /**
@@ -283,7 +289,6 @@ public class TicketManager {
             case "bug" -> {
                 try {
                     Modal modal1 = buildTechForm("bug", "bug-modal", "Bug Report");
-                    System.out.println("YO");
                     event.replyModal(modal1).queue();
                 }catch (Exception e){
                     System.out.println(e.getMessage());
@@ -323,13 +328,30 @@ public class TicketManager {
      * @return the built Modal
      */
     private Modal buildForm(String textId, String labelInfo, String insideInfo, String modalId, String modalTitle) {
+       if(!modalId.contains("tech")){
+           TextInput wtext = TextInput.create(textId, labelInfo, TextInputStyle.PARAGRAPH)
+                   .setPlaceholder(insideInfo)
+                   .setMinLength(5)
+                   .setMaxLength(3000)
+                   .setRequired(true)
+                   .build();
+           return Modal.create(modalId, modalTitle).addActionRow(wtext).build();
+       }
+        TextInput ttect = TextInput.create(textId + "tl", "Enter Short Title", TextInputStyle.SHORT)
+                .setMaxLength(10)
+                .setPlaceholder("provide short title")
+                .setMaxLength(50)
+                .setRequired(true)
+                .build();
+
         TextInput wtext = TextInput.create(textId, labelInfo, TextInputStyle.PARAGRAPH)
                 .setPlaceholder(insideInfo)
                 .setMinLength(5)
                 .setMaxLength(3000)
                 .setRequired(true)
                 .build();
-        return Modal.create(modalId, modalTitle).addActionRow(wtext).build();
+        return Modal.create(modalId, modalTitle).addActionRow(ttect).addActionRow(wtext).build();
+
     }
 
     /**
@@ -390,4 +412,5 @@ public class TicketManager {
         return 100 + random.nextInt(900);
     }
 }
+
 
