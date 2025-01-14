@@ -154,8 +154,10 @@ public class TicketManager {
      * @param ticketRole the role to mention for the ticket
      */
     private void handleTicket(ModalInteractionEvent event, String channelId, String title, String description, Color color, String ticketPrefix, String ticketRole) {
-        GitHubIssueCreator git = new GitHubIssueCreator();
+
         event.reply("Feedback Ticket issued! Please wait for our Admins to get back to you!").setEphemeral(true).queue();
+        String techtag = ticketPrefix.equalsIgnoreCase("techgen") ? "enhancement" : "bug";
+        String[] labels = new String[]{techtag, "user-submitted"};
         String ticketNumber = ticketPrefix + "#" + generateRandomTicketNumber(new Random());
         EmbedBuilder builder = new EmbedBuilder()
                 .setTitle(title)
@@ -168,24 +170,24 @@ public class TicketManager {
 
 
 
-        if(!ticketPrefix.equalsIgnoreCase("tp")){
-            Role getAsMention = event.getGuild().getRolesByName(ticketRole, true).get(0);
-            String mention = getAsMention.getAsMention();
-            System.out.println("DEBUGGER: pinging role");
-            event.getGuild().getTextChannelById(channelId).sendMessage(mention).queue();
-        }
+           if(!ticketPrefix.equalsIgnoreCase("tp")){
+               Role getAsMention = event.getGuild().getRolesByName(ticketRole, true).get(0);
+               String mention = getAsMention.getAsMention();
+               System.out.println("DEBUGGER: pinging role");
+               event.getGuild().getTextChannelById(channelId).sendMessage(mention).queue();
+           }
 
         AtomicReference<String> messageID = new AtomicReference<>("");
         if(ticketPrefix.toLowerCase().contains("tech")) {
             event.getGuild().getTextChannelById(channelId).sendMessageEmbeds(builder.build()).setActionRow(Button.success("reply", "Admin Reply")).queue(message -> {
                 messageID.set(message.getId());
+                String DiscordURL = "https://discord.com/channels/" + event.getGuild().getId() + "/" + channelId + "/" + messageID;
+                System.out.println(messageID);
+                String message1 = GitHubIssueCreator.createIssue(dotenv.get("GITHUB_OWNER"), dotenv.get("GITHUB_REPO"), dotenv.get("GITHUB_TOKEN_PROD"),  title + " " + ticketNumber, description + "\n\n" + builder.getFields().getLast().getName() + " " + event.getUser().getEffectiveName() + "\n" + "[Discord URL](" + DiscordURL + ")", labels );
+                System.out.println(message1);
+                event.getGuild().getTextChannelById(channelId).sendMessage(message1).queue();
             });
 
-            String DiscordURL = "https://discord.com/channels/" + event.getGuild().getId() + "/" + channelId + "/" + messageID;
-            String techtag = ticketPrefix.equalsIgnoreCase("techgen") ? "enhancement" : "bug";
-            String[] labels = new String[]{techtag, "user-submitted"};
-            String message = GitHubIssueCreator.createIssue(dotenv.get("GITHUB_OWNER"), dotenv.get("GITHUB_REPO"), dotenv.get("GITHUB_TOKEN_PROD"),  title + " " + ticketNumber, description + "\n\n" + builder.getFields().getLast().getName() + " " + event.getUser().getEffectiveName() + "\n" + DiscordURL, labels );
-            System.out.println(message);
         }
         else {
             event.getGuild().getTextChannelById(channelId).sendMessageEmbeds(builder.build()).setActionRow(Button.success("reply", "Admin Reply")).queue();

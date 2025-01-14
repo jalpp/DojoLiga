@@ -1,6 +1,9 @@
 package dojo.bot.Controller.TicketSystem;
 
 import com.google.gson.Gson;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -45,9 +48,21 @@ public class GitHubIssueCreator {
 
             // Get response code and handle response
             int responseCode = connection.getResponseCode();
+            System.out.println(connection.getResponseMessage());
+            String success = "";
+
             if (responseCode == HttpURLConnection.HTTP_CREATED) {
-                System.out.println("Issue created successfully!");
-                return "Issue created successfully!";
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        response.append(line);
+                    }
+
+                    String parsedIssue = response.toString().split("url")[1].split(",")[0].split("/")[7];
+                    success = "Issue created successfully with number: https://github.com/jackstenglein/chess-dojo-scheduler/issues/" + parsedIssue.substring(0, parsedIssue.length() - 1);
+                }
+                return success;
             } else {
                 System.err.println("Failed to create issue. Response Code: " + responseCode);
                 try (var errorStream = connection.getErrorStream()) {
@@ -66,4 +81,3 @@ public class GitHubIssueCreator {
 
 
 }
-
